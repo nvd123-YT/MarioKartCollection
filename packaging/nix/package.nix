@@ -88,7 +88,7 @@ rustPlatform.buildRustPackage {
 
   meta = {
     description = "Find, install, update and play recompiled and decompiled PC games";
-    homepage = "https://recomplauncher.com";
+    homepage = "https://github.com/nvd123-YT/MarioKartCollection";
     license = lib.licenses.gpl3Plus;
     mainProgram = "recomplauncher";
     platforms = [ "x86_64-linux" ];
