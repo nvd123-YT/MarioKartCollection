@@ -1,6 +1,6 @@
 'use strict';
-// RecompLauncher's window. Everything it shows comes from the Rust side (src-tauri/src/lib.rs):
-// the RecompLauncher catalog, each game's GitHub releases, and what's installed. Long jobs report back
+// Mario Kart Collection's window. Everything it shows comes from the Rust side (src-tauri/src/lib.rs):
+// the Mario Kart Collection catalog, each game's GitHub releases, and what's installed. Long jobs report back
 // through two events: `install` (download progress) and `game` (a game started or closed).
 
 const T = window.__TAURI__;
@@ -32,7 +32,7 @@ window.looksHere = () => S.os === 'windows' || S.os === 'linux';
 const AI_USE = { code: N_('code'), art: N_('art'), text: N_('writing'), audio: N_('voice or music') };
 
 const S = {
-  os: 'windows', arch: 'x64', version: '', site: 'https://recomplauncher.com',
+  os: 'windows', arch: 'x64', version: '', site: 'https://github.com/nvd123-YT/MarioKartCollection',
   library: {}, arts: {}, settings: {}, running: new Set(), settingUp: new Set(), setupJobs: {}, jobs: {}, recent: [], roms: [], owned: {}, steam: false, pc: null, libs: [], shots: {},
   cat: null, offline: false, updates: {}, rels: {}, builds: {}, reports: {}, runCounts: {}, info: {}, mods: {}, modList: {}, news: null, modQ: '', setup: {}, looks: {}, gb: {}, modSrc: {}, easy: new Set(), easyAll: new Set(), shelf: {}, slide: 0, lq: '',
   view: 'home', arg: null, back: [], q: '', dev: {}, setTab: 'general', endedOpen: false,
@@ -47,7 +47,7 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 // A translated sentence with markup in its gaps: the text is escaped, the values (already HTML) go in as they are.
 const htmlFill = (s, v) => esc(s).replace(/\{(\w+)\}/g, (m, k) => (v && k in v ? (typeof v[k] === 'number' ? fmtNum(v[k]) : String(v[k])) : m));
-// The RecompLauncher Discord (the catalog can name a newer invite).
+// The Mario Kart Collection Discord (the catalog can name a newer invite).
 const discordUrl = () => { const u = (S.cat && S.cat.site && S.cat.site.discord) || ''; return /^https:\/\//.test(u) ? u : 'https://discord.gg/FUzqGM2cvf'; };
 const webUrl = (u) => (!u ? '' : /^(https?:|data:)/.test(u) ? u : S.site + (u[0] === '/' ? '' : '/') + u);
 // A cover at the size a tile shows it: the site's smaller copy (its thumb.php, the same one the
@@ -473,7 +473,7 @@ async function checkLauncher(btn) {
   if (v) { el.remove(); return updateToast(v); }
   el.classList.add('found');
   el.classList.toggle('bad', bad);
-  el.innerHTML = bad ? `<span>${esc(t('Couldn\'t check for updates right now.'))}</span>` : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>${esc(t('You have the newest RecompLauncher.'))}</span>`;
+  el.innerHTML = bad ? `<span>${esc(t('Couldn\'t check for updates right now.'))}</span>` : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg><span>${esc(t('You have the newest Mario Kart Collection.'))}</span>`;
   setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 260); }, 3600);
 }
 const fail = (e) => toast(t(String(e && e.message ? e.message : e).replace(/^[A-Z_]+\|/, '')), true);
@@ -1243,16 +1243,16 @@ function actions(a, size = 'big') {
   }
 }
 
-// A new issue on the recomp's own page, asking for RecompLauncher support. Opened for the player to
+// A new issue on the recomp's own page, asking for Mario Kart Collection support. Opened for the player to
 // send themselves; nothing is sent from here.
 function askSupportUrl(a) {
-  const title = 'RecompLauncher support';
-  const body = 'Hi! Could you add a recomplauncher.json to this recomp, so RecompLauncher can set it up and show its settings for players?\n\nThe guide: https://recomplauncher.com/sdk-files/guide.md';
+  const title = 'Mario Kart Collection support';
+  const body = 'Hi! Could you add a recomplauncher.json to this recomp, so Mario Kart Collection can set it up and show its settings for players?\n\nThe guide: https://recomplauncher.com/sdk-files/guide.md';
   if (isSF(a.repo)) return repoIssues(a.repo);
   if (isLab(a.repo)) return `${repoHome(a.repo)}/-/issues/new?issue[title]=${encodeURIComponent(title)}&issue[description]=${encodeURIComponent(body)}`;
   return `${repoIssues(a.repo)}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
 }
-// Launcher Support, a box on Overview under Before You Play: what RecompLauncher can do for this
+// Launcher Support, a box on Overview under Before You Play: what Mario Kart Collection can do for this
 // recomp, and who made each part work. From the catalog's "support", the recomp's own
 // recomplauncher.json in its folder (asked for once, for an installed game), or (offline) its
 // boot profile.
@@ -1294,7 +1294,7 @@ function supportCard(a) {
     [t('Cloud Saves'), saves === 'dev' ? t('The recomp tells the launcher exactly where it saves.') : t('Always on from the launcher\'s side.'), saves, '<path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8.5a4 4 0 0 1 0 9.5z"/>'],
     [t('Handheld Rating'), hh ? tf('Handheld players say it runs well: {devices}', { devices: (Array.isArray(a.handheld.devices) ? a.handheld.devices : []).filter((d) => typeof d === 'string').join(', ') || t('several players') }) : t('From handheld players\' reports. None yet.'), hh ? 'players' : '', '<rect x="2.5" y="7" width="19" height="10" rx="3"/><path d="M7 10.5v3M5.5 12h3M16 11h.01M18 13h.01"/>'],
   ];
-  const src = (w) => (w === 'dev' ? t('From Manifest') : w === 'launcher' ? t('By RecompLauncher') : w === 'players' ? t('By Players') : '');
+  const src = (w) => (w === 'dev' ? t('From Manifest') : w === 'launcher' ? t('By Mario Kart Collection') : w === 'players' ? t('By Players') : '');
   // What the developer's own file could add (the handheld rating comes from players).
   const missing = rows.slice(0, 4).some((r) => !r[2]);
   const source = local ? t('Manifest found in the installed files.') : sdk === 'release' ? t('Manifest included with the release.') : sdk === 'repo' ? t('Manifest in the project repository.') : '';
@@ -1309,7 +1309,7 @@ function supportCard(a) {
     <div class="sup-list">${rows.map(row).join('')}</div>
     <div class="sup-foot sup-${owner}">${svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', 'sup-fi')}<b class="sup-own">${esc(t(OWNER_LONG[owner]))}</b></div>
     ${source ? `<p class="sup-src">${esc(source)}</p>` : ''}
-    ${ask ? `<div class="sup-ask"><p>${esc(t('Is a feature missing? Ask the developer to add RecompLauncher support.'))}</p><button type="button" class="btn main" data-act="url" data-url="${esc(askSupportUrl(a))}">${esc(t('Ask the Developer'))}</button></div>` : ''}</div>`;
+    ${ask ? `<div class="sup-ask"><p>${esc(t('Is a feature missing? Ask the developer to add Mario Kart Collection support.'))}</p><button type="button" class="btn main" data-act="url" data-url="${esc(askSupportUrl(a))}">${esc(t('Ask the Developer'))}</button></div>` : ''}</div>`;
 }
 
 // The other versions of this game that are installed too.
@@ -1843,8 +1843,8 @@ function pageDiscover() {
   const genres = Object.keys(GENRES).filter((k) => apps.some((a) => a.genre === k));
   const q = S.q.trim();
   return `<div class="page">${offlineNote()}
-    <div class="dhead"><h1>${esc(q ? t('Search') : f.tag ? tf('All recomps with {tag}', { tag: f.tag }) : f.genre ? t(GENRES[f.genre]) : t('Catalog'))}</h1><p>${esc(t('Every recomp comes straight from its developer\'s GitHub. You bring your own copy of the game.'))}</p>
-      <label class="bigsearch"><span class="sr">${esc(t('Search recomps'))}</span>${SEARCH}<input id="dq" type="search" placeholder="${esc(byGame() ? t('Search games') : t('Search games, recomps or developers'))}" value="${esc(S.q)}" autocomplete="off" spellcheck="false"><button type="button" class="clear" data-act="clear-q" aria-label="${esc(t('Clear the search'))}"${q ? '' : ' hidden'}>${XMARK}</button></label></div>
+    <div class="dhead"><h1>${esc(q ? t('Search') : f.tag ? tf('All recomps with {tag}', { tag: f.tag }) : f.genre ? t(GENRES[f.genre]) : t('Games'))}</h1><p>${esc(t('Choose a Mario Kart game. Updates come directly from each project's original GitHub release.'))}</p>
+      <label class="bigsearch"><span class="sr">${esc(t('Search Mario Kart games'))}</span>${SEARCH}<input id="dq" type="search" placeholder="${esc(byGame() ? t('Search games') : t('Search Mario Kart games'))}" value="${esc(S.q)}" autocomplete="off" spellcheck="false"><button type="button" class="clear" data-act="clear-q" aria-label="${esc(t('Clear the search'))}"${q ? '' : ' hidden'}>${XMARK}</button></label></div>
     ${notesBars()}
     <div class="dctl rows"><div class="grp">
       <div class="seg big by-seg" role="radiogroup" aria-label="${esc(t('Show'))}">${[['', t('Recomps')], ['games', t('Games')]].map(([k, n]) => `<button type="button" role="radio" aria-checked="${(byGame() ? 'games' : '') === k}" data-act="disc-by" data-k="${k}">${esc(n)}</button>`).join('')}</div>
@@ -2145,7 +2145,7 @@ function pageGame(id) {
     <div class="gp-top"><div class="gp-cover">${pic(thumbOf(a.cover))}</div>
       <div class="gp-name">${kick ? `<span class="kick">${esc(kick)}</span>` : ''}<h1 class="${a.name.length > 34 ? 'long' : ''}">${esc(a.name)}</h1></div>
       <div class="gp-title">${gameTitle(a, id)}</div>
-      <div class="gp-side">${window.saveBadge ? window.saveBadge(a) : ''}<div class="gp-acts" data-acts="${esc(id)}">${actions(a)}</div>${replacedNote(a) || betterNote(a) || reinstallNote(a) || badNote(a) || stateNote(a)}${S.library[id] && S.library[id].from_backup ? `<p class="bk-note">${esc(t('Downloaded from the RecompLauncher backup'))}</p>` : ''}<div class="ig-slot" data-ig="${esc(id)}">${igCard(a)}</div></div></div>
+      <div class="gp-side">${window.saveBadge ? window.saveBadge(a) : ''}<div class="gp-acts" data-acts="${esc(id)}">${actions(a)}</div>${replacedNote(a) || betterNote(a) || reinstallNote(a) || badNote(a) || stateNote(a)}${S.library[id] && S.library[id].from_backup ? `<p class="bk-note">${esc(t('Downloaded from the Mario Kart Collection backup'))}</p>` : ''}<div class="ig-slot" data-ig="${esc(id)}">${igCard(a)}</div></div></div>
     ${includesBox(a)}
     <div class="tabs"><div class="tabs-in" role="tablist"><span class="tab-pill" aria-hidden="true"></span>${gameTabs(a).map(([k, n, x]) => `<button type="button" role="tab" class="${S.tab === k ? 'on' : ''}" aria-selected="${S.tab === k}" data-act="tab" data-tab="${k}">${esc(n)}${x || ''}</button>`).join('')}</div></div>
     <div class="g-body" id="g-body">${gameBody(a)}</div></div>`;
@@ -2205,13 +2205,13 @@ function igGo(id) {
   invoke('open_url', { url: `${SITE}/api/ig.php?go=${encodeURIComponent(id)}&v=${encodeURIComponent(igVariant())}` }).catch(fail);
 }
 
-// RecompLauncher itself in Steam, starting in Big Picture mode (Gaming Mode on a Steam Deck).
+// Mario Kart Collection itself in Steam, starting in Big Picture mode (Gaming Mode on a Steam Deck).
 window.selfToSteam = selfToSteam;
 async function selfToSteam(restart) {
   let r;
   try { r = await invoke('launcher_to_steam', { restart }); } catch (e) { return fail(e); }
   if (r === 'steam_running') {
-    const v = await (window.ask || ask)(t('Close Steam for a moment?'), `<p>${esc(t('Steam only reads its list of games when it starts. It closes, RecompLauncher is added, and Steam opens again.'))}</p>`,
+    const v = await (window.ask || ask)(t('Close Steam for a moment?'), `<p>${esc(t('Steam only reads its list of games when it starts. It closes, Mario Kart Collection is added, and Steam opens again.'))}</p>`,
       [{ label: t('Not now'), v: null }, { label: t('Close and add'), v: 'yes', main: true }]);
     if (v === 'yes') return selfToSteam(true);
     return;
@@ -2219,7 +2219,7 @@ async function selfToSteam(restart) {
   // Remove from Steam's count changes with it.
   S.steamSyncState = undefined;
   await saveUi({ in_steam: true }, true);
-  toast(t('RecompLauncher is in your Steam library. It opens in Big Picture mode from there.'));
+  toast(t('Mario Kart Collection is in your Steam library. It opens in Big Picture mode from there.'));
   if (S.view === 'settings') render(true);
 }
 
@@ -2438,7 +2438,7 @@ const notesShown = () => { const closed = new Set(((S.settings.ui || {}).notes_c
 const httpsOnly = (u) => (/^https:\/\/\S+$/i.test(String(u || '')) ? String(u) : '');
 function notesBars() {
   const list = notesShown();
-  return list.length ? `<div class="tnotes">${list.map((n) => `<div class="tnote ${esc(n.tone || 'cyan')}" role="note"><span class="tn-l">RecompLauncher</span><p dir="auto">${esc(n.body)}</p>${httpsOnly(n.link) ? `<button type="button" class="btn sm" data-act="note-url" data-url="${esc(httpsOnly(n.link))}">${esc(n.linkText || t('Learn More'))}</button>` : ''}<button type="button" class="tn-x" data-act="note-x" data-n="${esc(n.id)}" aria-label="${esc(t('Close'))}" title="${esc(t('Close'))}">${XMARK}</button></div>`).join('')}</div>` : '';
+  return list.length ? `<div class="tnotes">${list.map((n) => `<div class="tnote ${esc(n.tone || 'cyan')}" role="note"><span class="tn-l">Mario Kart Collection</span><p dir="auto">${esc(n.body)}</p>${httpsOnly(n.link) ? `<button type="button" class="btn sm" data-act="note-url" data-url="${esc(httpsOnly(n.link))}">${esc(n.linkText || t('Learn More'))}</button>` : ''}<button type="button" class="tn-x" data-act="note-x" data-n="${esc(n.id)}" aria-label="${esc(t('Close'))}" title="${esc(t('Close'))}">${XMARK}</button></div>`).join('')}</div>` : '';
 }
 async function closeNote(id) {
   const closed = ((S.settings.ui || {}).notes_closed || []).map(String).filter((x) => x !== String(id));
@@ -2496,7 +2496,7 @@ function runsCard(a) {
 }
 const viaPx = (x) => !!x && (x.proton === true || x.proton === 1 || x.proton === '1' || x.proton === 'true');
 
-// The catalog's "players": PCs that installed or played it from RecompLauncher in the last 90 days.
+// The catalog's "players": PCs that installed or played it from Mario Kart Collection in the last 90 days.
 function playersText(a) {
   const n = Number(a.players);
   return n > 0 ? tn(n, '1 PC, last 90 days', '{n} PCs, last 90 days') : '';
@@ -2504,7 +2504,7 @@ function playersText(a) {
 function gameRail(a) {
   const facts = [
     [t('Latest version'), verText(a.version)], [t('Size'), a.size], [t('Latest release'), date(a.released)], [t('First release'), date(a.first)],
-    [t('Releases'), a.releases ? fmtNum(a.releases) : ''], [t('Downloads'), a.downloads ? fmtN(a.downloads) : ''], [t('Played on RecompLauncher'), playersText(a)], [starsLabel(a.repo), starsText(a)], [t('License'), a.license], [t('Setup By'), OWNER_NAME[a.maintained_by] ? t(OWNER_NAME[a.maintained_by]) : ''],
+    [t('Releases'), a.releases ? fmtNum(a.releases) : ''], [t('Downloads'), a.downloads ? fmtN(a.downloads) : ''], [t('Played on Mario Kart Collection'), playersText(a)], [starsLabel(a.repo), starsText(a)], [t('License'), a.license], [t('Setup By'), OWNER_NAME[a.maintained_by] ? t(OWNER_NAME[a.maintained_by]) : ''],
   ].filter(([, v]) => v);
   const sys = (a.systems || []).filter((k) => OS_NAME[k]);
   // Who made it is under the title; adding it somewhere, its project page and reporting are in the
@@ -3433,7 +3433,7 @@ function portableRow(row) {
   // Marked Beta, like the other features still settling in.
   const brow = (b, s2, ctl) => `<div class="set-row"><div class="k"><b>${esc(b)}${BETA_MARK()}</b><span>${esc(s2)}</span></div>${ctl}</div>`;
   if (p && p.portable) return brow(t('Portable Mode'), tf('On. Your library, settings, play time and save backups are in {folder}, next to the launcher, so they go wherever it goes.', { folder: p.data }), `<button type="button" class="btn" data-act="portable-open">${esc(t('Open'))}</button>`);
-  return brow(t('Make a Portable Copy'), t('A copy of RecompLauncher on a portable drive that keeps its library, settings, play time and save backups next to it, to use on any PC. Put your Recomp Library on that drive too.'), `<button type="button" class="btn" data-act="portable-make">${esc(t('Make a Portable Copy'))}</button>`);
+  return brow(t('Make a Portable Copy'), t('A copy of Mario Kart Collection on a portable drive that keeps its library, settings, play time and save backups next to it, to use on any PC. Put your Recomp Library on that drive too.'), `<button type="button" class="btn" data-act="portable-make">${esc(t('Make a Portable Copy'))}</button>`);
 }
 // A game's settings in their order: a heading where the group changes, advanced ones only after
 // Show Advanced Options (remembered per game), and sliders with their value beside them.
@@ -4110,8 +4110,8 @@ function pageDownloads() {
         <h2>${esc(a.name)}</h2>${progress(lead)}<div class="acts">${jobBtns(lead)}</div></div>
       <div class="dl-graph"><svg viewBox="0 0 300 96" preserveAspectRatio="none" data-dl-graph="${esc(lead)}" aria-hidden="true">${dlGraph(lead)}</svg>
         <div class="dl-gstats" data-dl-gstat="${esc(lead)}">${gs.map(([k, v]) => `<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div></div></section>`; })() : '';
-  // RecompLauncher's own update: up top, where it's seen first.
-  const self = S.launcherUpd ? `<section class="dl-self"><img src="img/mark.svg" alt=""><div class="mid"><b>${esc(tf('RecompLauncher {version} is ready', { version: verName(S.launcherUpd.version) }))}</b><span>${esc(tf('You have {version}. It updates in a moment and opens again by itself.', { version: verName(S.version) }))}</span></div><button type="button" class="btn main" data-act="self-update">${DOWN}${esc(t('Update now'))}</button></section>` : '';
+  // Mario Kart Collection's own update: up top, where it's seen first.
+  const self = S.launcherUpd ? `<section class="dl-self"><img src="img/mark.svg" alt=""><div class="mid"><b>${esc(tf('Mario Kart Collection {version} is ready', { version: verName(S.launcherUpd.version) }))}</b><span>${esc(tf('You have {version}. It updates in a moment and opens again by itself.', { version: verName(S.version) }))}</span></div><button type="button" class="btn main" data-act="self-update">${DOWN}${esc(t('Update now'))}</button></section>` : '';
   const queue = act.filter((id) => id !== lead).map((id) => { const a = appOf(id);
     return `<div class="dl-row dl-q">${wide(id)}<div class="mid"><b>${esc(a.name)}</b>${progress(id)}</div><span class="tag cy">${esc(kindTag(id))}</span><span class="acts">${jobBtns(id, true)}</span></div>`; }).join('');
   const upRows = ups.map((id) => { const a = appOf(id);
@@ -4148,7 +4148,7 @@ function pageDownloads() {
 // the version it came from and the one it went to), plus the launcher's own updates.
 function updateLog(hist) {
   const out = hist.filter((h) => h.update).map((h) => ({ key: `${h.id}@${h.tag}@${h.when}`, id: h.id, name: h.name, tag: h.tag, from: h.from || '', when: h.when, repo: h.repo || (byId(h.id) || {}).repo || '' }));
-  for (const u of ((S.settings.ui || {}).self_updates || [])) out.push({ key: `self@${u.to}@${u.when}`, self: true, name: 'RecompLauncher', tag: u.to, from: u.from || '', when: u.when });
+  for (const u of ((S.settings.ui || {}).self_updates || [])) out.push({ key: `self@${u.to}@${u.when}`, self: true, name: 'Mario Kart Collection', tag: u.to, from: u.from || '', when: u.when });
   return out.sort((a, b) => (b.when || 0) - (a.when || 0)).slice(0, 80);
 }
 const relKey = (tag) => String(tag || '').replace(/^v/i, '').toLowerCase();
@@ -4213,7 +4213,7 @@ function updatesTab(log) {
     const img = u.self ? '<span class="upd-self cap" aria-hidden="true"><img src="img/mark.svg" alt=""></span>' : a.hero ? pic(thumbOf(a.hero, 320), 'cap') : a.cover ? `<span class="cap cov">${pic(thumbOf(a.cover, 160))}</span>` : '<span class="cap ph"></span>';
     const open = S.updOpen.has(u.key);
     return `<div class="upd${open ? ' open' : ''}" data-key="${esc(u.key)}"${u.self ? ' data-self="1"' : ''}>
-      <button type="button" class="upd-h" data-act="upd" aria-expanded="${open}">${img}<span class="mid"><b>${esc(u.self ? 'RecompLauncher' : a.name || u.name)}</b><span>${esc(u.from ? tf('{from} → {to}', { from: u.self ? verName(u.from) : u.from, to: u.self ? verName(u.tag) : u.tag }) : tf('Updated to {tag}', { tag: u.self ? verName(u.tag) : u.tag }))}</span></span><span class="dl-when">${esc(agoCap(u.when))}</span>${CHEV_D}</button>
+      <button type="button" class="upd-h" data-act="upd" aria-expanded="${open}">${img}<span class="mid"><b>${esc(u.self ? 'Mario Kart Collection' : a.name || u.name)}</b><span>${esc(u.from ? tf('{from} → {to}', { from: u.self ? verName(u.from) : u.from, to: u.self ? verName(u.tag) : u.tag }) : tf('Updated to {tag}', { tag: u.self ? verName(u.tag) : u.tag }))}</span></span><span class="dl-when">${esc(agoCap(u.when))}</span>${CHEV_D}</button>
       <div class="upd-body"><div class="upd-in">${open ? updNotes(u) : ''}</div></div></div>`;
   }).join('')}</div>`;
 }
@@ -4249,10 +4249,10 @@ async function devCheck(id, loud) {
 }
 // Who looks after a game's setup (the catalog's maintained_by), and what Developer Tools calls the
 // setup's flow and what it can do.
-const OWNER_NAME = { project: N_('Its Developer'), official: N_('Its Developer'), launcher: N_('RecompLauncher'), community: N_('The Community') };
+const OWNER_NAME = { project: N_('Its Developer'), official: N_('Its Developer'), launcher: N_('Mario Kart Collection'), community: N_('The Community') };
 const FLOW_NAME = { launch: [N_('Launches With the Player\'s Copy'), N_('The game gets the player\'s disc or files when it starts. Nothing runs before Play.')], prepare: [N_('Needs a One-Time Step'), N_('A step runs once before Play (importing or recompiling from the player\'s copy).')], '': [N_('Plays as It Is'), N_('It doesn\'t ask the player for anything.')] };
 const CAP_NAME = { settings: N_('Launcher Settings'), verify: N_('Known-Dump Check'), inputs: N_('More Than One File'), saves: N_('Says Where It Saves') };
-const OWNER_LONG = { project: N_('Maintained by its developer'), launcher: N_('Maintained by RecompLauncher'), community: N_('Maintained by the community'), unconfirmed: N_('Nobody has confirmed who maintains it') };
+const OWNER_LONG = { project: N_('Maintained by its developer'), launcher: N_('Maintained by Mario Kart Collection'), community: N_('Maintained by the community'), unconfirmed: N_('Nobody has confirmed who maintains it') };
 const DEV_MARK = { ok: '<path d="m5 12.5 4.5 4.5L19 7.5"/>', warn: '<path d="M12 8v5M12 16.5v.01"/>', err: '<path d="m7 7 10 10M17 7 7 17"/>' };
 function devTab(a) {
   const id = a.id, g = S.library[id], r = S.dev[id];
@@ -4404,7 +4404,7 @@ function pageSettings() {
           + row(t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. It helps fix problems faster. No names, no files.'), `<span class="set-ctl2"><a href="#" data-act="url" data-url="https://recompstore.com/privacy#launcher">${esc(t('What\'s sent'))}</a>${sw('share_usage', st.data_asked && st.share_usage, t('Share usage and diagnostics'))}</span>`)
           + row(t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'), sw('share_stats', st.data_asked && st.share_stats, t('Share anonymous usage stats')))
           + row(t('Your IDs'), S.ids ? tf('Diagnostics {a} · Stats {b}. Quote them to have what was sent removed. A reset starts new ones.', { a: S.ids.usage.slice(0, 8), b: S.ids.stats.slice(0, 8) }) : t('Quote them to have what was sent removed. A reset starts new ones.'), `<span class="set-ctl2"><button type="button" class="btn" data-act="copy-ids">${esc(t('Copy'))}</button><button type="button" class="btn" data-act="reset-ids">${esc(t('Reset'))}</button></span>`))
-        + group(t('When you close the window'), row(t('Run in background'), t('Keep RecompLauncher running when you close the window. Turn off to exit on close. Quit always exits.'), sw('close_to_tray', st.close_to_tray, t('Run in background'))));
+        + group(t('When you close the window'), row(t('Run in background'), t('Keep Mario Kart Collection running when you close the window. Turn off to exit on close. Quit always exits.'), sw('close_to_tray', st.close_to_tray, t('Run in background'))));
       break;
     case 'report':
       body = window.reportSection ? window.reportSection(group) : '';
@@ -4486,7 +4486,7 @@ function pageSettings() {
             <div class="seg" role="radiogroup" aria-label="${esc(t('Big Picture mode size'))}">${[['', t('Auto')], ['small', t('Smaller')], ['medium', t('Medium')], ['large', t('Larger')]].map(([k, n]) => `<button type="button" role="radio" aria-checked="${(st.tv_size || '') === k}" data-act="tvsize" data-k="${k}">${esc(n)}</button>`).join('')}</div></div>`
           + row(t('Show the Button in the Sidebar'), t('The Big Picture mode button at the bottom of the sidebar. Off: it\'s hidden and only the button below here opens it (or hold Menu on your controller).'), sw('hide_tv_btn', !ui.hide_tv_btn, t('Show the Button in the Sidebar'), 'ui-toggle'))
           + row(t('Sounds'), t('The start-up sound and a soft click as you move around.'), sw('sounds', st.sounds, t('Sounds in Big Picture mode')))
-          + (S.steam ? row(t('RecompLauncher in Steam'), S.deck ? t('Puts it in your Steam library, so it\'s there in Gaming Mode and opens in Big Picture mode.') : t('Puts it in your Steam library, opening in Big Picture mode. Handy from Steam\'s own Big Picture.'), `<button type="button" class="btn sm" data-act="self-steam">${esc((st.ui || {}).in_steam ? t('Add it again') : t('Add to Steam'))}</button>`) : ''),
+          + (S.steam ? row(t('Mario Kart Collection in Steam'), S.deck ? t('Puts it in your Steam library, so it\'s there in Gaming Mode and opens in Big Picture mode.') : t('Puts it in your Steam library, opening in Big Picture mode. Handy from Steam\'s own Big Picture.'), `<button type="button" class="btn sm" data-act="self-steam">${esc((st.ui || {}).in_steam ? t('Add it again') : t('Add to Steam'))}</button>`) : ''),
         `<button type="button" class="btn sm main" data-act="tv">${esc(t('Open Big Picture mode'))}</button>`)
         + `<p class="set-tip">${esc(t('Hold Menu on your controller to switch to Big Picture mode.'))}</p>`;
       break;
@@ -4511,13 +4511,13 @@ function pageSettings() {
         + group(t('Developer tools'), row(t('Developer tools'), t('For recomp developers: add a build from a folder on this PC and check its recomplauncher.json before you ship it.'), sw('dev', ui.dev, t('Developer tools'), 'ui-toggle'))
           + (ui.dev ? row(t('Add a build from a folder'), t('Your recomp\'s folder, with its program and recomplauncher.json. It shows in your Library as a local build; the launcher never updates, moves or deletes it.'), `<button type="button" class="btn main" data-act="dev-add">${esc(t('Add a build'))}</button>`) : ''))
         + (ui.dev ? group(t('Your local builds'), locals.length ? locals.map((g) => `<div class="set-row"><div class="k"><b>${esc(g.name)}</b><span class="path">${esc(g.path)}</span></div><div class="acts"><button type="button" class="btn sm" data-act="dev-open" data-id="${esc(g.id)}">${esc(t('Check it'))}</button></div></div>`).join('') : `<p class="set-empty">${esc(t('None yet.'))}</p>`) : '')
-        + group(t('The developer guide'), row(t('Works with RecompLauncher'), t('How to write recomplauncher.json: Easy Setup from the player\'s disc, your settings in the launcher, and your own setup step.'), `<button type="button" class="btn" data-act="url" data-url="https://recompstore.com/hub?tab=docs">${esc(t('Open the guide'))}</button>`));
+        + group(t('The developer guide'), row(t('Works with Mario Kart Collection'), t('How to write recomplauncher.json: Easy Setup from the player\'s disc, your settings in the launcher, and your own setup step.'), `<button type="button" class="btn" data-act="url" data-url="https://recompstore.com/hub?tab=docs">${esc(t('Open the guide'))}</button>`));
       break;
     }
     default:
-      body = group(t('About'), `<p style="margin:0 0 8px">RecompLauncher ${esc(verName(S.version))} · ${OS_NAME[S.os]} ${esc(S.arch)}</p>
-        <p class="muted" style="margin:0">${esc(t('RecompLauncher has no game files and never downloads any. Every recomp comes from its developer\'s own GitHub, and you set it up with your own copy of the game.'))}</p>`, `<button type="button" class="btn sm" data-act="about">${esc(t('More about it'))}</button>`)
-        + group(t('Support'), row(t('Support RecompLauncher'), t('Help keep it running and growing, on Ko-fi'), `<button type="button" class="btn" data-act="url" data-url="${KOFI}">${HEART}${esc(t('Support Us'))}</button>`))
+      body = group(t('About'), `<p style="margin:0 0 8px">Mario Kart Collection ${esc(verName(S.version))} · ${OS_NAME[S.os]} ${esc(S.arch)}</p>
+        <p class="muted" style="margin:0">${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp comes from its developer\'s own GitHub, and you set it up with your own copy of the game.'))}</p>`, `<button type="button" class="btn sm" data-act="about">${esc(t('More about it'))}</button>`)
+        + group(t('Support'), row(t('Support Mario Kart Collection'), t('Help keep it running and growing, on Ko-fi'), `<button type="button" class="btn" data-act="url" data-url="${KOFI}">${HEART}${esc(t('Support Us'))}</button>`))
         + (discordUrl() ? group(t('Community'), row(t('Discord'), t('News, help with a game, and a place to send your logs.'), `<button type="button" class="btn" data-act="url" data-url="${esc(discordUrl())}">${DISCORD}${esc(t('Join the Discord'))}</button>`)) : '')
         + group(t('Start over'), row(t('Reset settings'), t('Every setting goes back to how it started. Your games, saves, library folders and pinned games stay.'), `<button type="button" class="btn" data-act="reset" data-k="settings">${esc(t('Reset settings'))}</button>`)
           + row(t('First-time setup'), t('Go through first-time setup again. Nothing is deleted.'), `<button type="button" class="btn" data-act="reset" data-k="setup">${esc(t('Run it again'))}</button>`));
@@ -6092,7 +6092,7 @@ function gameMenu(id) {
       '-',
       { label: t('Troubleshoot'), icon: 'wrench', sub: [
         { act: 'troubleshoot', id, label: t('Check What\'s Wrong…'), icon: 'info' },
-        { act: 'report', id, label: t('Report to RecompLauncher…'), icon: 'page' },
+        { act: 'report', id, label: t('Report to Mario Kart Collection…'), icon: 'page' },
         ...devReportItem(x),
       ] },
     ] : links.length ? ['-', ...links] : []),
@@ -6113,7 +6113,7 @@ function projectItem(x) {
   return [{ act: 'url', url: repoHome(x.repo), label: t('On GitHub'), icon: 'github' }];
 }
 // A new issue on its project's own page, for the recomp's developer (the catalog can name another
-// page). Report to RecompLauncher is the launcher's own form.
+// page). Report to Mario Kart Collection is the launcher's own form.
 function devReportItem(x) {
   if (!x || !x.repo) return [];
   return [{ act: 'url', url: reportUrl(x), label: t('Report to the Game\'s Developer'), icon: 'page' }];
@@ -6477,22 +6477,22 @@ function missingModal(id) {
 }
 window.missingModal = missingModal;
 
-// Players who had RecompLauncher before sharing was asked about: asked once, both off unless they
+// Players who had Mario Kart Collection before sharing was asked about: asked once, both off unless they
 // say yes. Big Picture mode asks with a sheet of its own (tv.js).
 function askData() {
   if (S.settings.data_asked || !S.settings.setup_done) return;
   if (document.body.classList.contains('tv-on') && window.tvAskData) return window.tvAskData();
   const pick = { share_usage: false, share_stats: false };
   const swr = (k, b, s) => `<div class="set-row"><div class="k"><b>${esc(b)}</b><span>${esc(s)}</span></div><button type="button" class="switch" role="switch" aria-checked="false" aria-label="${esc(b)}" data-x="sw" data-k="${k}"></button></div>`;
-  modal(`<h2>${esc(t('Help Improve RecompLauncher?'))}</h2>
-    <p>${esc(t('RecompLauncher can send a little information to help fix problems and see what players use. Both are off unless you turn them on, and you can change this any time in Settings.'))}</p>
+  modal(`<h2>${esc(t('Help Improve Mario Kart Collection?'))}</h2>
+    <p>${esc(t('Mario Kart Collection can send a little information to help fix problems and see what players use. Both are off unless you turn them on, and you can change this any time in Settings.'))}</p>
     <div class="set-rows">${swr('share_usage', t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. No names, no files.'))}
     ${swr('share_stats', t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'))}</div>
     <div class="acts grid2"><button type="button" class="btn" data-x="what">${esc(t('What\'s sent'))}</button><button type="button" class="btn main" data-x="save">${esc(t('Save'))}</button></div>`, async (x, close) => {
     if (x.dataset.x === 'sw') { const k = x.dataset.k; pick[k] = !pick[k]; x.setAttribute('aria-checked', String(pick[k])); }
     if (x.dataset.x === 'what') invoke('open_url', { url: 'https://recompstore.com/privacy#launcher' }).catch(fail);
     if (x.dataset.x === 'save') { close(); await saveSettings(Object.assign({ data_asked: true }, pick), true); if (S.view === 'settings') render(true); }
-  }, t('Help Improve RecompLauncher?'));
+  }, t('Help Improve Mario Kart Collection?'));
 }
 window.askData = askData;
 
@@ -6768,14 +6768,14 @@ function updateFailedModal(f) {
   // Twice from the same file: it's the file, not the PC. It isn't offered again; a fixed one is.
   if (f.bad) {
     S.launcherUpd = null; renderSide();
-    modal(`<h2>${esc(t('This Update Looks Wrong'))}</h2><p>${esc(tf('RecompLauncher {to} didn\'t install twice, so its update file looks wrong. It won\'t be offered again, and a fixed one shows up on its own once it\'s out. Nothing on your PC needs changing.', { to: verName(f.to) }))}</p>
+    modal(`<h2>${esc(t('This Update Looks Wrong'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t install twice, so its update file looks wrong. It won\'t be offered again, and a fixed one shows up on its own once it\'s out. Nothing on your PC needs changing.', { to: verName(f.to) }))}</p>
     <div class="acts"><button type="button" class="btn main" data-x="no">${esc(t('OK'))}</button></div>`, () => {}, t('This Update Looks Wrong'));
     return;
   }
   // On a Mac there's no installer: the new app was put in place, didn't start, and this one was
   // put back. Downloading it again is the only thing to offer.
   if (S.os === 'macos') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('RecompLauncher {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -6786,7 +6786,7 @@ function updateFailedModal(f) {
   // On Linux there's no installer: a helper swaps the AppImage once the launcher closes. This is
   // still the old version, so the swap didn't happen or the new one didn't start and was put back.
   if (S.os === 'linux') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('RecompLauncher {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -6794,7 +6794,7 @@ function updateFailedModal(f) {
     }, t('The Update Didn\'t Start'));
     return;
   }
-  modal(`<h2>${esc(t('The Update Didn\'t Install'))}</h2><p>${esc(tf('RecompLauncher {to} was downloaded, but it didn\'t install, so this is still {now}. Run its installer the usual way to see what\'s stopping it, like an antivirus or a folder Windows protects.', { to: verName(f.to), now: verName(S.version) }))}</p>
+  modal(`<h2>${esc(t('The Update Didn\'t Install'))}</h2><p>${esc(tf('Mario Kart Collection {to} was downloaded, but it didn\'t install, so this is still {now}. Run its installer the usual way to see what\'s stopping it, like an antivirus or a folder Windows protects.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(f.there ? t('Run the Installer') : t('Download It Again'))}</button></div>`, async (x, close) => {
     if (x.dataset.x !== 'go') return;
     close();
@@ -6805,7 +6805,7 @@ function updateFailedModal(f) {
 async function selfUpdate() {
   if (S.selfUpdating) return;
   S.selfUpdating = true;
-  toast(t('Downloading the new RecompLauncher…'));
+  toast(t('Downloading the new Mario Kart Collection…'));
   try {
     if (S.os === 'linux') await invoke('update_launcher', { bigPicture: document.body.classList.contains('tv-on') });
     else await invoke('update_launcher');
@@ -6818,8 +6818,8 @@ function cantReplace(err) {
   const m = String(err && err.message ? err.message : err).match(/^CANT_REPLACE\|([^]*)$/);
   if (!m) return false;
   const url = (S.launcherUpd && S.launcherUpd.url) || `${S.site}/download`;
-  const title = t('RecompLauncher Can\'t Update Itself Here');
-  modal(`<h2>${esc(title)}</h2><p>${esc(tf('It can\'t replace itself in {folder}, because this account can\'t change that folder. Move RecompLauncher to a folder you own, like Applications in your home folder, or download the new version and use that one.', { folder: m[1] }))}</p>
+  const title = t('Mario Kart Collection Can\'t Update Itself Here');
+  modal(`<h2>${esc(title)}</h2><p>${esc(tf('It can\'t replace itself in {folder}, because this account can\'t change that folder. Move Mario Kart Collection to a folder you own, like Applications in your home folder, or download the new version and use that one.', { folder: m[1] }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Download It'))}</button></div>`, (x, close) => {
     if (x.dataset.x !== 'go') return;
     close();
@@ -6949,13 +6949,13 @@ function steamSyncLine() {
   if (!st) return t('Every game that\'s installed and set up, with its art.');
   const n = (st.add || 0) + (st.remove || 0);
   if (n) return tn(n, '1 change waits for Steam to close. Sync Now restarts Steam to put it in.', '{n} changes wait for Steam to close. Sync Now restarts Steam to put them in.');
-  if (st.collection) return t('The RecompLauncher collection goes in the next time Steam is closed.');
+  if (st.collection) return t('The Mario Kart Collection collection goes in the next time Steam is closed.');
   return tn(st.games || 0, 'Steam has your 1 installed game.', 'Steam has all {n} of your installed games.');
 }
 
 function steamSyncGroup(group, row, sw) {
   const on = !!S.settings.steam_sync;
-  const main = row(t('Keep Steam in Sync'), t('Every game that\'s installed and set up goes in your Steam library with its art, in a RecompLauncher collection, and leaves it when you uninstall it. Games you added to Steam yourself stay. Turning it off leaves Steam as it is.'), sw('steam_sync', on, t('Keep Steam in Sync')));
+  const main = row(t('Keep Steam in Sync'), t('Every game that\'s installed and set up goes in your Steam library with its art, in a Mario Kart Collection collection, and leaves it when you uninstall it. Games you added to Steam yourself stay. Turning it off leaves Steam as it is.'), sw('steam_sync', on, t('Keep Steam in Sync')));
   const now = on ? row(t('Sync Now'), steamSyncLine(), `<button type="button" class="btn sm" data-act="steam-sync">${esc(t('Sync Now'))}</button>`) : '';
   return group(t('Steam'), main + now + steamRemoveRow(row));
 }
@@ -6967,9 +6967,9 @@ function steamRemoveRow(row) {
   const st = S.steamSyncState || {};
   const n = st.ours || 0;
   const none = S.steamSyncState && !n && !st.launcher;
-  const line = none ? t('Steam has no games from RecompLauncher.')
-    : n ? tn(n, 'Takes out the 1 game RecompLauncher put in Steam, and its collection. Games you added to Steam yourself stay.', 'Takes out the {n} games RecompLauncher put in Steam, and its collection. Games you added to Steam yourself stay.')
-      : t('Takes out the games RecompLauncher put in Steam, and its collection. Games you added to Steam yourself stay.');
+  const line = none ? t('Steam has no games from Mario Kart Collection.')
+    : n ? tn(n, 'Takes out the 1 game Mario Kart Collection put in Steam, and its collection. Games you added to Steam yourself stay.', 'Takes out the {n} games Mario Kart Collection put in Steam, and its collection. Games you added to Steam yourself stay.')
+      : t('Takes out the games Mario Kart Collection put in Steam, and its collection. Games you added to Steam yourself stay.');
   const off = S.settings.steam_sync ? ' ' + t('Keep Steam in Sync turns off too, or they\'d come back.') : '';
   return row(t('Remove from Steam'), line + off, `<button type="button" class="btn sm danger" data-act="steam-remove"${none ? ' disabled' : ''}>${esc(t('Remove All'))}</button>`);
 }
@@ -6977,8 +6977,8 @@ function steamRemoveRow(row) {
 // Asks first: on the desktop with a box for the launcher's own entry; in Big Picture, which has no
 // boxes in its dialogs, as a third button. null: cancelled, else whether the launcher goes too.
 async function askSteamRemove(n, launcherIn) {
-  const title = n ? tn(n, 'Remove 1 game from Steam?', 'Remove {n} games from Steam?') : t('Remove RecompLauncher from Steam?');
-  const what = t('The games RecompLauncher added leave your Steam library, with their art and the RecompLauncher collection. Your games, saves and play time here aren\'t touched.');
+  const title = n ? tn(n, 'Remove 1 game from Steam?', 'Remove {n} games from Steam?') : t('Remove Mario Kart Collection from Steam?');
+  const what = t('The games Mario Kart Collection added leave your Steam library, with their art and the Mario Kart Collection collection. Your games, saves and play time here aren\'t touched.');
   const notes = [S.settings.steam_sync ? t('Keep Steam in Sync turns off too, or they\'d come back.') : '', t('Games you added to Steam yourself stay.')].filter(Boolean);
   const body = `<p>${esc(what)}</p><ul class="muted">${notes.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
   const go = n ? tn(n, 'Remove 1 Game', 'Remove {n} Games') : t('Remove It');
@@ -6986,13 +6986,13 @@ async function askSteamRemove(n, launcherIn) {
   if (tv || !n || !launcherIn) {
     // Big Picture's dialog shows only its buttons, so the notes go under them.
     const sub = notes.join(' ');
-    const both = n && launcherIn ? [{ label: t('Remove Them and RecompLauncher'), sub, v: 'both', last: true }] : [];
+    const both = n && launcherIn ? [{ label: t('Remove Them and Mario Kart Collection'), sub, v: 'both', last: true }] : [];
     const v = await (window.ask || ask)(title, body, [{ label: t('Cancel'), v: null, focus: true }, { label: go, sub, v: n ? 'games' : 'both', main: true }, ...both]);
     return v == null ? null : v === 'both';
   }
   return new Promise((res) => {
     let picked = null;
-    const box = modal(`<h2>${esc(title)}</h2>${body}<label><input type="checkbox" id="sr-self"> ${esc(t('Also remove RecompLauncher itself from Steam'))}</label>
+    const box = modal(`<h2>${esc(title)}</h2>${body}<label><input type="checkbox" id="sr-self"> ${esc(t('Also remove Mario Kart Collection itself from Steam'))}</label>
       <div class="acts"><button type="button" class="btn" data-x="no">${esc(t('Cancel'))}</button><button type="button" class="btn danger" data-x="yes">${esc(go)}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'yes') return;
       picked = !!($('#sr-self', box) || {}).checked;
@@ -7008,7 +7008,7 @@ async function steamRemoveAll(launcher, restart) {
   if (launcher == null) {
     // Big Picture never shows the desktop line, so the count may not be looked up yet.
     const st = S.steamSyncState || (await invoke('steam_sync_state').catch(() => null)) || {};
-    if (!st.ours && !st.launcher) return toast(t('Steam has no games from RecompLauncher.'));
+    if (!st.ours && !st.launcher) return toast(t('Steam has no games from Mario Kart Collection.'));
     launcher = await askSteamRemove(st.ours || 0, !!st.launcher);
     if (launcher == null) return;
   }
@@ -7021,7 +7021,7 @@ async function steamRemoveAll(launcher, restart) {
     return;
   }
   S.steamSyncState = undefined;
-  if (r === 'none') toast(t('Steam has no games from RecompLauncher.'));
+  if (r === 'none') toast(t('Steam has no games from Mario Kart Collection.'));
   else if (r === 'busy') toast(t('Steam is being synced right now. Try again in a moment.'));
   else if (String(r).startsWith('removed:')) {
     const [, n, self] = String(r).split(':');
@@ -7030,7 +7030,7 @@ async function steamRemoveAll(launcher, restart) {
     S.settings.steam_sync = false;
     if (self === '1') await saveUi({ in_steam: false }, true);
     if (games) toast(tn(games, '1 game removed from Steam.', '{n} games removed from Steam.'));
-    else toast(t('RecompLauncher is out of your Steam library.'));
+    else toast(t('Mario Kart Collection is out of your Steam library.'));
   }
   if (S.view === 'settings') render(true);
 }
@@ -7076,7 +7076,7 @@ function listedFor(link) {
 }
 window.listedFor = listedFor;
 function requestModal() {
-  const m = modal(`<h2>${esc(t('Request a Recomp'))}</h2><p>${esc(t('Know of a recomp the launcher doesn\'t have? Paste the link to its project page, and it goes to RecompLauncher for a look.'))}</p>
+  const m = modal(`<h2>${esc(t('Request a Recomp'))}</h2><p>${esc(t('Know of a recomp the launcher doesn\'t have? Paste the link to its project page, and it goes to Mario Kart Collection for a look.'))}</p>
     <input class="field" id="rq-url" type="url" placeholder="https://..." spellcheck="false" autocomplete="off" maxlength="300" aria-label="${esc(t('Request a Recomp'))}">
     <textarea class="field" id="rq-note" rows="3" maxlength="500" placeholder="${esc(t('Anything to add? Which game it is, or why you\'d like it (optional)'))}" aria-label="${esc(t('Note'))}"></textarea>
     <p class="err" id="rq-err" hidden></p>
@@ -7107,7 +7107,7 @@ function pageShots() {
   const all = S.allShots, list = shotList();
   const games = uniq(all.map((x) => x.id)).map((id) => ({ id, name: (all.find((x) => x.id === id) || {}).game, n: all.filter((x) => x.id === id).length }));
   if (S.shotsGame && !games.some((g) => g.id === S.shotsGame) && S.library[S.shotsGame]) games.push({ id: S.shotsGame, name: S.library[S.shotsGame].name, n: 0 });
-  return `<div class="page"><div class="head"><div><h1>${esc(t('Screenshots'))}</h1><p>${esc(t('F12, or View + RB on a controller, while you play. They\'re kept in Pictures\\RecompLauncher.'))}</p></div>
+  return `<div class="page"><div class="head"><div><h1>${esc(t('Screenshots'))}</h1><p>${esc(t('F12, or View + RB on a controller, while you play. They\'re kept in Pictures\\Mario Kart Collection.'))}</p></div>
       ${all.length ? `<button type="button" class="btn" data-act="shots-root">${esc(t('Open the folder'))}</button>` : ''}</div>
     ${games.length ? `<div class="chips"><button type="button" class="chip${!S.shotsGame ? ' on' : ''}" data-act="shots-game" data-g="">${esc(t('All'))} ${fmtNum(all.length)}</button>${games.map((g) => `<button type="button" class="chip${S.shotsGame === g.id ? ' on' : ''}" data-act="shots-game" data-g="${esc(g.id)}">${esc(g.name)} ${fmtNum(g.n)}</button>`).join('')}</div>` : ''}
     ${list.length ? `<div class="shotgrid">${list.map((x, i) => `<button type="button" class="shot" data-act="shot-open" data-i="${i}" data-path="${esc(x.path)}"><img src="${esc(fileSrc(x.path))}" alt="" loading="lazy"><span><b>${esc(x.game)}</b><small>${esc(when(x.time))}</small></span></button>`).join('')}</div>`
@@ -7168,8 +7168,8 @@ function viewShot(i, list = shotList()) {
   draw();
 }
 
-// A newer RecompLauncher: one click downloads it, checks it and runs its installer.
-// A new RecompLauncher, announced while the launcher is open: looked for when it opens (an answer
+// A newer Mario Kart Collection: one click downloads it, checks it and runs its installer.
+// A new Mario Kart Collection, announced while the launcher is open: looked for when it opens (an answer
 // from the last hour is reused); after that the core looks every six hours or so, and sooner when
 // the website pushes a new build ('launcher-update' in more.js). Each new version is announced once.
 const LL = { told: '' };
@@ -7207,8 +7207,8 @@ function updateStart(v) {
   el.setAttribute('aria-labelledby', 'upd-start-h');
   const notes = v.notes ? `<div class="md upd-start-notes">${md(v.notes, true)}</div>` : '';
   const later = v.required ? '' : `<button type="button" class="btn" data-x="later">${esc(t('Later'))}</button>`;
-  el.innerHTML = `<div class="upd-start-box"><img class="upd-start-mark" src="img/mark.svg" alt=""><h1 id="upd-start-h">${esc(tf('RecompLauncher {version} is ready', { version: verName(v.version) }))}</h1>
-    <p class="muted">${esc(v.required ? tf('You have {version}, which is too old to keep up with the recomps. Update to keep playing. It only takes a moment.', { version: verName(S.version) }) : tf('You have {version}. Updating takes a moment, and RecompLauncher opens again by itself.', { version: verName(S.version) }))}</p>
+  el.innerHTML = `<div class="upd-start-box"><img class="upd-start-mark" src="img/mark.svg" alt=""><h1 id="upd-start-h">${esc(tf('Mario Kart Collection {version} is ready', { version: verName(v.version) }))}</h1>
+    <p class="muted">${esc(v.required ? tf('You have {version}, which is too old to keep up with the recomps. Update to keep playing. It only takes a moment.', { version: verName(S.version) }) : tf('You have {version}. Updating takes a moment, and Mario Kart Collection opens again by itself.', { version: verName(S.version) }))}</p>
     ${notes}<div class="acts ${later ? 'grid2' : ''}">${later}<button type="button" class="btn main" data-x="now">${esc(t('Update Now'))}</button></div>
     ${later ? `<p class="muted upd-start-small">${esc(t('Later keeps this version on the Downloads page until a newer one is out.'))}</p>` : ''}</div>`;
   document.body.appendChild(el);
@@ -7242,7 +7242,7 @@ function farBehind(cur, next) {
 function updateToast(v) {
   if (v && (v.required || farBehind(S.version, v.version)) && !requiredShown) {
     requiredShown = true;
-    modal(`<h2>${esc(t('Time to Update'))}</h2><p>${esc(v.required ? tf('This version of RecompLauncher is too old to keep up with the recomps. Update to {version} to keep playing. It only takes a moment.', { version: verName(v.version) }) : tf('You\'re a few updates behind. {version} has fixes for crashes and setup problems people ran into on this one. It only takes a moment.', { version: verName(v.version) }))}</p>
+    modal(`<h2>${esc(t('Time to Update'))}</h2><p>${esc(v.required ? tf('This version of Mario Kart Collection is too old to keep up with the recomps. Update to {version} to keep playing. It only takes a moment.', { version: verName(v.version) }) : tf('You\'re a few updates behind. {version} has fixes for crashes and setup problems people ran into on this one. It only takes a moment.', { version: verName(v.version) }))}</p>
       <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not now'))}</button><button type="button" class="btn main" data-x="yes">${esc(t('Update now'))}</button></div>`, (x, close) => { close(); if (x.dataset.x === 'yes') selfUpdate(); }, t('Time to Update'));
   }
   // Otherwise no toast: the start window and the Downloads page already announce the update.
@@ -7265,10 +7265,10 @@ function resetModal(what) {
 }
 
 function aboutModal() {
-  modal(`<div class="about"><img src="img/mark.svg" alt="" width="72" height="72"><h2 class="sr">RecompLauncher</h2><img class="about-wm" src="img/wordmark.svg" alt="" height="26">
+  modal(`<div class="about"><img src="img/mark.svg" alt="" width="72" height="72"><h2 class="sr">Mario Kart Collection</h2><img class="about-wm" src="img/wordmark.svg" alt="" height="26">
     <p class="muted">${esc(tf('Version {v}', { v: verName(S.version) }))} · ${OS_NAME[S.os]} ${esc(S.arch)}</p>
     <p>${esc(t('Recompiled and decompiled PC games: find, install, update and play them, straight from each developer\'s own GitHub.'))}</p>
-    <p class="muted" style="font-size:14px">${esc(t('RecompLauncher has no game files and never downloads any. Every recomp runs with your own copy of the game. RecompLauncher is free software under the GPL-3.0; each recomp has its own license, set by its developer.'))}</p>
+    <p class="muted" style="font-size:14px">${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp runs with your own copy of the game. Mario Kart Collection is free software under the GPL-3.0; each recomp has its own license, set by its developer.'))}</p>
     ${discordUrl() ? `<div class="acts grid2"><button type="button" class="btn" data-x="site">recomplauncher.com</button><button type="button" class="btn dc-btn" data-x="discord" aria-label="Discord" title="Discord">${DISCORD}</button>
       <button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button>
       <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn main span2" data-x="no">${esc(t('Close'))}</button></div>` : `<div class="acts grid2"><button type="button" class="btn" data-x="site">recomplauncher.com</button><button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button>
@@ -7278,7 +7278,7 @@ function aboutModal() {
     if (x.dataset.x === 'me') invoke('open_url', { url: 'https://www.elripalda.com' }).catch(fail);
     if (x.dataset.x === 'kofi') invoke('open_url', { url: KOFI }).catch(fail);
     if (x.dataset.x === 'update') checkLauncher(x);
-  }, t('About RecompLauncher'));
+  }, t('About Mario Kart Collection'));
 }
 
 async function loadPads() {
@@ -7531,7 +7531,7 @@ function evenActs(btns) {
   if (btns.length % 2) { let i = btns.findIndex((x) => /class="btn main"/.test(x)); if (i < 0) i = 0; const [m] = btns.splice(i, 1); btns.unshift(m.replace('class="btn', 'class="span2 btn')); }
   return btns.join('');
 }
-// A new issue on RecompLauncher's GitHub for a crash, filled in: the versions, the PC, the game and
+// A new issue on Mario Kart Collection's GitHub for a crash, filled in: the versions, the PC, the game and
 // the end of its log. Home folders become "~" and the excerpt loses lines from the top until the
 // address fits in 8 KB, which is about what GitHub and browsers take.
 const ghCrashUrl = (c) => {
@@ -7539,10 +7539,10 @@ const ghCrashUrl = (c) => {
   const reason = String(c.reason || '').replace(/\s+/g, ' ').trim();
   const title = `Crash: ${reason.length > 80 ? `${reason.slice(0, 79)}…` : reason}`;
   const head = [c.note ? `**What happened:** ${c.note}` : '**What happened:** ', '',
-    `- RecompLauncher: ${c.version}`, `- System: ${c.os}`, `- Graphics card: ${c.gpu || 'unknown'}`,
+    `- Mario Kart Collection: ${c.version}`, `- System: ${c.os}`, `- Graphics card: ${c.gpu || 'unknown'}`,
     ...(c.game ? [`- Game: ${c.game}`] : []), ...(c.exit ? [`- ${c.exit}`] : [])];
   const ask = 'Please attach the full log too: drag the file into this box. Open its folder in the crash window shows where it is.';
-  const base = 'https://github.com/elripalda/RecompLauncher/issues/new';
+  const base = 'https://github.com/elripalda/Mario Kart Collection/issues/new';
   let lines = c.file ? home(c.text).split('\n').slice(-60) : [];
   for (;;) {
     const ex = lines.join('\n'), fence = ex.includes('```') ? '````' : '```';
@@ -7606,7 +7606,7 @@ async function crashModal(p) {
   if (p.secs > 20 && /destruct ResourceManager|shutting down|shutdown complete|clean exit|exiting\.\.\./i.test(tail)) return;
   const meaning = codeMeaning(p.code);
   const codeShown = meaning ? `${p.code}: ${meaning}` : String(p.code);
-  const details = `${g.name} ${g.tag || ''} closed with code ${codeShown} after ${p.secs} s on ${OS_NAME[S.os]} (RecompLauncher ${S.version}).` + (log ? `\n\n${log[0]}:\n${log[1]}` : '');
+  const details = `${g.name} ${g.tag || ''} closed with code ${codeShown} after ${p.secs} s on ${OS_NAME[S.os]} (Mario Kart Collection ${S.version}).` + (log ? `\n\n${log[0]}:\n${log[1]}` : '');
   // The game said it couldn't open one of its own files (the player's copy isn't where it looks).
   const EXT = '(?:xex|rpx|rpl|elf|dol|iso|wbfs|rvz|gcm|xci|nsp|nca|z64|n64|v64|bin|cue|chd|cso|pbp|xbe|self|sprx|szs|arc|pak|rarc|cpk|afs)';
   // ReXGlue recomps ask for the game's files with --game_data_root: the player picks the folder once.
@@ -7814,7 +7814,7 @@ async function crashModal(p) {
       const note = String(($('#c-note', m) || {}).value || '').trim();
       const tail = log ? String(log[1]).split('\n').slice(-40).join('\n').slice(-1800) : '';
       const title = `Crash: closed with code ${codeShown} after ${p.secs} s`;
-      const body = [note ? `**What happened:** ${note}` : '**What happened:** ', '', `- Game: ${g.name} ${g.tag || ''}`, `- System: ${OS_NAME[S.os]} (${S.arch || ''})`, `- Started from RecompLauncher ${S.version}`, `- Closed with code ${codeShown} after ${p.secs} s`, ...(tail ? ['', `From ${log[0]}:`, '```', tail, '```'] : [])].join('\n');
+      const body = [note ? `**What happened:** ${note}` : '**What happened:** ', '', `- Game: ${g.name} ${g.tag || ''}`, `- System: ${OS_NAME[S.os]} (${S.arch || ''})`, `- Started from Mario Kart Collection ${S.version}`, `- Closed with code ${codeShown} after ${p.secs} s`, ...(tail ? ['', `From ${log[0]}:`, '```', tail, '```'] : [])].join('\n');
       // SourceForge, or a report link from the catalog: its page, with the details on the clipboard.
       if (isSF(a.repo) || /^https:\/\//i.test(String(a.report_url || ''))) {
         try { await navigator.clipboard.writeText(`${title}\n\n${body}`); } catch (e) { /* the window has the details anyway */ }
@@ -8205,7 +8205,7 @@ const TS_TEXT = [
   N_('No updates in 1 year'),
   N_('No updates in {n} years'),
   N_('This build comes as a Flatpak, and Flatpak isn\'t on this PC. Install Flatpak from your system\'s software center, or switch to another build on the game\'s page.'),
-  N_('This build comes as a Flatpak, and the RecompLauncher Flatpak is not allowed to install it. Allow it with: flatpak override --user --talk-name=org.freedesktop.Flatpak com.recomplauncher.RecompLauncher. Or switch to another build on the game page.'),
+  N_('This build comes as a Flatpak, and the Mario Kart Collection Flatpak is not allowed to install it. Allow it with: flatpak override --user --talk-name=org.freedesktop.Flatpak com.recomplauncher.Mario Kart Collection. Or switch to another build on the game page.'),
   N_('This Flatpak file doesn\'t say which app it holds, so it can\'t be installed. Switch to another build on the game\'s page.'),
   N_('Installing its Flatpak for the first time. It can take a few minutes; the game starts when it\'s done.'),
   N_('Unpacking the game into your Recomp Library. This happens once; it starts when it\'s done.'),
@@ -8779,7 +8779,7 @@ async function act(el, e) {
       const f = await pickFile({ title: t('Where to put the portable copy'), directory: true }).catch(fail);
       const path = f && (typeof f === 'string' ? f : f.path);
       if (!path) return;
-      try { const at = await invoke('make_portable', { target: path }); toast(tf('Portable copy made in {folder}. Start RecompLauncher from there.', { folder: at })); invoke('open_folder', { id: null, path: at }).catch(() => {}); } catch (err) { fail(err); }
+      try { const at = await invoke('make_portable', { target: path }); toast(tf('Portable copy made in {folder}. Start Mario Kart Collection from there.', { folder: at })); invoke('open_folder', { id: null, path: at }).catch(() => {}); } catch (err) { fail(err); }
       return;
     }
     case 'manual': return manualModal(id);
@@ -8995,7 +8995,7 @@ document.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   if (document.querySelector('.scrim, .viewer') || document.body.classList.contains('tv-on')) return;
   const at = { x: e.clientX, y: e.clientY };
-  if (e.target.closest('#brand')) return menu(at, [{ act: 'about', label: t('About RecompLauncher'), icon: 'info' }, { act: 'refresh', label: t('Refresh'), icon: 'refresh' }]);
+  if (e.target.closest('#brand')) return menu(at, [{ act: 'about', label: t('About Mario Kart Collection'), icon: 'info' }, { act: 'refresh', label: t('Refresh'), icon: 'refresh' }]);
   const shot = e.target.closest('.shot[data-path]');
   if (shot) {
     const p = esc(shot.dataset.path);
@@ -9006,7 +9006,7 @@ document.addEventListener('contextmenu', (e) => {
   const g = e.target.closest('[data-id]');
   const id = g && g.dataset.id;
   if (id && (byId(id) || S.library[id])) return menu(at, gameMenu(id));
-  menu(at, [{ act: 'refresh', label: t('Refresh'), icon: 'refresh' }, { act: 'go-settings', label: t('Settings'), icon: 'gear' }, { act: 'about', label: t('About RecompLauncher'), icon: 'info' }]);
+  menu(at, [{ act: 'refresh', label: t('Refresh'), icon: 'refresh' }, { act: 'go-settings', label: t('Settings'), icon: 'gear' }, { act: 'about', label: t('About Mario Kart Collection'), icon: 'info' }]);
 });
 $('#brand').addEventListener('click', () => aboutModal());
 // Pictures fade in as they arrive instead of popping in.
@@ -9398,13 +9398,13 @@ async function enjoyAsk(why) {
   await saveUi({ enjoy_done: why }, true).catch(() => {});
   const UP = '<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H4V10zM7 10l4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.3 8A2 2 0 0 1 18.2 21H7"/></svg>';
   const DOWN = UP.replace('<svg ', '<svg style="transform:rotate(180deg)" ');
-  const first = `<h2>${esc(t('How Are You Enjoying RecompLauncher?'))}</h2><p>${esc(t('You\'ve been playing for a while. One tap tells us how it\'s going.'))}</p>
+  const first = `<h2>${esc(t('How Are You Enjoying Mario Kart Collection?'))}</h2><p>${esc(t('You\'ve been playing for a while. One tap tells us how it\'s going.'))}</p>
     <div class="acts grid2 enjoy-pick"><button type="button" class="btn enjoy" data-x="up" aria-label="${esc(t('I Like It'))}">${UP}<span>${esc(t('I Like It'))}</span></button><button type="button" class="btn enjoy" data-x="down" aria-label="${esc(t('Not Really'))}">${DOWN}<span>${esc(t('Not Really'))}</span></button></div>`;
   const m = modal(first, async (x, close) => {
     const k = x.dataset.x, box = $('.modal', m);
     if (k === 'up') {
       saveUi({ enjoy_done: 'up' }, true).catch(() => {});
-      box.innerHTML = `<h2>${esc(t('Thank You for Supporting the Project'))}</h2><p>${esc(t('A star on GitHub helps more players find RecompLauncher.'))}</p>
+      box.innerHTML = `<h2>${esc(t('Thank You for Supporting the Project'))}</h2><p>${esc(t('A star on GitHub helps more players find Mario Kart Collection.'))}</p>
         <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Maybe Later'))}</button><button type="button" class="btn main" data-x="star">${esc(t('Star on GitHub'))}</button></div>`;
       return;
     }
@@ -9414,7 +9414,7 @@ async function enjoyAsk(why) {
         <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Close'))}</button><button type="button" class="btn main" data-x="tell">${esc(t('Tell Us'))}</button></div>`;
       return;
     }
-    if (k === 'star') { invoke('open_url', { url: 'https://github.com/elripalda/RecompLauncher' }).catch(fail); return close(); }
+    if (k === 'star') { invoke('open_url', { url: 'https://github.com/elripalda/Mario Kart Collection' }).catch(fail); return close(); }
     if (k === 'tell') { close(); S.setTab = 'beta'; return go('settings'); }
     return close();
   });
@@ -9515,7 +9515,7 @@ function openLinkedGame(id) {
     }
     if (known()) { if (tv) window.tvGoto('game', id); else go('game', id); return; }
     if (tv) window.tvGoto('discover'); else go('discover');
-    toast(t('That game isn\'t in RecompLauncher yet'), true);
+    toast(t('That game isn\'t in Mario Kart Collection yet'), true);
   };
   tryOpen();
 }
@@ -9558,7 +9558,7 @@ T.event.listen('bigpicture', () => { if (window.startTV && !document.body.classL
 // Something new from a developer the player follows: Home shows it.
 T.event.listen('followed', () => { if (S.view === 'home') render(true); });
 // The icon by the clock: its menu in the launcher's language, and where its items go.
-const TRAY_WORDS = [N_('Open RecompLauncher'), N_('Playing'), N_('Library'), N_('Catalog'), N_('Screenshots'), N_('Settings'), N_('Big Picture mode'), N_('Quit RecompLauncher'), N_('RecompLauncher is still running'), N_('It\'s by the clock. Right-click its icon to quit.')];
+const TRAY_WORDS = [N_('Open Mario Kart Collection'), N_('Playing'), N_('Library'), N_('Catalog'), N_('Screenshots'), N_('Settings'), N_('Big Picture mode'), N_('Quit Mario Kart Collection'), N_('Mario Kart Collection is still running'), N_('It\'s by the clock. Right-click its icon to quit.')];
 const trayWords = () => invoke('tray_words', { words: Object.fromEntries(TRAY_WORDS.map((k) => [k, t(k)])) }).catch(() => {});
 T.event.listen('tray', ({ payload: p }) => {
   const tv = document.body.classList.contains('tv-on');
