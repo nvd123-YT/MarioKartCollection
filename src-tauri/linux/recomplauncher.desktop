@@ -1,10 +1,10 @@
 [Desktop Entry]
 Categories=Game;
-Comment=Recompiled and decompiled PC games
+Comment=A collection of native Mario Kart recompilations
 Exec=recomplauncher %u
 StartupWMClass=recomplauncher
 Icon=recomplauncher
-Name=RecompLauncher
+Name=Mario Kart Collection
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/recomplauncher;
+MimeType=x-scheme-handler/mariokartcollection;
