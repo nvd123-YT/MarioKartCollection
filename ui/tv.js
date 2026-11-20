@@ -426,7 +426,8 @@
     return true;
   };
   // Sharing, asked once of players who had the launcher before it was asked (app.js askData).
-  window.tvAskData = () => {
+  window.tvAskData = () => false;
+  /* window.tvAskData = () => {
     if (!TV.on) return false;
     if (TV.booting || TV.flying || !stage() || TV.sheet) { setTimeout(() => window.tvAskData(), 400); return true; }
     if (S.settings.data_asked) return true;
@@ -438,7 +439,7 @@
       { label: t('Share Both'), sub: t('Also your PC\'s parts and what went wrong when a game crashes. No names, no files.'), icon: 'check', run: () => set(true, true) },
     ], 'tv-ask', head);
     return true;
-  };
+  }; */
   window.tvSetupReq = (id) => {
     if (!TV.on) return false;
     if (TV.booting || TV.flying || !stage()) { setTimeout(() => window.tvSetupReq(id), 300); return true; }
@@ -1272,7 +1273,6 @@
           ${head(t('Big Picture mode'))}
           <button type="button" class="tv-item" data-f data-key="s:leave" data-tvact="leave"><span class="k">${esc(t('Leave Big Picture mode'))}<small>${esc(t('Back to the desktop view, for mouse and keyboard'))}</small></span><span class="tv-pill on">${esc(t('Leave'))}</span></button>
           ${head(t('About'))}
-          <button type="button" class="tv-item" data-f data-key="s:support" data-tvact="support">${HEART}<span class="k">${esc(t('About Mario Kart Collection'))}<small>${esc(t('Help keep it running and growing, on Ko-fi'))}</small></span>${svg('chevR', 30)}</button>
           <button type="button" class="tv-item" data-f data-key="s:about" data-tvact="about"><span class="k">${esc(t('About Mario Kart Collection'))}<small>${esc(t('Who makes it, and where to find the Discord'))}</small></span>${svg('chevR', 30)}</button>
         </div><aside class="tv-setpanel" id="tv-setpanel" aria-live="polite"></aside></div>`, 'top')}
       ${hints([['A', t('Change')], ['dpad', t('Pick')], ['B', t('Back')], ['LB+RB', t('Sections')]])}`;
@@ -2404,14 +2404,14 @@
       ${region(`<div class="tv-about">
         <div class="tv-about-l">${MARK}<img class="tv-about-wm" src="img/${document.body.classList.contains('light') ? 'wordmark-dark' : 'wordmark'}.svg" alt="Mario Kart Collection">
           <p class="v">${esc(tf('Version {v}', { v: verName(S.version) }))}</p>
-          <p>${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp comes from its developer\'s own GitHub, and you set it up with your own copy of the game.'))}</p>
-          <p class="by">${esc(t('Made by Ripalda'))}</p>
+          <p>${esc(t('One library for eight existing Mario Kart recompilation projects. Each game keeps its own runtime and setup.'))}</p>
+          <p class="by">${esc(t('Based on RecompLauncher by Ripalda.'))}</p>
           <button type="button" class="tv-btn" data-f data-key="ab:back" data-tvact="back">${glyph('b', 'tv-keyg')}<span>${esc(t('Back'))}</span></button></div>
-        <div class="tv-qrs"><figure><img src="img/qr-discord.svg" alt=""><figcaption><b>${esc(t('Discord'))}</b><span>${esc(t('News, help and a place to send your logs'))}</span></figcaption></figure>
-          <figure><img src="img/qr-site.svg" alt=""><figcaption><b>github.com/nvd123-YT/MarioKartCollection</b><span>${esc(t('Every recomp, and the newest launcher'))}</span></figcaption></figure>
-          <figure><img src="img/qr-support.svg" alt=""><figcaption><b class="tv-heart">${HEART}${esc(t('Support Us'))}</b><span>ko-fi.com/recomp</span></figcaption></figure></div></div>`)}
+        <div class="tv-qrs"><a class="tv-btn" href="https://github.com/nvd123-YT/MarioKartCollection" target="_blank" rel="noreferrer">${esc(t('GitHub repository'))}</a>
+          <a class="tv-btn" href="https://github.com/nvd123-YT/MarioKartCollection/issues" target="_blank" rel="noreferrer">${esc(t('Report a launcher issue'))}</a></div></div>`)}
       ${hints([['B', t('Back')]])}`;
   }
+
   const VIEWS = { home: pageHome, library: pageLibrary, achievements: pageAchTV, discover: pageDiscover, soon: pageSoonTV, downloads: pageDownloads, settings: pageSettings, about: pageAbout, storage: pageStorage, saves: pageSavesAll };
   function draw(keep) {
     expandLib();
