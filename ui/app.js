@@ -106,7 +106,7 @@ const isAI = (a) => !!(a && a.ai);
 // ("boot_all"), and when there's no catalog at all.
 // How a game's profile did (Easy Setup, a settings change), for the admin: sent with the usage
 // reports, only when the player allows them.
-function profileSaid(id, step, ok, err) { invoke('profile_report', { id, step, ok, error: err ? String(err && err.message ? err.message : err) : null }).catch(() => {}); }
+function profileSaid(_id, _step, _ok, _err) { /* No hosted profile-report service is configured. */ }
 window.profileSaid = profileSaid;
 function builtinBoot() { return (S.cat && S.cat.boot_all) ? {} : (S.bootBuiltin || {}); }
 const isServer = (a) => !!(((a && a.boot) || builtinBoot()[a && a.id] || {}).server);
@@ -1283,7 +1283,7 @@ function supportCard(a) {
   const who = (k) => (local && local[k] ? 'dev' : sup ? (sup[k] === 'dev' || sup[k] === 'launcher' ? sup[k] : '') : guess[k] ? '?' : '');
   const sdk = local ? 'release' : sup && sup.sdk ? sup.sdk : 'unknown';
   const hh = a.handheld && a.handheld.ok;
-  const saves = who('saves') === 'dev' ? 'dev' : 'launcher';
+  const saves = 'launcher';
   // One row per feature: its icon, a short line, and a check when it works here or a dash when not
   // yet; who made it work is the row's tooltip. "4 of 6" sits by the heading.
   const rows = [
@@ -1291,7 +1291,7 @@ function supportCard(a) {
     [t('Game Settings'), t('Change the game\'s own settings from its page.'), who('settings'), '<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>'],
     [t('Full Setup Step'), t('The recomp\'s own setup step, run for you.'), who('prepare'), '<path d="M14.5 5.5a4 4 0 0 0-5 5L4 16l4 4 5.5-5.5a4 4 0 0 0 5-5l-2.5 2.5-3-1-1-3z"/>'],
     [t('Verified Copies'), t('Shows when your copy matches a known good one.'), who('verified'), '<path d="M12 3 5 6v6c0 4 3 7 7 9 4-2 7-5 7-9V6z"/><path d="m9 12 2 2 4-4"/>'],
-    [t('Cloud Saves'), saves === 'dev' ? t('The recomp tells the launcher exactly where it saves.') : t('Always on from the launcher\'s side.'), saves, '<path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8.5a4 4 0 0 1 0 9.5z"/>'],
+    [t('Local Save Backups'), t('Back up and restore saves on this PC.'), saves, '<path d="M7 18a4.5 4.5 0 0 1-.5-9A6 6 0 0 1 18 8.5a4 4 0 0 1 0 9.5z"/>'],
     [t('Handheld Rating'), hh ? tf('Handheld players say it runs well: {devices}', { devices: (Array.isArray(a.handheld.devices) ? a.handheld.devices : []).filter((d) => typeof d === 'string').join(', ') || t('several players') }) : t('From handheld players\' reports. None yet.'), hh ? 'players' : '', '<rect x="2.5" y="7" width="19" height="10" rx="3"/><path d="M7 10.5v3M5.5 12h3M16 11h.01M18 13h.01"/>'],
   ];
   const src = (w) => (w === 'dev' ? t('From Manifest') : w === 'launcher' ? t('By Mario Kart Collection') : w === 'players' ? t('By Players') : '');
@@ -2330,53 +2330,9 @@ const RUN_WORD = { runs: N_('Plays great'), issues: N_('Has problems'), broken: 
 // What players say about each recomp: asked for when a page that shows it opens, at most once an
 // hour (the core keeps it on disk for an hour too).
 const COUNTS = { at: 0 };
-function wantCounts() {
-  if (Date.now() - COUNTS.at < 3600e3) return;
-  COUNTS.at = Date.now();
-  setTimeout(() => loadCounts(), 0);
-}
-async function loadCounts(force) {
-  const before = JSON.stringify([S.runCounts || {}, S.deckScores || {}]);
-  const [rc, ds, lc] = await Promise.all([invoke('report_counts', { force: !!force }).catch(() => null), invoke('deck_scores', { force: !!force }).catch(() => null), invoke('latest_counts', { force: !!force }).catch(() => null)]);
-  S.runCounts = rc || S.runCounts || {};
-  S.deckScores = ds || S.deckScores || {};
-  S.latestCounts = lc || S.latestCounts || {};
-  // Nothing new: the page stays as it is (no second draw of a long list).
-  if (JSON.stringify([S.runCounts, S.deckScores]) === before) return;
-  if (S.view === 'game') refreshGame();
-  else if (S.view === 'discover' && $('#dlist')) morphList($('#dlist'), discoverGrid());
-  else if (S.view === 'home') render(true);
-  if (window.tvRefresh) window.tvRefresh();
-}
-async function loadReports(id, force) {
-  S.reports[id] = S.reports[id] && S.reports[id] !== 'loading' ? S.reports[id] : 'loading';
-  try { S.reports[id] = await invoke('play_reports', { id, force: !!force }); } catch (e) { S.reports[id] = { error: true, counts: {}, items: [] }; }
-  if (S.view === 'game' && S.arg === id && S.tab === 'overview') refreshGame();
-}
-// { n, runs, issues, broken, pct(k) } from counts.
-function runTally(c) {
-  c = c || {};
-  const n = (c.runs || 0) + (c.issues || 0) + (c.broken || 0);
-  return { n, runs: c.runs || 0, issues: c.issues || 0, broken: c.broken || 0, pct: (k) => (n ? Math.round((100 * (c[k] || 0)) / n) : 0) };
-}
-// A version as players and the site write it, to tell whether two are the same ("v0.1.1" = "0.1.1").
-const verNorm = (v) => String(v || '').trim().toLowerCase().replace(/^version\s*/, '').replace(/^v(?=\d)/, '');
-const verShown = (v) => (verNorm(v) ? 'v' + verNorm(v) : '');
-// The score to show: the release out now once 3 or more of its players said, like an app store;
-// else every report, with how many the new release has so far.
-function scoreOf(all, latest) {
-  const r = runTally(all), l = latest ? runTally(latest.counts || latest) : null, v = latest ? verShown(latest.version) : '';
-  if (l && v && l.n >= 3) return { r: l, cur: true, v, all: r };
-  return { r, cur: false, v, l, all: r };
-}
-const runBar = (r) => `<div class="rbar" aria-hidden="true">${['runs', 'issues', 'broken'].map((k) => (r[k] ? `<i class="v-${k}" style="flex:${r[k]}"></i>` : '')).join('')}</div>`;
-// Enough players said it plays great: five reports or more, most of them good.
-const playsGreat = (a) => { const r = runTally((S.runCounts || {})[a.id]); return r.n >= 5 && r.pct('runs') >= 70; };
-// Great on Deck: three or more Steam Deck players, and a score of 80 or more.
-const greatOnDeck = (a) => { const d = a && (S.deckScores || {})[a.id]; return !!d && Number(d.n) >= 3 && Number(d.score) >= 80; };
-const onHandheld = () => !!(S.deck || (S.handheld && S.os === 'linux'));
-const DECK_ICON = (n = 13) => `<svg width="${n}" height="${n}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6l-.9 7.2a2.6 2.6 0 0 0 2.6 2.9c1 0 1.7-.5 2.3-1.3L8 15.5h8l1.3 1.9c.6.8 1.3 1.3 2.3 1.3a2.6 2.6 0 0 0 2.6-2.9l-.9-7.2a4 4 0 0 0-4-3.6z"/></svg>`;
-const BELL = (n = 18) => `<svg width="${n}" height="${n}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>`;
+function wantCounts() {}
+async function loadCounts() {}
+async function loadReports() {}
 
 // ---------- Notify Me on Coming Soon games ----------
 // The games the signed-in player asked to hear about: one email from the site when each comes out.
@@ -2428,11 +2384,9 @@ window.afterSignIn = async () => {
 // ---------- notes from the this collection team, on top of Discover ----------
 const NOTES = { list: [] };
 async function loadNotes() {
-  try { NOTES.list = (await invoke('team_notes')) || []; } catch (e) { NOTES.list = []; }
-  if (S.view === 'discover') render(true);
-  if (window.tvRefresh && document.body.classList.contains('tv-on')) window.tvRefresh();
+  NOTES.list = [];
 }
-setInterval(loadNotes, 6 * 3600e3);
+
 const notesShown = () => { const closed = new Set(((S.settings.ui || {}).notes_closed || []).map(String)); return NOTES.list.filter((n) => !closed.has(String(n.id))); };
 const httpsOnly = (u) => (/^https:\/\/\S+$/i.test(String(u || '')) ? String(u) : '');
 function notesBars() {
@@ -3999,55 +3953,12 @@ function dlPhase(id) {
 // or Not verified. Safe carries VirusTotal's mark, the scanner the store uses; how many engines
 // looked stays out of what players see.
 S.scans = S.scans || {};
-const VT_MARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.87 12 0 22.68h24V1.32H0zm10.73 8.52H5.28l8.637-8.448L5.28 3.48H21.6z"/></svg>';
-const scanAsk = new Map();
-const SCAN_TIP = N_('Scanned before release and checked by the this collection team.');
-// The label for a release's scan: { cls, ic, text }, or null while it isn't known (asked once; a
-// release still being checked is asked again at most every 10 minutes, so an okay shows up).
-function scanVerdict(files) {
-  const mine = (files || []).filter((f) => (f.for || []).includes(S.os));
-  const use = mine.length ? mine : files || [];
-  if (!use.length) return null;
-  if (use.some((f) => f.verdict === 'red')) return 'bad';
-  if (use.some((f) => f.verdict === 'grey' || (f.verdict === 'yellow' && !f.reviewed) || !['green', 'yellow'].includes(f.verdict))) return 'wait';
-  return 'ok';
+const scanPill = (h) => h && h.verified ? `<span class="dl-check">${esc(t('Checksum matched'))}</span>` : '';
+function scanInfo(_h) {
+  // This fork validates developer-published digests during installation; it has no hosted scan service.
+  return null;
 }
-function scanInfo(h) {
-  const key = h.id + '@' + h.tag, files = S.scans[key];
-  const last = scanAsk.get(key) || 0;
-  const again = files !== undefined && scanVerdict(files) === 'wait' && Date.now() - last > 600e3;
-  if (h.tag && ((files === undefined && !last) || again)) {
-    scanAsk.set(key, Date.now());
-    invoke('scan_info', { id: h.id, tag: h.tag, force: again }).then((r) => (r && r.files) || []).catch(() => files || []).then((f) => {
-      S.scans[key] = f;
-      for (const el of document.querySelectorAll(`[data-scan="${CSS.escape(key)}"]`)) el.outerHTML = scanPill(h);
-      if (document.body.classList.contains('tv-on') && window.tvRedraw) window.tvRedraw();
-    });
-  }
-  const v = scanVerdict(files);
-  if (!v) return null;
-  return v === 'ok' ? { cls: 'ok', ic: VT_MARK, text: h.update ? t('Safe Update') : t('Safe') }
-    : v === 'wait' ? { cls: 'wait', ic: '…', text: t('Checking') }
-      : { cls: 'bad', ic: '✕', text: t('Not verified') };
-}
-// A verified release's report: the file for this system first, else any file, that has one.
-// (A file checked only by the store's own scanner, the last resort, has none.)
-function scanLink(files) {
-  const has = (f) => typeof f.link === 'string' && /^https:\/\//.test(f.link);
-  const all = (files || []).filter(has);
-  const mine = all.find((f) => (f.for || []).includes(S.os));
-  return (mine || all[0] || {}).link || '';
-}
-function scanPill(h) {
-  const key = h.id + '@' + h.tag, info = scanInfo(h);
-  if (!info) return h.verified ? `<span class="dl-check" data-scan="${esc(key)}">${esc(t('Checksum matched'))}</span>` : `<span data-scan="${esc(key)}"></span>`;
-  if (info.cls === 'ok') {
-    const link = scanLink(S.scans[key]);
-    if (link) return `<button type="button" class="scan-pill ok" data-scan="${esc(key)}" data-act="scan-report" data-url="${esc(link)}" title="${esc(t('Open the VirusTotal report'))}"><i>${info.ic}</i>${esc(info.text)}</button>`;
-    return `<span class="scan-pill ok" data-scan="${esc(key)}" title="${esc(t('Checked by the this collection team'))}"><i>${info.ic}</i>${esc(info.text)}</span>`;
-  }
-  return `<span class="scan-pill ${info.cls}" data-scan="${esc(key)}" title="${esc(t(SCAN_TIP))}"><i>${info.ic}</i>${esc(info.text)}</span>`;
-}
+
 function pageDownloads() {
   if (!S.dlHist) loadDlHist();
   const hist = S.dlHist || [];
