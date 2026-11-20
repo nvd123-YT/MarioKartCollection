@@ -1,8 +1,8 @@
 {
-  "name": "recomplauncher",
-  "version": "0.90.0-beta.66",
+  "name": "mario-kart-collection",
+  "version": "0.1.0",
   "private": true,
-  "description": "Recompiled and decompiled PC games: find, install, update and play them from each developer's own GitHub.",
+  "description": "One launcher for eight existing Mario Kart recompilation projects.",
   "license": "GPL-3.0-or-later",
   "scripts": {
     "tauri": "tauri",
