@@ -74,7 +74,7 @@
   };
 
   // ---------- sounds ----------
-  // Start-up, moving, going back and changing section are RecompStore's. Picking something and
+  // Start-up, moving, going back and changing section are Mario Kart Collection's. Picking something and
   // opening a game are soft, short tones made here.
   const SFX = {};
   let ctx = null;
@@ -251,7 +251,7 @@
     sfx('boot');
     root.innerHTML = `<div class="tv-stage"><div class="tv-boot"><div class="aurora"><i></i><i></i><i></i></div>
       <div class="logo"><svg width="236" height="236" viewBox="0 0 256 256" aria-hidden="true"><defs><linearGradient id="tvb" x1="0" y1="38" x2="0" y2="218" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#34f2e8"/><stop offset="1" stop-color="#377bb6"/></linearGradient></defs><g fill="url(#tvb)" transform="translate(4 -2)"><path d="M40 40H88V168H116L64 220L12 168H40Z"/><path d="M104 40H172L216 84V116L180 152H104V116H164L180 100V92L164 76H104Z"/><path d="M132 168H184L236 220H184Z"/></g></svg>
-        <img class="word" src="img/wordmark.svg" alt="RecompLauncher"></div>
+        <img class="word" src="img/wordmark.svg" alt="Mario Kart Collection"></div>
       <div class="load"><div>${esc(t('Loading your library'))}<span><i></i><i></i><i></i></span></div><div class="bar"><i></i></div></div>
     </div></div>`;
     fit();
@@ -431,7 +431,7 @@
     if (TV.booting || TV.flying || !stage() || TV.sheet) { setTimeout(() => window.tvAskData(), 400); return true; }
     if (S.settings.data_asked) return true;
     const set = async (u, s) => { await saveSettings({ data_asked: true, share_usage: u, share_stats: s }, true); };
-    const head = `<h3>${esc(t('Help Improve RecompLauncher?'))}</h3><p class="tv-sh-p">${esc(t('RecompLauncher can send a little information to help fix problems and see what players use. Nothing is sent unless you say so, and you can change this any time in Settings.'))}</p>`;
+    const head = `<h3>${esc(t('Help Improve Mario Kart Collection?'))}</h3><p class="tv-sh-p">${esc(t('Mario Kart Collection can send a little information to help fix problems and see what players use. Nothing is sent unless you say so, and you can change this any time in Settings.'))}</p>`;
     sheet('', [
       { label: t('Don\'t Share'), sub: t('Nothing is sent'), icon: 'close', run: () => set(false, false) },
       { label: t('Share Anonymous Stats'), sub: t('When the launcher is open and which recomps are played, under a random ID'), icon: 'check', run: () => set(false, true) },
@@ -470,7 +470,7 @@
   const updatesReady = () => Object.keys(S.updates || {}).filter((id) => S.library[id] && !S.jobs[id]).length + (S.launcherUpd ? 1 : 0);
   const tabOf = () => (['about', 'saves', 'storage'].includes(TV.view) ? 'settings' : GAMEVIEWS.includes(TV.view) ? TV.from || 'home' : TV.view);
   const clock = () => new Date().toLocaleTimeString(curLocale(), timeOpts({ hour: 'numeric', minute: '2-digit' }));
-  const bar = () => `<header class="tv-bar"><div class="tv-brand">${MARK}<img class="tv-wm" src="img/${document.body.classList.contains('light') ? 'wordmark-dark' : 'wordmark'}.svg" alt="RecompLauncher"></div>
+  const bar = () => `<header class="tv-bar"><div class="tv-brand">${MARK}<img class="tv-wm" src="img/${document.body.classList.contains('light') ? 'wordmark-dark' : 'wordmark'}.svg" alt="Mario Kart Collection"></div>
     <nav class="tv-nav" aria-label="${esc(t('Sections'))}">${glyph('lb', 'tv-bumpg')}<span class="tv-tab-pill" aria-hidden="true"></span>${tvTabs().map(([k, n]) => `<button type="button" class="tv-tab${tabOf() === k ? ' on' : ''}" data-f data-key="tab:${k}" data-tab="${k}">${esc(t(n))}${k === 'downloads' && updatesReady() ? `<b class="tv-tab-n">${updatesReady()}</b>` : ''}</button>`).join('')}${glyph('rb', 'tv-bumpg')}</nav>
     <div class="tv-status"><span class="tv-clock" id="tv-clock">${clock()}</span></div></header>`;
   // The game page has a Back pill instead of the sections.
@@ -509,13 +509,13 @@
     const picked = window.bannerApps && bannerApps();
     return picked ? { list: turnkeyFirst(picked), kind: 'banner' } : { list: turnkeyFirst(oneEach(pool().filter(notPC).sort(byDl)).slice(0, 10)), kind: 'top' };
   }
-  // Notes from the RecompStore team, under the header: B or the X closes one for good.
+  // Notes from the Mario Kart Collection team, under the header: B or the X closes one for good.
   function tvNotes() {
     // One at a time, in the room beside the game's name (closing it brings the next).
     const n = notesShown()[0];
     if (!n) return '';
     const link = httpsOnly(n.link);
-    return `<div class="tv-notes"><div class="tv-tnote ${esc(n.tone || 'cyan')}" role="note"><div class="tn-top"><span class="tn-l">RecompLauncher</span><button type="button" class="tv-btn sm tv-tnote-x" data-f data-key="note:x:${esc(n.id)}" data-tvact="notex" data-n="${esc(n.id)}" aria-label="${esc(t('Close'))}">${svg('stop', 20)}</button></div><p dir="auto">${esc(n.body)}</p>${link ? `<div class="tn-acts"><button type="button" class="tv-btn sm" data-f data-key="note:l:${esc(n.id)}" data-tvact="noteurl" data-url="${esc(link)}"><span>${esc(n.linkText || t('Learn More'))}</span></button></div>` : ''}</div></div>`;
+    return `<div class="tv-notes"><div class="tv-tnote ${esc(n.tone || 'cyan')}" role="note"><div class="tn-top"><span class="tn-l">Mario Kart Collection</span><button type="button" class="tv-btn sm tv-tnote-x" data-f data-key="note:x:${esc(n.id)}" data-tvact="notex" data-n="${esc(n.id)}" aria-label="${esc(t('Close'))}">${svg('stop', 20)}</button></div><p dir="auto">${esc(n.body)}</p>${link ? `<div class="tn-acts"><button type="button" class="tv-btn sm" data-f data-key="note:l:${esc(n.id)}" data-tvact="noteurl" data-url="${esc(link)}"><span>${esc(n.linkText || t('Learn More'))}</span></button></div>` : ''}</div></div>`;
   }
   function pageHome() {
     const d = dockList(), list = d.list;
@@ -1191,7 +1191,7 @@
     // The launcher's own update is counted in the Downloads badge, so it needs a row here too, or the
     // badge points at a page with nothing to press. Same words and same selfUpdate() as the desktop.
     const lu = S.launcherUpd;
-    const self = lu ? [`<button type="button" class="tv-item" data-f data-key="u:@launcher" data-tvact="selfupdate"><img class="mark" src="img/mark.svg" alt=""><span class="k">${esc(tf('RecompLauncher {version} is ready', { version: verName(lu.version) }))}<small>${esc(tf('You have {version}. It updates in a moment and opens again by itself.', { version: verName(S.version) }))}</small></span><span class="tv-pill on">${esc(t('Update now'))}</span></button>`] : [];
+    const self = lu ? [`<button type="button" class="tv-item" data-f data-key="u:@launcher" data-tvact="selfupdate"><img class="mark" src="img/mark.svg" alt=""><span class="k">${esc(tf('Mario Kart Collection {version} is ready', { version: verName(lu.version) }))}<small>${esc(tf('You have {version}. It updates in a moment and opens again by itself.', { version: verName(S.version) }))}</small></span><span class="tv-pill on">${esc(t('Update now'))}</span></button>`] : [];
     const items = self.concat(act.map((id) => item(id, '', 'd:' + id, progress(id)))).concat(ups.map((id) => item(id, esc(tf('Update ready: {from} → {to}', { from: S.library[id].tag || '?', to: S.updates[id] })), 'u:' + id, scanTag(id, S.updates[id], true)))).concat(rec.map((r) => item(r.id, r.phase === 'error' ? esc(cleanMsg(r.msg)) : r.phase === 'cancelled' ? esc(t('Cancelled')) : esc(t('Installed and ready to play')), 'r:' + r.id)));
     return `${backdrop(null)}${bar()}
       ${region(`${pageHead(t('Downloads'), t('Each download is checked against GitHub\'s checksum before it\'s installed.'))}
@@ -1253,7 +1253,7 @@
           ${head(t('Starting up'))}
           ${sw('start_in_tv', t('Start in Big Picture mode'), t('Open full screen, ready for a controller'))}
           ${head(t('When you close the window'))}
-          ${sw('close_to_tray', t('Run in background'), t('Keep RecompLauncher running when you close the window. Turn off to exit on close. Quit always exits.'))}
+          ${sw('close_to_tray', t('Run in background'), t('Keep Mario Kart Collection running when you close the window. Turn off to exit on close. Quit always exits.'))}
           ${head(t('Games and updates'))}
           ${sw('notify', t('Notifications'), t('When a new recomp comes out for a game you own'))}
           ${sw('auto_update_all', t('Update All Games Automatically'), t('Every installed game takes a new release as soon as the launcher finds one'))}
@@ -1261,9 +1261,9 @@
           ${sw('auto_install', t('Auto-Install'), t('Open a game\'s setup or installer as soon as it finishes downloading'), S.settings.auto_install !== false)}
           ${sw('hide_ai', t('Hide AI-assisted recomps'), t('They won\'t show in the Catalog'))}
           ${sw('discord', t('Discord status'), t('Show the game you\'re playing on your Discord profile'), S.settings.discord !== false)}
-          ${S.steam ? sw('steam_sync', t('Keep Steam in Sync'), t('Installed games go in your Steam library, in a RecompLauncher collection, and leave it when you uninstall them')) : ''}
+          ${S.steam ? sw('steam_sync', t('Keep Steam in Sync'), t('Installed games go in your Steam library, in a Mario Kart Collection collection, and leave it when you uninstall them')) : ''}
           ${S.steam && S.settings.steam_sync ? `<button type="button" class="tv-item" data-f data-key="s:steamsync" data-tvact="steamsync"><span class="k">${esc(t('Sync Now'))}<small>${esc(t('Steam takes changes while it\'s closed. This restarts it to put them in now.'))}</small></span><span class="tv-pill on">${esc(t('Sync Now'))}</span></button>` : ''}
-          ${S.steam ? `<button type="button" class="tv-item" data-f data-key="s:steamremove" data-tvact="steamremove"><span class="k">${esc(t('Remove from Steam'))}<small>${esc(S.settings.steam_sync ? t('Takes out the games RecompLauncher put in Steam. Keep Steam in Sync turns off too.') : t('Takes out the games RecompLauncher put in Steam. Games you added yourself stay.'))}</small></span><span class="tv-pill">${esc(t('Remove All'))}</span></button>` : ''}
+          ${S.steam ? `<button type="button" class="tv-item" data-f data-key="s:steamremove" data-tvact="steamremove"><span class="k">${esc(t('Remove from Steam'))}<small>${esc(S.settings.steam_sync ? t('Takes out the games Mario Kart Collection put in Steam. Keep Steam in Sync turns off too.') : t('Takes out the games Mario Kart Collection put in Steam. Games you added yourself stay.'))}</small></span><span class="tv-pill">${esc(t('Remove All'))}</span></button>` : ''}
           <button type="button" class="tv-item" data-f data-key="s:storage" data-tvact="storage"><span class="k">${esc(t('Storage'))}<small>${esc(t('How much room each game takes, and uninstalling'))}</small></span>${svg('chevR', 30)}</button>
           <button type="button" class="tv-item" data-f data-key="s:saves" data-tvact="saves"><span class="k">${esc(t('Saves'))}<small>${esc(t('Every game\'s save copies, to restore an older one'))}</small></span>${svg('chevR', 30)}</button>
           ${head(t('Controller'))}
@@ -1272,8 +1272,8 @@
           ${head(t('Big Picture mode'))}
           <button type="button" class="tv-item" data-f data-key="s:leave" data-tvact="leave"><span class="k">${esc(t('Leave Big Picture mode'))}<small>${esc(t('Back to the desktop view, for mouse and keyboard'))}</small></span><span class="tv-pill on">${esc(t('Leave'))}</span></button>
           ${head(t('About'))}
-          <button type="button" class="tv-item" data-f data-key="s:support" data-tvact="support">${HEART}<span class="k">${esc(t('Support RecompLauncher'))}<small>${esc(t('Help keep it running and growing, on Ko-fi'))}</small></span>${svg('chevR', 30)}</button>
-          <button type="button" class="tv-item" data-f data-key="s:about" data-tvact="about"><span class="k">${esc(t('About RecompLauncher'))}<small>${esc(t('Who makes it, and where to find the Discord'))}</small></span>${svg('chevR', 30)}</button>
+          <button type="button" class="tv-item" data-f data-key="s:support" data-tvact="support">${HEART}<span class="k">${esc(t('About Mario Kart Collection'))}<small>${esc(t('Help keep it running and growing, on Ko-fi'))}</small></span>${svg('chevR', 30)}</button>
+          <button type="button" class="tv-item" data-f data-key="s:about" data-tvact="about"><span class="k">${esc(t('About Mario Kart Collection'))}<small>${esc(t('Who makes it, and where to find the Discord'))}</small></span>${svg('chevR', 30)}</button>
         </div><aside class="tv-setpanel" id="tv-setpanel" aria-live="polite"></aside></div>`, 'top')}
       ${hints([['A', t('Change')], ['dpad', t('Pick')], ['B', t('Back')], ['LB+RB', t('Sections')]])}`;
   }
@@ -1329,7 +1329,7 @@
     const step = saveNextStep(st, S.savePhase[sid], S.running.has(parentId(sid)), picked);
     const act = step && !sv.busy && TV_STEP[step.act];
     // Reporting stays in the desktop view, and the account page needs a browser: said instead.
-    const desk = !step ? '' : step.act === 'report' ? ` ${t('Report problems from the desktop view')}.` : step.act === 'url' ? ` ${t('Free up space on your account page at recomplauncher.com.')}` : '';
+    const desk = !step ? '' : step.act === 'report' ? ` ${t('Report problems from the desktop view')}.` : step.act === 'url' ? ` ${t('Free up space on your account page at github.com/nvd123-YT/MarioKartCollection.')}` : '';
     const tvact = act ? ` data-tvact="${act}" data-id="${esc(id)}"` : '';
     const pill = act ? `<span class="tv-pill on">${esc(t(step.label))}</span>` : '';
     const note = b.note ? ` <i>· ${esc(b.note)}</i>` : '';
@@ -1529,7 +1529,7 @@
       : a.blurb && g ? `<section class="tv-block"><h3>${esc(t('About it'))}</h3><p class="tv-about">${esc(a.blurb)}</p></section>` : '';
     // Not installed yet: what the recomp is and who makes it come first; what it needs comes after.
     const devText = a.blurb || notesLine(a.description);
-    const facts = [[t('Version'), window.verText(a.version)], [t('Latest release'), date(a.released)], [t('Downloads'), a.downloads ? fmtN(a.downloads) : ''], [t('Played on RecompLauncher'), playersText(a)], [starsLabel(a.repo), starsText(a)], [t('Size'), a.size]].filter(([, v]) => v);
+    const facts = [[t('Version'), window.verText(a.version)], [t('Latest release'), date(a.released)], [t('Downloads'), a.downloads ? fmtN(a.downloads) : ''], [t('Played on Mario Kart Collection'), playersText(a)], [starsLabel(a.repo), starsText(a)], [t('Size'), a.size]].filter(([, v]) => v);
     const checkBlock = !g && checks.length ? `<section class="tv-block"><h3>${esc(t('Before you install'))}${bad ? ` <small>${esc(tn(bad, '1 thing to do', '{n} things to do'))}</small>` : ''}</h3><div class="tv-panel tv-checks" data-f data-key="g-checks"><dl>${checks.map((r) => `<div><dt>${esc(r.k)}<small>${esc(r.d || '')}</small></dt><dd>${okMark(r.v)}</dd></div>`).join('')}</dl></div></section>` : '';
     const aside = g
       ? `<aside class="tv-panel" aria-label="${esc(t('Details'))}"><h2>${esc(bad ? t('Before you play') : t('Ready to play'))}</h2><dl>${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>${tvRuns(a)}</aside>`
@@ -1949,7 +1949,7 @@
     TV.sheet = { items: [{ label: t('Cancel') }], prev: (focused() || {}).dataset?.key, onClose: () => s.onClose && s.onClose() };
     const el = document.createElement('div');
     el.className = 'tv-sheet tv-signin';
-    el.innerHTML = `<div class="tv-sheet-in"><h3>${esc(t('Sign in with your phone'))}</h3><div class="tv-signin-two"><div class="tv-qr">${s.qr}</div><div><p>${esc(t('Scan the code with your phone, or go to recomplauncher.com/activate and type:'))}</p><div class="tv-code">${esc(s.code)}</div><p class="tv-wait" data-st>${esc(t('Waiting for you to sign in…'))}</p></div></div>
+    el.innerHTML = `<div class="tv-sheet-in"><h3>${esc(t('Sign in with your phone'))}</h3><div class="tv-signin-two"><div class="tv-qr">${s.qr}</div><div><p>${esc(t('Scan the code with your phone, or go to github.com/nvd123-YT/MarioKartCollection/activate and type:'))}</p><div class="tv-code">${esc(s.code)}</div><p class="tv-wait" data-st>${esc(t('Waiting for you to sign in…'))}</p></div></div>
       <button type="button" class="tv-item" data-f data-key="sheet:0" data-sheet="0"><span class="k">${esc(t('Cancel'))}</span></button></div>`;
     stage().append(el);
     focus($('[data-sheet="0"]', el), true);
@@ -2402,13 +2402,13 @@
   function pageAbout() {
     return `${backdrop(null)}${bar()}
       ${region(`<div class="tv-about">
-        <div class="tv-about-l">${MARK}<img class="tv-about-wm" src="img/${document.body.classList.contains('light') ? 'wordmark-dark' : 'wordmark'}.svg" alt="RecompLauncher">
+        <div class="tv-about-l">${MARK}<img class="tv-about-wm" src="img/${document.body.classList.contains('light') ? 'wordmark-dark' : 'wordmark'}.svg" alt="Mario Kart Collection">
           <p class="v">${esc(tf('Version {v}', { v: verName(S.version) }))}</p>
-          <p>${esc(t('RecompLauncher has no game files and never downloads any. Every recomp comes from its developer\'s own GitHub, and you set it up with your own copy of the game.'))}</p>
+          <p>${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp comes from its developer\'s own GitHub, and you set it up with your own copy of the game.'))}</p>
           <p class="by">${esc(t('Made by Ripalda'))}</p>
           <button type="button" class="tv-btn" data-f data-key="ab:back" data-tvact="back">${glyph('b', 'tv-keyg')}<span>${esc(t('Back'))}</span></button></div>
         <div class="tv-qrs"><figure><img src="img/qr-discord.svg" alt=""><figcaption><b>${esc(t('Discord'))}</b><span>${esc(t('News, help and a place to send your logs'))}</span></figcaption></figure>
-          <figure><img src="img/qr-site.svg" alt=""><figcaption><b>recomplauncher.com</b><span>${esc(t('Every recomp, and the newest launcher'))}</span></figcaption></figure>
+          <figure><img src="img/qr-site.svg" alt=""><figcaption><b>github.com/nvd123-YT/MarioKartCollection</b><span>${esc(t('Every recomp, and the newest launcher'))}</span></figcaption></figure>
           <figure><img src="img/qr-support.svg" alt=""><figcaption><b class="tv-heart">${HEART}${esc(t('Support Us'))}</b><span>ko-fi.com/recomp</span></figcaption></figure></div></div>`)}
       ${hints([['B', t('Back')]])}`;
   }
@@ -2851,7 +2851,7 @@
       // Back on Home: offer the way out, like Steam (B or Esc, then A).
       return sheet(t('Leave Big Picture mode'), [
         { label: t('Leave Big Picture mode'), sub: t('Back to the desktop view, for mouse and keyboard'), icon: 'chevL', run: () => leave() },
-        { label: t('Quit RecompLauncher'), icon: 'close', run: () => invoke('quit_launcher').catch(fail) },
+        { label: t('Quit Mario Kart Collection'), icon: 'close', run: () => invoke('quit_launcher').catch(fail) },
         { label: t('Cancel'), icon: 'check', run: () => {} },
       ]);
     }
