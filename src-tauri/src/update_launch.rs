@@ -35,7 +35,7 @@ pub fn installer_command(installer: &Path, portable_dir: Option<&Path>, how: Ins
         // /S: no installer window at all (the passive one flashed its Back button as it finished);
         // the launcher says it is installing.
         command.args(["/S", "/UPDATE"]);
-        // /R: RecompLauncher opens again after.
+        // /R: Mario Kart Collection opens again after.
         if reopen {
             command.arg("/R");
         }
@@ -82,16 +82,16 @@ mod tests {
 
     #[test]
     fn portable_updates_and_retries_put_the_directory_last() {
-        let dir = Path::new(r"C:\Portable Games\RecompLauncher");
+        let dir = Path::new(r"C:\Portable Games\Mario Kart Collection");
         let quiet = installer_command(Path::new("installer.exe"), Some(dir), Install::Quiet { reopen: true });
         let quiet_args: Vec<_> = quiet.get_args().collect();
-        assert_eq!(quiet_args, ["/S", "/UPDATE", "/R", r"/D=C:\Portable Games\RecompLauncher"]);
+        assert_eq!(quiet_args, ["/S", "/UPDATE", "/R", r"/D=C:\Portable Games\Mario Kart Collection"]);
         let closed = installer_command(Path::new("installer.exe"), Some(dir), Install::Quiet { reopen: false });
         let closed_args: Vec<_> = closed.get_args().collect();
-        assert_eq!(closed_args, ["/S", "/UPDATE", r"/D=C:\Portable Games\RecompLauncher"]);
+        assert_eq!(closed_args, ["/S", "/UPDATE", r"/D=C:\Portable Games\Mario Kart Collection"]);
         let shown = installer_command(Path::new("installer.exe"), Some(dir), Install::Shown);
         let shown_args: Vec<_> = shown.get_args().collect();
-        assert_eq!(shown_args, [r"/D=C:\Portable Games\RecompLauncher"]);
+        assert_eq!(shown_args, [r"/D=C:\Portable Games\Mario Kart Collection"]);
     }
 
     #[test]
@@ -115,7 +115,7 @@ mod tests {
     fn windows_passes_the_install_directory_without_quotes() {
         // NSIS consumes the raw command-line tail, not CRT argv. cmd's Unicode echo preserves
         // quotes in that tail, so this catches Command::arg inserting them around a spaced path.
-        for dir in [r"C:\Portable Games\RecompLauncher", r"C:\Игры\Portable Launcher", r"\\server\shared games\Launcher"] {
+        for dir in [r"C:\Portable Games\Mario Kart Collection", r"C:\Игры\Portable Launcher", r"\\server\shared games\Launcher"] {
             let mut command = Command::new("cmd.exe");
             command.args(["/D", "/U", "/C", "echo"]);
             install_dir(&mut command, Path::new(dir));
