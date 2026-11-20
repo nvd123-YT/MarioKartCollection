@@ -1,5 +1,5 @@
-# Flatpak manifest for RecompLauncher. See packaging/flatpak/README.md.
-app-id: com.recomplauncher.RecompLauncher
+# Flatpak manifest for Mario Kart Collection. See packaging/flatpak/README.md.
+app-id: com.nvd123.mariokartcollection
 runtime: org.gnome.Platform
 runtime-version: '51'
 sdk: org.gnome.Sdk
@@ -31,7 +31,7 @@ finish-args:
   # Shortcuts on the desktop and in the PC's app menu.
   - --filesystem=xdg-desktop
   - --filesystem=xdg-data/applications:create
-  # In-game screenshots (Pictures/RecompLauncher).
+  # In-game screenshots (Pictures/Mario Kart Collection).
   - --filesystem=xdg-pictures/RecompLauncher:create
   # Rich presence for Discord (its socket, native or Flatpak).
   - --filesystem=xdg-run/app/com.discordapp.Discord:create
@@ -40,7 +40,7 @@ finish-args:
 build-options:
   append-path: /usr/lib/sdk/rust-stable/bin
   env:
-    CARGO_HOME: /run/build/recomplauncher/cargo
+    CARGO_HOME: /run/build/mario-kart-collection/cargo
     CARGO_NET_OFFLINE: 'true'
 
 modules:
