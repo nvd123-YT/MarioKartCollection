@@ -1,5 +1,5 @@
 'use strict';
-// RecompLauncher's own updates (found while it runs, installed quietly, What's new after), games
+// Mario Kart Collection's own updates (found while it runs, installed quietly, What's new after), games
 // sent from recomplauncher.com ("Get it on my PC"), betas of recomps, "How did it run?" after a
 // session, and usage and diagnostics. Uses app.js's helpers and state (S), and account.js's ask().
 
@@ -13,18 +13,18 @@ T.event.listen('launcher-update', ({ payload: v }) => { if (v && v.version) { S.
 T.event.listen('push', ({ payload: p }) => {
   if (p && p.type === 'game') checkUpdates();
 });
-// The download, then the install (no window of its own); RecompLauncher opens again after.
+// The download, then the install (no window of its own); Mario Kart Collection opens again after.
 let updBox = null;
 T.event.listen('self-update', ({ payload: p }) => {
   if (p.failed) { if (updBox) updBox.remove(); updBox = null; return; }
   if (!updBox || !updBox.isConnected) {
-    updBox = modal(`<div class="upd"><h2>${esc(t('Updating RecompLauncher'))}</h2><div class="prog"><div class="track"><i style="width:0%"></i></div></div><p class="muted" data-st>${esc(t('Downloading…'))}</p></div>`, () => {}, t('Updating RecompLauncher'));
+    updBox = modal(`<div class="upd"><h2>${esc(t('Updating Mario Kart Collection'))}</h2><div class="prog"><div class="track"><i style="width:0%"></i></div></div><p class="muted" data-st>${esc(t('Downloading…'))}</p></div>`, () => {}, t('Updating Mario Kart Collection'));
     if (S.os === 'linux') updBox.dataset.busy = 'true';
   }
   const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
   const bar = $('.track i', updBox), st = $('[data-st]', updBox);
   if (bar) bar.style.width = (p.installing ? 100 : pct) + '%';
-  if (st) st.textContent = p.installing ? t('Installing. RecompLauncher opens again in a moment.') : p.total ? tf('{done} of {total}', { done: fmtB(p.done), total: fmtB(p.total) }) : t('Downloading…');
+  if (st) st.textContent = p.installing ? t('Installing. Mario Kart Collection opens again in a moment.') : p.total ? tf('{done} of {total}', { done: fmtB(p.done), total: fmtB(p.total) }) : t('Downloading…');
 });
 // What's new: once, the first time a new version opens.
 async function whatsNew() {
@@ -38,7 +38,7 @@ async function whatsNew() {
   try { v = await invoke('launcher_notes'); } catch (e) { /* offline: next time */ return; }
   await saveUi({ seen_version: S.version });
   if (!v || v.version !== S.version || !v.notes) return;
-  modal(`<div class="whatsnew"><h2>${esc(tf('What\'s new in RecompLauncher {version}', { version: verName(S.version) }))}</h2><div class="md">${md(v.notes, true)}</div>
+  modal(`<div class="whatsnew"><h2>${esc(tf('What\'s new in Mario Kart Collection {version}', { version: verName(S.version) }))}</h2><div class="md">${md(v.notes, true)}</div>
     <div class="acts"><button type="button" class="btn main" data-x="no">${esc(t('Got it'))}</button></div></div>`, () => {}, t('What\'s new'));
 }
 
@@ -156,7 +156,7 @@ window.moreAct = async (act, el) => {
 // ---------- How did it run? ----------
 // Reports need an account (names never show with them). Signed out, the site's words and a Sign In
 // button, instead of a failure.
-const SIGNIN_TEXT = N_('Sign in to your RecompLauncher account to send a report. Your name isn\'t shown with it.');
+const SIGNIN_TEXT = N_('Sign in to your Mario Kart Collection account to send a report. Your name isn\'t shown with it.');
 const signedIn = () => !!(S.account && S.account.signedIn);
 async function signInToReport(text) {
   const msg = text ? t(text) : t(SIGNIN_TEXT);
