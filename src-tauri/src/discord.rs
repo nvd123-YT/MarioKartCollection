@@ -1,26 +1,26 @@
 //! Discord status: "Playing <game>" with the game's cover and the time played, while a game
-//! runs, and "Playing RecompLauncher" while the launcher's window is open without one (not while
+//! runs, and "Playing Mario Kart Collection" while the launcher's window is open without one (not while
 //! it waits in the tray). Talks to the Discord app on this PC; nothing happens when it isn't open.
 //!
-//! It needs RecompLauncher's Discord application id: the catalog's top-level `"discord"`, or
+//! It needs Mario Kart Collection's Discord application id: the catalog's top-level `"discord"`, or
 //! the one built in.
 
 use discord_rich_presence::{activity, DiscordIpc, DiscordIpcClient};
 use std::sync::mpsc::{channel, Sender};
 use std::sync::{Mutex, OnceLock};
 
-/// RecompLauncher's application on discord.com/developers (empty until it's made). The catalog's
+/// Mario Kart Collection's application on discord.com/developers (empty until it's made). The catalog's
 /// top-level `"discord"` overrides it.
-pub const APP_ID: &str = "1565871388504367154";
+pub const APP_ID: &str = "";
 /// The launcher's logo, shown small in the corner of the game's cover.
 const LOGO: &str = "https://recomplauncher.com/assets/logo-512.png";
 
 pub enum Msg {
     Playing { app_id: String, game: String, recomp: String, cover: String, start: u64 },
-    /// The game's own line (Recomp Achievements' rich presence) in place of "via RecompLauncher".
+    /// The game's own line (Recomp Achievements' rich presence) in place of "via Mario Kart Collection".
     State(String),
     Clear,
-    /// The launcher is open (app id, since when): "RecompLauncher" shows while no game is running.
+    /// The launcher is open (app id, since when): "Mario Kart Collection" shows while no game is running.
     /// None when the Discord status is turned off.
     Idle(Option<(String, u64)>),
     /// The launcher's window came into sight (true) or went to the tray (false). Hidden, the
@@ -58,7 +58,7 @@ fn put(client: &mut Option<(String, DiscordIpcClient)>, app_id: &str, show: Show
             let (game, recomp, cover, line) = (*game, *recomp, *cover, *line);
             // No cover (a game the player added): the launcher's logo instead.
             let assets = if cover.starts_with("https://") {
-                activity::Assets::new().large_image(cover).large_text(recomp).small_image(LOGO).small_text("RecompLauncher")
+                activity::Assets::new().large_image(cover).large_text(recomp).small_image(LOGO).small_text("Mario Kart Collection")
             } else {
                 activity::Assets::new().large_image(LOGO).large_text(recomp)
             };
@@ -67,18 +67,18 @@ fn put(client: &mut Option<(String, DiscordIpcClient)>, app_id: &str, show: Show
                 .activity_type(activity::ActivityType::Playing)
                 .status_display_type(activity::StatusDisplayType::Details)
                 .details(game)
-                .state(if line.is_empty() { "via RecompLauncher" } else { line })
+                .state(if line.is_empty() { "via Mario Kart Collection" } else { line })
                 .timestamps(activity::Timestamps::new().start(*start as i64 * 1000))
                 .assets(assets)
-                .buttons(vec![activity::Button::new("Get RecompLauncher", "https://recomplauncher.com")])
+                .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://recomplauncher.com")])
         }
-        // The launcher open, no game: "Playing RecompLauncher" with its logo.
+        // The launcher open, no game: "Playing Mario Kart Collection" with its logo.
         Show::Launcher { start } => activity::Activity::new()
             .activity_type(activity::ActivityType::Playing)
             .details("In the launcher")
             .timestamps(activity::Timestamps::new().start(*start as i64 * 1000))
-            .assets(activity::Assets::new().large_image(LOGO).large_text("RecompLauncher"))
-            .buttons(vec![activity::Button::new("Get RecompLauncher", "https://recomplauncher.com")]),
+            .assets(activity::Assets::new().large_image(LOGO).large_text("Mario Kart Collection"))
+            .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://recomplauncher.com")]),
     };
     if c.set_activity(make()).is_err() {
         // Discord was closed and opened again: one more try.
