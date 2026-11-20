@@ -32,7 +32,7 @@ finish-args:
   - --filesystem=xdg-desktop
   - --filesystem=xdg-data/applications:create
   # In-game screenshots (Pictures/Mario Kart Collection).
-  - --filesystem=xdg-pictures/RecompLauncher:create
+  - --filesystem=xdg-pictures/Mario Kart Collection:create
   # Rich presence for Discord (its socket, native or Flatpak).
   - --filesystem=xdg-run/app/com.discordapp.Discord:create
   - --filesystem=xdg-run/discord-ipc-0
@@ -54,17 +54,17 @@ modules:
       # cargo build, not `tauri build`: no Node needed, and the web UI is embedded from ui/.
       - cargo build --release --offline --locked --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol
       - install -Dm755 src-tauri/target/release/recomplauncher -t /app/bin
-      - install -Dm644 packaging/flatpak/com.recomplauncher.RecompLauncher.desktop -t /app/share/applications
-      - install -Dm644 packaging/flatpak/com.recomplauncher.RecompLauncher.metainfo.xml -t /app/share/metainfo
-      - install -Dm644 src-tauri/icons/128x128.png /app/share/icons/hicolor/128x128/apps/com.recomplauncher.RecompLauncher.png
+      - install -Dm644 packaging/flatpak/com.recomplauncher.RecompLauncher.desktop /app/share/applications/com.nvd123.mariokartcollection.desktop
+      - install -Dm644 packaging/flatpak/com.recomplauncher.RecompLauncher.metainfo.xml /app/share/metainfo/com.nvd123.mariokartcollection.metainfo.xml
+      - install -Dm644 src-tauri/icons/128x128.png /app/share/icons/hicolor/128x128/apps/com.nvd123.mariokartcollection.png
       - install -Dm644 src-tauri/icons/icon.png /app/share/icons/hicolor/512x512/apps/com.recomplauncher.RecompLauncher.png
-      - install -Dm644 src-tauri/icons/icon.svg /app/share/icons/hicolor/scalable/apps/com.recomplauncher.RecompLauncher.svg
+      - install -Dm644 src-tauri/icons/icon.svg /app/share/icons/hicolor/scalable/apps/com.nvd123.mariokartcollection.svg
     sources:
       - type: git
-        url: https://github.com/elripalda/RecompLauncher.git
-        # The first release with this packaging (Beta 32 and older don't have it).
-        tag: v0.90.0-beta.33
-        commit: ed0d001585e25580a2f55d5fb107d3f76cfd6ea1
+        url: https://github.com/nvd123-YT/MarioKartCollection.git
+        # The first Mario Kart Collection release.
+        tag: v0.1.0
+        commit: REPLACE_WITH_RELEASE_COMMIT
       # Every crate, generated from src-tauri/Cargo.lock:
       #   python3 flatpak-cargo-generator.py src-tauri/Cargo.lock -o cargo-sources.json
       - cargo-sources.json
