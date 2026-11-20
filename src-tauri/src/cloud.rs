@@ -1155,7 +1155,7 @@ async fn check_saves(app: AppHandle, id: String, manual: bool) -> Res<Value> {
 }
 
 /// A shortcut or tray launch has no conflict prompt, so let the player resolve it in the launcher.
-pub async fn sync_quiet(app: &AppHandle, id: &str) -> Res<()> {
+pub async fn sync_quiet(_app: &AppHandle, _id: &str) -> Res<()> {
     // No hosted save account is configured for this collection. Never block Play on cloud sync.
     Ok(())
 }
