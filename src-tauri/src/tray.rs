@@ -43,7 +43,7 @@ fn menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
         .collect();
     games.sort_by(|a, b| b.2.cmp(&a.2));
     let m = Menu::new(app)?;
-    m.append(&MenuItem::with_id(app, "open", word("Open RecompLauncher"), true, None::<&str>)?)?;
+    m.append(&MenuItem::with_id(app, "open", word("Open Mario Kart Collection"), true, None::<&str>)?)?;
     if !games.is_empty() {
         m.append(&PredefinedMenuItem::separator(app)?)?;
         for (id, name, _) in games.into_iter().take(8) {
@@ -58,7 +58,7 @@ fn menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     }
     m.append(&MenuItem::with_id(app, "bp", word("Big Picture mode"), true, None::<&str>)?)?;
     m.append(&PredefinedMenuItem::separator(app)?)?;
-    m.append(&MenuItem::with_id(app, "quit", word("Quit RecompLauncher"), true, None::<&str>)?)?;
+    m.append(&MenuItem::with_id(app, "quit", word("Quit Mario Kart Collection"), true, None::<&str>)?)?;
     Ok(m)
 }
 
@@ -82,7 +82,7 @@ pub fn start(app: &AppHandle) -> tauri::Result<()> {
         }
     }
     b.icon(icon)
-        .tooltip("RecompLauncher")
+        .tooltip("Mario Kart Collection")
         .menu(&menu(app)?)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, ev| picked(app, ev.id().as_ref()))
@@ -142,6 +142,6 @@ pub fn hid(app: &AppHandle) {
         first
     };
     if first {
-        crate::ingame::notify(app, &word("RecompLauncher is still running"), &word("It's by the clock. Right-click its icon to quit."));
+        crate::ingame::notify(app, &word("Mario Kart Collection is still running"), &word("It's by the clock. Right-click its icon to quit."));
     }
 }
