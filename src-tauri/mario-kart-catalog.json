@@ -1,0 +1,154 @@
+{
+  "schema": "mario-kart-collection/catalog-v1",
+  "apps": [
+    {
+      "id": "smk",
+      "name": "Super Mario Kart",
+      "game": "Super Mario Kart",
+      "repo": "mpolizel/SMKSNESRecomp",
+      "origin": "snes",
+      "genre": "racing",
+      "systems": [
+        "windows"
+      ],
+      "featured": true,
+      "about": "Native SNES recompilation. The project release includes its own RecompLauncher setup profile; provide your own USA ROM."
+    },
+    {
+      "id": "mk64",
+      "name": "Mario Kart 64",
+      "game": "Mario Kart 64",
+      "repo": "sonicdcer/MarioKart64Recomp",
+      "origin": "n64",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "macos",
+        "linux"
+      ],
+      "featured": true,
+      "about": "Native N64 recompilation using N64: Recompiled and RT64. Requires your own supported game dump."
+    },
+    {
+      "id": "mksc",
+      "name": "Mario Kart: Super Circuit",
+      "game": "Mario Kart: Super Circuit",
+      "repo": "mstan/MarioKartSuperCircuitRecomp",
+      "origin": "gba",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "linux"
+      ],
+      "featured": true,
+      "about": "Experimental GBA recompilation with optional 60 FPS, adaptive widescreen and higher internal resolution. Requires your own ROM and BIOS dump."
+    },
+    {
+      "id": "mkds",
+      "name": "Mario Kart DS",
+      "game": "Mario Kart DS",
+      "repo": "AlonsoTlol/DS-Kart-Recompiled",
+      "origin": "nds",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "macos",
+        "linux"
+      ],
+      "featured": true,
+      "about": "Native recompilation of the European Mario Kart DS. Its own launcher handles ROM setup and configuration; Linux and macOS builds are beta."
+    },
+    {
+      "id": "mkwii",
+      "name": "Mario Kart Wii",
+      "game": "Mario Kart Wii",
+      "repo": "patchzyy/Wiicompiled",
+      "origin": "wii",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "linux"
+      ],
+      "featured": true,
+      "installer": true,
+      "about": "Native PowerPC static recompilation. Current builds support the PAL disc; Windows uses the project's setup program and Linux uses its AppImage."
+    },
+    {
+      "id": "mk7",
+      "name": "Mario Kart 7",
+      "game": "Mario Kart 7",
+      "repo": "nvd123-YT/MK7Recomp",
+      "origin": "3ds",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "macos",
+        "linux"
+      ],
+      "featured": true,
+      "about": "Mario Kart 7 Recompiled, including its launcher setup profile, graphics settings, save handling and 3GX plugin support."
+    },
+    {
+      "id": "mk8dx",
+      "name": "Mario Kart 8 Deluxe",
+      "game": "Mario Kart 8 Deluxe",
+      "repo": "Vnnc1/MK8-online",
+      "origin": "switch",
+      "genre": "racing",
+      "systems": [
+        "windows"
+      ],
+      "featured": true,
+      "installer": true,
+      "about": "Experimental Windows recompilation with a native launcher, Vulkan runtime, local racing and experimental online play. Requires your own game files and console keys."
+    },
+    {
+      "id": "mkworld",
+      "name": "Mario Kart World",
+      "game": "Mario Kart World",
+      "repo": "adriadam10/mkw-recomp",
+      "origin": "switch2",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "linux"
+      ],
+      "featured": true,
+      "about": "Early native recompilation for Windows and Linux. Its own setup screen builds the game locally from your own Switch 2 dump; allow substantial free disk space."
+    }
+  ],
+  "origins": [
+    {
+      "id": "3ds",
+      "name": "Nintendo 3DS"
+    },
+    {
+      "id": "gba",
+      "name": "Game Boy Advance"
+    },
+    {
+      "id": "n64",
+      "name": "Nintendo 64"
+    },
+    {
+      "id": "nds",
+      "name": "Nintendo DS"
+    },
+    {
+      "id": "snes",
+      "name": "Super Nintendo"
+    },
+    {
+      "id": "switch",
+      "name": "Nintendo Switch"
+    },
+    {
+      "id": "switch2",
+      "name": "Nintendo Switch 2"
+    },
+    {
+      "id": "wii",
+      "name": "Nintendo Wii"
+    }
+  ]
+}
