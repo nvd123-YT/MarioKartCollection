@@ -129,6 +129,11 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Generate collection icons
+        run: |
+          npx tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
+          cp src-tauri/icons/32x32.png src-tauri/icons/tray.png
+
       - name: Run tests
         run: npm test -- --locked
 
@@ -146,15 +151,8 @@ jobs:
           exit 1
         env:
           APPIMAGE_EXTRACT_AND_RUN: "1"
-          # The launcher must start on a PC without the Visual C++ runtime.
+          # Mario Kart Collection must start on a PC without the Visual C++ runtime.
           RUSTFLAGS: ${{ runner.os == 'Windows' && '-C target-feature=+crt-static' || '' }}
-
-      - name: Brand the Windows installer
-        if: runner.os == 'Windows'
-        shell: bash
-        run: |
-          # Tauri keeps its own NSIS; the branding script finds it and rebuilds the installer with it.
-          python tools/brand-installer.py src-tauri/target/release
 
       - name: Collect files
         shell: bash
@@ -165,7 +163,7 @@ jobs:
             Windows) cp "$b"/nsis/*-setup.exe out/ ;;
             Linux) cp "$b"/deb/*.deb "$b"/appimage/*.AppImage out/ ;;
             macOS)
-              codesign --verify --deep --strict "$b/macos/RecompLauncher.app"
+              codesign --verify --deep --strict "$b/macos/Mario Kart Collection.app"
               cp "$b"/dmg/*.dmg out/ ;;
           esac
           ls -l out
@@ -205,7 +203,7 @@ jobs:
       - name: Source zip
         run: |
           v="${TAG#v}"
-          git archive --format=zip --prefix="RecompLauncher-$v/" HEAD -o "out/RecompLauncher-$v-source.zip"
+          git archive --format=zip --prefix="Mario-Kart-Collection-$v/" HEAD -o "out/Mario-Kart-Collection-$v-source.zip"
           ls -l out
 
       # Nothing is uploaded unless every built file is this tag's version and the app itself says so.
@@ -229,7 +227,7 @@ jobs:
           # v0.90.0-beta.25 -> "RecompLauncher 0.90 Beta 25", notes from docs/PATCH-NOTES-0.90-beta-25.md
           major_minor=$(echo "$v" | cut -d. -f1-2)
           beta=$(echo "$v" | sed -n 's/.*-beta\.\([0-9]*\).*/\1/p')
-          title="RecompLauncher $major_minor${beta:+ Beta $beta}"
+          title="Mario Kart Collection $v"
           notes="docs/PATCH-NOTES-$major_minor${beta:+-beta-$beta}.md"
           # The notes file's own heading isn't repeated in the release.
           if [ -f "$notes" ]; then sed '1{/^# /d}' "$notes" | sed '/./,$!d' > body.md; else : > body.md; fi
