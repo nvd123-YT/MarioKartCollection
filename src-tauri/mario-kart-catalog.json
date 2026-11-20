@@ -12,7 +12,10 @@
         "windows"
       ],
       "featured": true,
-      "about": "Native SNES recompilation. The project release includes its own RecompLauncher setup profile; provide your own USA ROM."
+      "about": "Native SNES recompilation. The project release includes its own RecompLauncher setup profile; provide your own USA ROM.",
+      "assets": {
+        "windows": "*windows-x64.zip"
+      }
     },
     {
       "id": "mk64",
@@ -27,7 +30,12 @@
         "linux"
       ],
       "featured": true,
-      "about": "Native N64 recompilation using N64: Recompiled and RT64. Requires your own supported game dump."
+      "about": "Native N64 recompilation using N64: Recompiled and RT64. Requires your own supported game dump.",
+      "assets": {
+        "windows": "*Windows-RelWithDebInfo.zip",
+        "linux": "*Linux-X64-Release.zip",
+        "macos": "*macOS-Release.zip"
+      }
     },
     {
       "id": "mksc",
@@ -41,7 +49,11 @@
         "linux"
       ],
       "featured": true,
-      "about": "Experimental GBA recompilation with optional 60 FPS, adaptive widescreen and higher internal resolution. Requires your own ROM and BIOS dump."
+      "about": "Experimental GBA recompilation with optional 60 FPS, adaptive widescreen and higher internal resolution. Requires your own ROM and BIOS dump.",
+      "assets": {
+        "windows": "*windows-x64*.zip",
+        "linux": "*linux-x86_64*.AppImage"
+      }
     },
     {
       "id": "mkds",
@@ -56,7 +68,12 @@
         "linux"
       ],
       "featured": true,
-      "about": "Native recompilation of the European Mario Kart DS. Its own launcher handles ROM setup and configuration; Linux and macOS builds are beta."
+      "about": "Native recompilation of the European Mario Kart DS. Its own launcher handles ROM setup and configuration; Linux and macOS builds are beta.",
+      "assets": {
+        "windows": "*Windows*.zip",
+        "linux": "*Linux*.zip",
+        "macos": "*Mac*.zip"
+      }
     },
     {
       "id": "mkwii",
@@ -71,7 +88,11 @@
       ],
       "featured": true,
       "installer": true,
-      "about": "Native PowerPC static recompilation. Current builds support the PAL disc; Windows uses the project's setup program and Linux uses its AppImage."
+      "about": "Native PowerPC static recompilation. Current builds support the PAL disc; Windows uses the project's setup program and Linux uses its AppImage.",
+      "assets": {
+        "windows": "*Setup.exe",
+        "linux": "*x86_64.AppImage"
+      }
     },
     {
       "id": "mk7",
@@ -86,7 +107,12 @@
         "linux"
       ],
       "featured": true,
-      "about": "Mario Kart 7 Recompiled, including its launcher setup profile, graphics settings, save handling and 3GX plugin support."
+      "about": "Mario Kart 7 Recompiled, including its launcher setup profile, graphics settings, save handling and 3GX plugin support.",
+      "assets": {
+        "windows": "*windows-x86_64.zip",
+        "linux": "*linux-x86_64.AppImage",
+        "macos": "*macos-arm64.zip"
+      }
     },
     {
       "id": "mk8dx",
@@ -100,7 +126,10 @@
       ],
       "featured": true,
       "installer": true,
-      "about": "Experimental Windows recompilation with a native launcher, Vulkan runtime, local racing and experimental online play. Requires your own game files and console keys."
+      "about": "Experimental Windows recompilation with a native launcher, Vulkan runtime, local racing and experimental online play. Requires your own game files and console keys.",
+      "assets": {
+        "windows": "*setup.exe"
+      }
     },
     {
       "id": "mkworld",
@@ -114,7 +143,11 @@
         "linux"
       ],
       "featured": true,
-      "about": "Early native recompilation for Windows and Linux. Its own setup screen builds the game locally from your own Switch 2 dump; allow substantial free disk space."
+      "about": "Early native recompilation for Windows and Linux. Its own setup screen builds the game locally from your own Switch 2 dump; allow substantial free disk space.",
+      "assets": {
+        "windows": "*windows-x64.zip",
+        "linux": "*x86_64.AppImage"
+      }
     }
   ],
   "origins": [
