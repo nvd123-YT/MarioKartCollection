@@ -29,6 +29,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Generate collection icons
+        run: |
+          npm ci
+          npx tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
+          cp src-tauri/icons/32x32.png src-tauri/icons/tray.png
+
       - name: Prepare the build files
         shell: bash
         run: |
