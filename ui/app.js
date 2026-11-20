@@ -1837,7 +1837,6 @@ const discToggles = (f) => `<button type="button" class="toggle" role="switch" a
       <button type="button" class="toggle" role="switch" aria-checked="${!!S.settings.hide_ai}" data-act="toggle" data-k="hide_ai">${esc(t('Hide AI-assisted'))}<span class="switch" aria-hidden="true"></span></button>`;
 const discGenres = () => { const apps = visible(); return Object.keys(GENRES).filter((k) => apps.some((a) => a.genre === k)); };
 function pageDiscover() {
-  wantCounts();
   if (!S.cat) return `<div class="loading">${esc(t('Loading…'))}</div>`;
   const f = S.find, apps = visible();
   const genres = Object.keys(GENRES).filter((k) => apps.some((a) => a.genre === k));
@@ -4322,7 +4321,7 @@ async function saveProxy(mode) {
     if (S.view === 'settings') setSection('updates', false);
   } catch (e) { fail(e); }
 }
-const SET_SECTIONS = [['general', N_('General')], ['report', N_('Report a Problem')], ['beta', N_('Beta')], ['account', N_('Account')], ['library', N_('Games and folders')], ['bring', N_('Bring Your Games')], ['updates', N_('Updates and downloads')], ['playing', N_('While Playing')], ['look', N_('Appearance')], ['bigpicture', N_('Big Picture mode')], ['plugins', N_('Plugins')], ['pads', N_('Controllers')], ['pc', N_('Your PC')], ['dev', N_('Developers')], ['about', N_('About')]];
+const SET_SECTIONS = [['general', N_('General')], ['library', N_('Games and folders')], ['updates', N_('Updates and downloads')], ['playing', N_('While Playing')], ['look', N_('Appearance')], ['bigpicture', N_('Big Picture mode')], ['plugins', N_('Plugins')], ['pads', N_('Controllers')], ['pc', N_('Your PC')], ['about', N_('About')]];
 // Microsoft's Visual C++ runtime, installed by the launcher (its installer's own small window
 // shows the progress, and Windows may ask for permission).
 let vcBusy = false;
