@@ -40,7 +40,7 @@ jobs:
           # The release manifest fetches a tagged commit; here the build uses this checkout.
           python3 - <<'PY'
           import yaml
-          p = "com.recomplauncher.RecompLauncher.yml"
+          p = "com.nvd123.mariokartcollection.yml"
           m = yaml.safe_load(open(p))
           mod = m["modules"][-1]
           mod["sources"][0] = {"type": "dir", "path": "../.."}
@@ -59,20 +59,18 @@ jobs:
 
       - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: RecompLauncher.flatpak
+          bundle: MarioKartCollection.flatpak
           manifest-path: packaging/flatpak/ci-manifest.yml
           # Reused while the crates and the manifest stay the same.
-          cache-key: flatpak-builder-${{ hashFiles('src-tauri/Cargo.lock', 'packaging/flatpak/com.recomplauncher.RecompLauncher.yml') }}
+          cache-key: flatpak-builder-${{ hashFiles('src-tauri/Cargo.lock', 'packaging/flatpak/com.nvd123.mariokartcollection.yml') }}
           restore-cache: true
 
-      # Flathub's own checks. Only errors fail it (the release's missing commit is a warning).
-      # Its check that recomplauncher.com answers is about the website, not the packaging: when the
-      # site is slow or down it's reported, not a failure. Flathub checks it again on submission.
+      # Flathub's own checks. Only errors fail the build; the app's homepage and VCS links point to this fork.
       - name: Lint the manifest and app data
         run: |
           flatpak install -y --noninteractive flathub org.flatpak.Builder
           cd packaging/flatpak
-          out=$(flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest com.recomplauncher.RecompLauncher.yml) || true
+          out=$(flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest com.nvd123.mariokartcollection.yml) || true
           echo "$out"
           printf '%s' "$out" | python3 -c '
           import json, sys
@@ -82,4 +80,4 @@ jobs:
               print("::warning::recomplauncher.com did not answer the linter (appid-url-not-reachable)")
           sys.exit(1 if [e for e in errors if e != "appid-url-not-reachable"] else 0)
           '
-          flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream com.recomplauncher.RecompLauncher.metainfo.xml
+          flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream com.nvd123.mariokartcollection.metainfo.xml
