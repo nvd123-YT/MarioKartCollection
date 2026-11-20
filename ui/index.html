@@ -3,21 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RecompLauncher</title>
+<title>Mario Kart Collection</title>
 <link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="mario-kart.css">
 <link rel="stylesheet" href="tv.css">
 <link rel="stylesheet" href="media-art.css">
 </head>
 <body>
 <div id="app">
-  <aside data-t class="side" id="side" aria-label="RecompLauncher">
+  <aside data-t class="side" id="side" aria-label="Mario Kart Collection">
     <div class="brand" data-tauri-drag-region>
-      <button data-t type="button" id="brand" aria-label="About RecompLauncher"><img class="mk" src="img/mark.svg" alt="" width="30" height="30"><img class="wm lbl" src="img/wordmark.svg" alt="RecompLauncher" height="15"></button>
+      <button type="button" id="brand" aria-label="About Mario Kart Collection"><img class="mk" src="img/kart-collection.svg" alt="" width="38" height="38"><span class="brand-name lbl"><b>MARIO KART</b><small>COLLECTION</small></span></button>
     </div>
     <div class="side-scroll">
       <nav data-t class="navs" aria-label="Sections">
         <button data-t type="button" class="nav" data-go="home" title="Home"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5 12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg><span class="lbl" data-t>Home</span></button>
-        <button data-t type="button" class="nav" data-go="discover" title="Catalog"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="lbl" data-t>Catalog</span></button>
+        <button data-t type="button" class="nav" data-go="discover" title="Games"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="lbl">Games</span></button>
         <button data-t type="button" class="nav" data-go="soon" title="Coming Soon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.8 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M15 3v4M7 3v4M3 11h16"/><circle cx="18" cy="18" r="4"/><path d="M18 16.5V18l1 1"/></svg><span class="lbl" data-t>Coming Soon</span></button>
         <button data-t type="button" class="nav" data-go="library" title="Library"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></svg><span class="lbl" data-t>Library</span></button>
         <button data-t type="button" class="nav" data-go="downloads" title="Downloads"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span class="lbl" data-t>Downloads</span><b class="n" id="n-dl"></b></button>
@@ -29,7 +30,7 @@
       <div class="pins" id="pins"></div>
     </div>
     <div class="side-foot">
-      <button data-t type="button" class="nav side-upd" id="side-upd" data-act="self-update" title="Update RecompLauncher" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span class="lbl" data-t>Update RecompLauncher</span></button>
+      <button data-t type="button" class="nav side-upd" id="side-upd" data-act="self-update" title="Update Mario Kart Collection" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg><span class="lbl">Update Collection</span></button>
       <button type="button" class="nav acc-btn" id="acc-btn" data-act="acc-btn" title="Sign in"></button>
       <button data-t type="button" class="nav" data-act="tv" title="Big Picture mode"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="13" rx="2.5"/><path d="M8 21h8"/><path d="m10.5 8.5 4 2.5-4 2.5z" fill="currentColor"/></svg><span class="lbl" data-t>Big Picture mode</span></button>
       <button data-t type="button" class="nav" data-go="settings" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span class="lbl" data-t>Settings</span></button>
