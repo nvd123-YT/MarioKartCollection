@@ -4134,7 +4134,7 @@ function updNotes(u) {
   if (u.self) {
     const n = S.selfNotes;
     if (n === undefined) { loadSelfNotes(); return `<p class="muted">${esc(t('Loading the notes…'))}</p>`; }
-    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on this collection's GitHub repository.'))}</p>`;
+    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on this the collection GitHub repository.'))}</p>`;
   }
   if (!u.repo) return `<p class="muted">${esc(t('No notes for this one.'))}</p>`;
   const r = S.rels[u.repo];
@@ -4229,7 +4229,7 @@ function devTab(a) {
   if (r === undefined) { devCheck(id); return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`; }
   if (r === 'loading') return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`;
   const flow = FLOW_NAME[r.flow || ''] || FLOW_NAME[''];
-  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file on this collection's GitHub repository'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
+  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file on this the collection GitHub repository'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
   const errs = r.items.filter((x) => x.level === 'err').length, warns = r.items.filter((x) => x.level === 'warn').length;
   return `<div class="stack">
     <div class="card dev-head"><div class="dev-sum"><span class="kick">${esc(t('Local build'))}</span><h3>${esc(src)}</h3>
@@ -6727,7 +6727,7 @@ function updateFailedModal(f) {
   // On a Mac there's no installer: the new app was put in place, didn't start, and this one was
   // put back. Downloading it again is the only thing to offer.
   if (S.os === 'macos') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from this collection's GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from this the collection GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -6738,7 +6738,7 @@ function updateFailedModal(f) {
   // On Linux there's no installer: a helper swaps the AppImage once the launcher closes. This is
   // still the old version, so the swap didn't happen or the new one didn't start and was put back.
   if (S.os === 'linux') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from this collection's GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from this the collection GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -7016,7 +7016,7 @@ function pageSoon() {
 }
 
 // Request a recomp: the player pastes its project's link (GitHub, GitLab, SourceForge, or a
-// Forgejo or Gitea server), with a note, and it goes to this collection's GitHub repository for a look. One the
+// Forgejo or Gitea server), with a note, and it goes to this the collection GitHub repository for a look. One the
 // catalog already lists just opens.
 // The link as typed, with https:// in front when it was left out.
 const reqUrl = (typed) => { const s = String(typed || '').replace(/\s+/g, ''); return !s || /^https?:\/\//i.test(s) ? s : 'https://' + s; };
@@ -8653,7 +8653,7 @@ async function act(el, e) {
       if (Date.now() - (S.refreshedAt || 0) < 60e3) { toast(t('The Catalog is up to date.')); return; }
       S.refreshedAt = Date.now();
       toast(t('Getting the newest list…')); await loadCatalog(true); await loadOwned(); loadEasy(); S.rels = {};
-      toast(offNow() ? t('Can\'t reach this collection's GitHub repository right now, so this is the list saved on your PC.') : t('The Catalog is up to date.'));
+      toast(offNow() ? t('Can\'t reach this the collection GitHub repository right now, so this is the list saved on your PC.') : t('The Catalog is up to date.'));
       return render(true);
     }
     case 'tvsize': return saveSettings({ tv_size: el.dataset.k });
@@ -8697,7 +8697,7 @@ async function act(el, e) {
       if (fresh) S.updCheckedAt = Date.now();
       const ok = await checkUpdates(fresh);
       el.disabled = false;
-      if (ok && !Object.keys(S.updates || {}).length) toast(offNow() ? t('Can\'t reach this collection's GitHub repository right now. Try again in a bit.') : t('Everything is up to date.'));
+      if (ok && !Object.keys(S.updates || {}).length) toast(offNow() ? t('Can\'t reach this the collection GitHub repository right now. Try again in a bit.') : t('Everything is up to date.'));
       return render(true);
     }
     case 'lib-remove': {
