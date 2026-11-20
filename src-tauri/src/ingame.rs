@@ -7,10 +7,10 @@ use std::path::PathBuf;
 use std::sync::atomic::Ordering;
 use tauri::{AppHandle, Emitter, Manager};
 
-/// Where a game's screenshots go: Pictures\RecompLauncher\<game>.
+/// Where a game's screenshots go: Pictures\Mario Kart Collection\<game>.
 pub fn shots_dir(name: &str) -> PathBuf {
     let safe: String = name.chars().map(|c| if "<>:\"/\\|?*".contains(c) || c.is_control() { ' ' } else { c }).collect();
-    dirs::picture_dir().unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join("Pictures")).join("RecompLauncher").join(safe.trim())
+    dirs::picture_dir().unwrap_or_else(|| dirs::home_dir().unwrap_or_default().join("Pictures")).join("Mario Kart Collection").join(safe.trim())
 }
 
 /// A game's screenshots, newest first.
