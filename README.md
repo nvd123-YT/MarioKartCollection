@@ -53,7 +53,7 @@ Requirements are Node.js, Rust, the platform's Tauri prerequisites, and the depe
 
 ```sh
 npm ci
-npm run tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
+npx tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
 cp src-tauri/icons/32x32.png src-tauri/icons/tray.png
 npm run dev
 ```
