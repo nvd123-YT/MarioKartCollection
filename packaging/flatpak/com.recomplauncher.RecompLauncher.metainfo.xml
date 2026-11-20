@@ -1,33 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.recomplauncher.RecompLauncher</id>
-  <name>RecompLauncher</name>
-  <summary>Recompiled and decompiled PC games</summary>
-  <developer id="com.recomplauncher">
-    <name>Ripalda</name>
+  <id>com.nvd123.mariokartcollection</id>
+  <name>Mario Kart Collection</name>
+  <summary>One launcher for eight Mario Kart recompilation projects</summary>
+  <developer id="io.github.nvd123-YT">
+    <name>nvd123-YT</name>
   </developer>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  <url type="homepage">https://recomplauncher.com</url>
-  <url type="vcs-browser">https://github.com/elripalda/RecompLauncher</url>
-  <url type="bugtracker">https://github.com/elripalda/RecompLauncher/issues</url>
-  <url type="contact">https://discord.gg/FUzqGM2cvf</url>
-  <url type="donation">https://ko-fi.com/recomp</url>
-  <launchable type="desktop-id">com.recomplauncher.RecompLauncher.desktop</launchable>
+  <url type="homepage">https://github.com/nvd123-YT/MarioKartCollection</url>
+  <url type="vcs-browser">https://github.com/nvd123-YT/MarioKartCollection</url>
+  <url type="bugtracker">https://github.com/nvd123-YT/MarioKartCollection/issues</url>
+  <launchable type="desktop-id">com.nvd123.mariokartcollection.desktop</launchable>
   <description>
-    <p>Recompilations and decompilations are native PC versions of console games, rebuilt by their developers from the original game. RecompLauncher finds, installs, updates and starts them, straight from each developer's own GitHub release.</p>
+    <p>Mario Kart Collection is a focused library for eight existing Mario Kart recompilation projects. It reuses each game's original project and release packages instead of rebuilding or redistributing the game.</p>
     <ul>
-      <li>Discover every project, with what it needs and how it runs for other players</li>
-      <li>Install and update in one click, with every download checked against GitHub's checksum</li>
-      <li>Easy Setup: point it at your disc image or game folder and it does the rest</li>
-      <li>Save backups before every update, and optional cloud saves</li>
-      <li>Big Picture mode for a controller and a TV</li>
+      <li>Install and update from each project's own GitHub Releases</li>
+      <li>Keep each game's native runtime and setup flow intact</li>
+      <li>Use the common library, controller, local save and backup features</li>
+      <li>Launch games from one desktop app or Big Picture mode</li>
     </ul>
-    <p>No game files are included: every game needs your own copy, which you choose the first time you set it up.</p>
+    <p>No game files are included. Bring your own legally obtained game dumps and any project-specific keys or firmware.</p>
   </description>
   <branding>
-    <color type="primary" scheme_preference="light">#34f2e8</color>
-    <color type="primary" scheme_preference="dark">#377bb6</color>
+    <color type="primary" scheme_preference="light">#ffd34e</color>
+    <color type="primary" scheme_preference="dark">#f04b5d</color>
   </branding>
   <categories>
     <category>Game</category>
@@ -41,196 +38,11 @@
     <binary>recomplauncher</binary>
   </provides>
   <content_rating type="oars-1.1"/>
-  <screenshots>
-    <!-- Pinned to the commit that added them, so the links never change. -->
-    <screenshot type="default">
-      <image>https://raw.githubusercontent.com/elripalda/RecompLauncher/2e03584205f688a2da6ff1b786a5582fd61fdd55/docs/images/flathub/home.jpg</image>
-      <caption>Featured projects and games ready to play</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/elripalda/RecompLauncher/2e03584205f688a2da6ff1b786a5582fd61fdd55/docs/images/flathub/discover.jpg</image>
-      <caption>Search and filter every project</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/elripalda/RecompLauncher/2e03584205f688a2da6ff1b786a5582fd61fdd55/docs/images/flathub/game.jpg</image>
-      <caption>A game's page, with what it needs and how it runs</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/elripalda/RecompLauncher/dcba4ac61f6e56bf83f293d5d440a26065e7688b/docs/images/flathub/bigpicture.jpg</image>
-      <caption>Big Picture mode, made for a controller and a TV</caption>
-    </screenshot>
-  </screenshots>
   <releases>
-    <release version="0.90.0-beta.66" date="2026-11-20">
+    <release version="0.1.0" date="2026-11-20">
       <description>
-        <p>Rebuilt Updates, Saves, Shaders and Manage tabs, cloud save status above Play, updating every game automatically from Settings, Play finishes an update that needs a new build, games can say what they need from your PC, and Discover is now Catalog.</p>
+        <p>First Mario Kart Collection release with eight curated Mario Kart recompilation projects, a refreshed racing-inspired interface, direct GitHub release updates, and local save backups.</p>
       </description>
     </release>
-    <release version="0.90.0-beta.65" date="2026-11-19">
-      <description>
-        <p>Reworks how games install, update and build, Easy Setup keeps your choices, updates go in whole or not at all, cloud save status for each game, and the featured banner can be turned off.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.64" date="2026-11-17">
-      <description>
-        <p>Easy Setup goes in clear steps on the desktop and in Big Picture, setup options a game needs are marked Required, the game page is cleaner, consoles are listed A to Z, custom logos show full size in Big Picture, and using a build you already made works for more games.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.63" date="2026-11-17">
-      <description>
-        <p>Fixes games built from your copy asking to set up again after an update.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.62" date="2026-11-17">
-      <description>
-        <p>The Verified label on a download opens its scan report.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.61" date="2026-11-17">
-      <description>
-        <p>Games that install with their own setup no longer show as missing before Set Up, and the Library can sort by game name.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.60" date="2026-11-17">
-      <description>
-        <p>The window opens on the right screen at a size that fits, updates show for games whose project moved, Linux .NET games find .NET, and the launcher starts faster.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.59" date="2026-11-17">
-      <description>
-        <p>Easy Setup can be switched on and off from a game's Manage tab, and a game's page shows its latest version before you install it.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.58" date="2026-11-16">
-      <description>
-        <p>Playtime by game across recomps, kept through reinstalls and synced with your account, and each game of a multi-game release gets its own place in the store.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.57" date="2026-11-16">
-      <description>
-        <p>Linux .NET games start through their own start script, controller A waits for the D-pad on the desktop, and setups that build inside the game's folder are recognized.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.56" date="2026-11-16">
-      <description>
-        <p>Games built from your copy are built again when their setup changes or their build is missing, and Steam names itself when it asks to share the screen.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.55" date="2026-11-16">
-      <description>
-        <p>Saves restore into the folder a game uses now, Switch copies are recognized by their title ID, and setups run more reliably in the Flatpak.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.54" date="2026-11-15">
-      <description>
-        <p>Updates can be paused for one game, a copy a game no longer needs can go to the trash, builds kept in a folder of their own can move to another drive, and Big Picture asks where new games go.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.53" date="2026-11-15">
-      <description>
-        <p>Easy Setup can be skipped for one game from its menu, or for every game in Settings, and games built from your copy can use a build you already have, wherever it is.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.52" date="2026-11-15">
-      <description>
-        <p>Easy Setup shows each game's own cartridge, card or disc with its art, with discs that spin and cartridges that click into place, and optional console labels across the top of covers.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.51" date="2026-11-15">
-      <description>
-        <p>Updates keep the setup and lost setups can be relinked, builds made with a developer's own launcher are picked up, ratings for the latest version, cleaner game cards, reasons for recommended versions, a choice of install folder, sign-in for reports, and a single Verified label for checked releases.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.50" date="2026-11-14">
-      <description>
-        <p>Xbox 360 achievements found in more places and after a game closes, a way to show the Achievements tab a game's save folder, Discord status only while the launcher is in use, ROM scans for zipped ROMs, arcade sets and Wii U archives, and installed games found next to similarly named sequels.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.49" date="2026-11-14">
-      <description>
-        <p>Fixes games asking to be set up again after updating the launcher, finds disc sets kept as .cue, .gdi and .m3u, and fixes setup opening after a game update and the Discord status while the launcher waits in the tray.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.48" date="2026-11-14">
-      <description>
-        <p>Setups that keep going in the background and stop cleanly when cancelled, game file scans for Xbox 360 updates and DLC and PS3 packages, a quit option and Scan pill in Big Picture mode, and fixes for small windows, update checks, picked programs, Easy Setup and covers on Linux.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.47" date="2026-11-14">
-      <description>
-        <p>A weekly Trending row on Discover, developer names on game pages, a start window with the logo, scroll bars in Big Picture mode, an Auto-Install setting, Arch Linux packages, and fixes for updates, picked programs and handheld animations.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.46" date="2026-11-13">
-      <description>
-        <p>Bring your games over from another launcher in one go, browse Discover by game, switch to a better version in one step, setup options such as DLSS and FSR 4, plain copies of compressed game images, and fixes for builds, Python games and saves.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.45" date="2026-11-13">
-      <description>
-        <p>Pick the monitor Big Picture opens on, a 12- or 24-hour clock, one Steam collection for every game the launcher adds, See All on every shelf, and fixes for controllers, saves and installs.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.44" date="2026-11-13">
-      <description>
-        <p>Add a Recomp and Request a Recomp take a link to any project, including Forgejo and Gitea servers, whose recomps show their README and get Easy Setup from their own setup file.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.43" date="2026-11-13">
-      <description>
-        <p>Recomps from Forgejo servers, a Library that keeps every game, prod.keys accepted, self-updates on Linux, and fixes for covers, search and setup.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.42" date="2026-11-13">
-      <description>
-        <p>Bring Your Games for moving over from another launcher, self-updates on a Mac, and Big Picture fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.41" date="2026-11-12">
-      <description>
-        <p>A Coming Soon page with recomp requests, Keep Steam in Sync, Sync Now for cloud saves, shared game media across versions, and a smoother Downloads graph.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.40" date="2026-11-12">
-      <description>
-        <p>A window that opens once drawn, a clearer tray icon, smoother Big Picture on Steam Deck, and crash reports on GitHub.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.39" date="2026-11-12">
-      <description>
-        <p>No more false Offline mark, smarter cloud save uploads, and fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.38" date="2026-11-12">
-      <description>
-        <p>Save sharing between versions of a game, a Run in background setting, drag to reorder pinned games, cleaner game and Achievements pages, and fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.37" date="2026-11-11">
-      <description>
-        <p>NVIDIA DLSS for recomps that ask for it, saved games that sync between PCs, proxy support, and fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.36" date="2026-11-11">
-      <description>
-        <p>Recomp Achievements fixes and improvements.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.35" date="2026-11-10">
-      <description>
-        <p>New versions show up when RecompLauncher opens, smoother updates and more accurate play time.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.34" date="2026-11-10">
-      <description>
-        <p>Safer launcher updates, plus improvements and fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.33" date="2026-11-10">
-      <description>
-        <p>A redesigned Downloads page, plus improvements and fixes.</p>
-      </description>
-    </release>
-    <release version="0.90.0-beta.31" date="2026-11-10"/>
   </releases>
 </component>
