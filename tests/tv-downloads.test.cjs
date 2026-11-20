@@ -27,7 +27,7 @@ function downloadsContext(launcherUpd) {
 test('Big Picture Downloads lists the launcher update the badge counts', () => {
   const html = downloadsContext({ version: '0.90.0-beta.40' }).pageDownloads();
   assert.match(html, /data-key="u:@launcher" data-tvact="selfupdate"><img class="mark" src="img\/mark.svg"/);
-  assert.match(html, /RecompLauncher 0.90.0-beta.40 is ready<small>You have 0.90.0-beta.39\./);
+  assert.match(html, /Mario Kart Collection 0.90.0-beta.40 is ready<small>You have 0.90.0-beta.39\./);
   assert.doesNotMatch(html, /Nothing downloading\./);
 });
 

@@ -62,98 +62,35 @@ function saveStatusCard(id, s) {
   if (!b) return '';
   const sid = saveIdOf(id);
   const st = S.saveStat[sid] || {};
-  const picked = s.spots.some((p) => p.from === 'player');
-  const note = b.note ? ` <small>· ${esc(b.note)}</small>` : '';
-  const rows = b.rows.map(([k, v]) => `${k}: ${v}`).join(' · ');
-  const text = statusCardText(st, b, picked);
-  const offline = st.problem && st.problem.kind === 'offline' && s.status;
-  const help = offline ? `<p class="set-note">${esc(t('Still no answer. Check whether the website is having trouble:'))} <button type="button" class="linkish" data-act="url" data-url="${esc(s.status)}">${esc(s.status.replace(/^https:\/\//, ''))}</button></p>` : '';
-  const space = s.signedIn && s.cloudOn === true ? cloudSpace() : '';
-  const step = saveNextStep(st, S.savePhase[sid], S.running.has(parentId(sid)), picked);
-  const url = step && step.url ? ` data-url="${esc(step.url)}"` : '';
-  const btn = step ? `<button type="button" class="btn sm main" data-act="${step.act}" data-id="${esc(id)}"${url}${s.busy ? ' disabled' : ''}>${esc(t(step.label))}</button>` : '';
-  return `<div class="card svs sb-${b.tone}" role="status"><div class="svs-row"><span class="svs-ico">${badgeIcon(b.mark, 30)}</span>
-    <div class="k"><b>${esc(b.label)}${note}</b>${text ? `<span>${esc(text)}</span>` : ''}${rows ? `<small>${esc(rows)}</small>` : ''}</div>
-    <span class="acts">${btn}</span></div>${help}${space}</div>`;
+  const step = saveNextStep(st, S.savePhase[sid], S.running.has(parentId(sid)));
+  const btn = step ? '<button type="button" class="btn sm main" data-act="' + step.act + '" data-id="' + esc(id) + '"' + (s.busy ? ' disabled' : '') + '>' + esc(t(step.label)) + '</button>' : '';
+  const rows = b.rows.map(([k, v]) => k + ': ' + v).join(' · ');
+  return '<div class="card svs sb-' + b.tone + '" role="status"><div class="svs-row"><span class="svs-ico">' + badgeIcon(b.mark, 30) + '</span><div class="k"><b>' + esc(b.label) + (b.note ? ' <small>· ' + esc(b.note) + '</small>' : '') + '</b>' + (b.text ? '<span>' + esc(b.text) + '</span>' : '') + (rows ? '<small>' + esc(rows) + '</small>' : '') + '</div><span class="acts">' + btn + '</span></div></div>';
 }
-
-// The status's line on the tab: the badge's, except where the badge points somewhere else.
-function statusCardText(st, b, picked) {
-  // On the tab the way to pick is the button beside it, not "Play, or Sync Now".
-  if (st.state === 'conflict') return t('This PC and the cloud both changed since they last synced. Pick the one to keep; the other stays as a copy on this PC.');
-  if (st.state === 'off') return t('The launcher still keeps a copy after every session. Turn cloud saves on to have it on any PC.');
-  const kind = st.state === 'problem' && st.problem && st.problem.kind;
-  if (kind === 'too-big-folder' && !picked) return t(FOLDER_SET_TOO_BIG);
+function statusCardText(st, b) {
+  if (st.known === false) return t('The launcher does not know this game\'s save folder yet. Pick it below to enable local backups.');
   return b.text;
 }
-
-// What the player can do about a status, so none leaves them stuck: a button ({ act, label }),
-// or null when it sorts itself out (a sync running, the game being played, an upload's next try,
-// cloud saves paused for everyone, nothing played yet). `picked`: the player chose the folder.
-function saveNextStep(st, phase, running, picked) {
-  if (phase || running) return null;
-  if (st.known === false) return { act: 'saves-place', label: N_('Pick a Folder') };
-  if (st.state === 'signed-out') return { act: 'acc-signin', label: N_('Sign in') };
-  // saves-cloud turns them on when the button has no switch state to read.
-  if (st.state === 'off') return { act: 'saves-cloud', label: N_('Turn On') };
-  if (st.state === 'conflict') return { act: 'saves-sync', label: N_('Choose a Save') };
-  if (st.state === 'problem') return problemStep((st.problem && st.problem.kind) || 'error', picked);
-  if (st.state === 'waiting' || st.state === 'up-to-date') return { act: 'saves-sync', label: N_('Sync Now') };
-  return null;
-}
-
-function problemStep(kind, picked) {
-  if (kind === 'too-big-folder') return picked ? { act: 'saves-place', label: N_('Pick a Folder') } : { act: 'report', label: N_('Report a Problem') };
-  // A save over the upload limit is the game's to make smaller.
-  if (kind === 'too-big-copy') return { act: 'report', label: N_('Report a Problem') };
-  // The site paused cloud saves; they start again by themselves.
-  if (kind === 'paused') return null;
-  // The newest save of every game is kept, so room comes from another game's cloud saves: the
-  // account page lists them all.
-  if (kind === 'full') return { act: 'url', label: N_('Free Up Space'), url: `${SITE}/account` };
-  return { act: 'saves-sync', label: N_('Try Again') };
-}
-
-// How full the account's cloud saves are, the same bar as Settings → Account.
-function cloudSpace() {
-  const acc = S.account || {};
-  const used = acc.used || 0, quota = acc.quota || 150 * 1024 * 1024;
-  const pct = Math.min(100, Math.round((used / quota) * 100));
-  return `<div class="acc-space svs-space"><div class="acc-bar"><i style="width:${pct}%"></i></div><span>${esc(tf('Cloud space: {used} of {quota} used', { used: fmtB(used) || '0 KB', quota: fmtB(quota) }))}</span></div>`;
+function saveNextStep(st, phase, running) {
+  if (phase || running || !st || st.known !== false) return null;
+  return { act: 'saves-place', label: N_('Pick a Folder') };
 }
 
 // Every save in one list, newest first. A copy kept on this PC and the same save in the cloud
 // (the same checksum) are one row, marked as being in both places. The one in the game's folder
 // now is Current.
 function saveHistory(s) {
-  const rows = [];
-  const byHash = new Map();
-  for (const c of s.local || []) {
-    const row = { when: c.when, device: c.device, played: c.played, files: c.files, size: c.size, hash: c.hash, name: c.name, v: null, current: false };
-    rows.push(row);
-    if (c.hash && !byHash.has(c.hash)) byHash.set(c.hash, row);
-  }
-  for (const c of Array.isArray(s.cloud) ? s.cloud : []) {
-    const same = c.hash && byHash.get(c.hash);
-    if (same) { same.v = same.v || c.v; continue; }
-    rows.push({ when: c.made, device: c.device, played: c.played, files: 0, size: c.size, hash: c.hash, name: null, v: c.v, current: false });
-  }
-  rows.sort((p, q) => q.when - p.when);
+  const rows = (Array.isArray(s.local) ? s.local : []).map((c) => ({
+    when: c.when, device: c.device, played: c.played, files: c.files, size: c.size,
+    hash: c.hash, name: c.name, v: null, current: false, deletable: false,
+  }));
+  rows.sort((a, b) => b.when - a.when);
   const now = s.current && rows.find((r) => r.hash === s.current);
   if (now) now.current = true;
-  // Any cloud save but the newest can be deleted (saves_cloud_delete says why not that one).
-  const newestCloud = Array.isArray(s.cloud) && s.cloud.length ? s.cloud.reduce((p, q) => (q.made > p.made ? q : p)).v : '';
-  for (const r of rows) r.deletable = !!r.v && r.v !== newestCloud;
   return rows;
 }
-
-// Where a save is kept, and whether another PC made it.
-function historyMarks(r, s) {
-  const out = [];
-  if (r.name) out.push({ k: 'pc', label: t('On this PC') });
-  if (r.v) out.push({ k: 'cloud', label: t('In the cloud') });
-  if (r.device && s.here && r.device !== s.here) out.push({ k: 'other', label: tf('From {device}', { device: r.device }) });
-  return out;
+function historyMarks() {
+  return [{ k: 'pc', label: t('On this device') }];
 }
 const MARK_ICONS = {
   pc: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
@@ -171,17 +108,12 @@ function historyDetails(r) {
   return [played, files, fmtB(r.size)].filter(Boolean).join(' · ');
 }
 
-function historyRow(id, r, s) {
-  const marks = historyMarks(r, s).map((m) => `<span class="svm svm-${m.k}">${MARK_ICONS[m.k]}${esc(m.label)}</span>`).join('');
-  // A copy on this PC is restored from here; one only in the cloud comes down first.
-  const which = r.name ? `data-name="${esc(r.name)}"` : `data-v="${esc(r.v)}"`;
-  const put = `<button type="button" class="btn sm" data-act="saves-restore" data-id="${esc(id)}" ${which}>${esc(t('Restore'))}</button>`;
-  // The save in the game now has nothing to restore: its row is lit instead, and says so where
-  // the others have their button.
-  const side = r.current ? `<span class="svh-cur">${CURRENT_ICON}${esc(t('In the game now'))}</span>` : put;
-  // Deleting from the cloud is quieter than Restore: an icon, with its name on hover.
-  const del = r.deletable ? `<button type="button" class="icon-btn svh-del" data-act="saves-cloud-delete" data-id="${esc(id)}" data-v="${esc(r.v)}" title="${esc(t('Delete from the cloud'))}" aria-label="${esc(t('Delete from the cloud'))}">${BIN_ICON}</button>` : '';
-  return `<div class="set-row svh-row${r.current ? ' cur' : ''}"><div class="k"><b>${esc(whenText(r.when))}</b><span class="svh-marks">${marks}</span><span>${esc(historyDetails(r))}</span></div><span class="acts">${del}${side}</span></div>`;
+function historyRow(id, r) {
+  const marks = historyMarks(r).map((m) => '<span class="svm svm-' + m.k + '">' + MARK_ICONS[m.k] + esc(m.label) + '</span>').join('');
+  const which = r.name ? 'data-name="' + esc(r.name) + '"' : '';
+  const put = '<button type="button" class="btn sm" data-act="saves-restore" data-id="' + esc(id) + '" ' + which + '>' + esc(t('Restore')) + '</button>';
+  const side = r.current ? '<span class="svh-cur">' + CURRENT_ICON + esc(t('In the game now')) + '</span>' : put;
+  return '<div class="set-row svh-row' + (r.current ? ' cur' : '') + '"><div class="k"><b>' + esc(whenText(r.when)) + '</b><span class="svh-marks">' + marks + '</span><span>' + esc(historyDetails(r)) + '</span></div><span class="acts">' + side + '</span></div>';
 }
 
 // The newest few; the rest one click away, so a long history doesn't push the settings far down.
@@ -207,19 +139,14 @@ function historyCard(id, s, g, unknown) {
   const rows = saveHistory(s);
   const shown = historyShown(id, rows);
   const more = rows.length - shown.length;
-  const backups = `<button type="button" class="btn sm" data-act="saves-open-backups" data-id="${esc(id)}" title="${esc(t('Where the launcher keeps its copies of them'))}">${esc(t('Open Backups'))}</button>`;
-  const now = `<button type="button" class="btn sm main" data-act="saves-now" data-id="${esc(id)}"${s.busy ? ' disabled' : ''}>${esc(t('Back up now'))}</button>`;
-  // Nothing to back up until a save folder is known; copies made before can still be opened. With
-  // cloud saves on, Sync Now copies the save before it goes up, so Back Up Now is only for a game
-  // whose saves stay on this PC.
-  const syncs = s.signedIn && s.cloudOn === true;
-  const acts = unknown ? (s.local.length ? backups : '') : syncs ? backups : backups + now;
-  const emptyText = unknown ? t('No backups yet.') : g.last_played ? t('No saves found yet. If it saves somewhere unusual, its developer can say where in recomplauncher.json.') : t('Play it once and its saves are copied here after.');
-  const list = rows.length ? shown.map((r) => historyRow(id, r, s)).join('') : `<p class="set-empty">${esc(emptyText)}</p>`;
-  const offline = s.cloudOn === true && s.offline ? `<p class="set-note">${esc(t('The cloud can\'t be reached right now, so only the copies on this PC are listed.'))}</p>` : '';
+  const backups = '<button type="button" class="btn sm" data-act="saves-open-backups" data-id="' + esc(id) + '">' + esc(t('Open Backups')) + '</button>';
+  const now = '<button type="button" class="btn sm main" data-act="saves-now" data-id="' + esc(id) + '"' + (s.busy ? ' disabled' : '') + '>' + esc(t('Back up now')) + '</button>';
+  const acts = unknown ? (s.local && s.local.length ? backups : '') : backups + now;
+  const emptyText = unknown ? t('No backups yet.') : g.last_played ? t('No saves found yet. Check the game project\'s documentation for its save location.') : t('Play it once and its saves are copied here after.');
+  const list = rows.length ? shown.map((r) => historyRow(id, r)).join('') : '<p class="set-empty">' + esc(emptyText) + '</p>';
   const toggle = historyToggle(id, rows, more);
-  const toggleBtn = toggle ? `<button type="button" class="btn sm svh-more" data-act="${toggle.more ? 'saves-more' : 'saves-less'}" data-id="${esc(id)}">${esc(toggle.label)}</button>` : '';
-  return `<div class="card"><div class="card-h"><h3>${esc(t('Save History'))}</h3><span class="acts">${acts}</span></div>${offline}${list}${toggleBtn}</div>`;
+  const toggleBtn = toggle ? '<button type="button" class="btn sm svh-more" data-act="' + (toggle.more ? 'saves-more' : 'saves-less') + '" data-id="' + esc(id) + '">' + esc(toggle.label) + '</button>' : '';
+  return '<div class="card"><div class="card-h"><h3>' + esc(t('Save History')) + '</h3><span class="acts">' + acts + '</span></div>' + list + toggleBtn + '</div>';
 }
 
 // Sharing saves between its versions, for a game with more than one. Cloud saves on or off is in
@@ -237,7 +164,7 @@ function savesSettingsCard(id) {
 function whereCard(id, s) {
   const picked = s.spots.filter((p) => p.from === 'player').length;
   const rows = s.spots.map((p) => spotRow(id, p, picked > 1)).join('');
-  const add = picked ? `<div class="set-row"><div class="k"><b>${esc(t('Saves in more than one folder?'))}</b><span>${esc(t('For a launcher with several games in it, each saving in its own folder. Backups and cloud saves cover every folder.'))}</span></div><span class="acts"><button type="button" class="btn sm" data-act="saves-place-add" data-id="${esc(id)}">${esc(t('Add a Folder'))}</button></span></div>` : '';
+  const add = picked ? `<div class="set-row"><div class="k"><b>${esc(t('Saves in more than one folder?'))}</b><span>${esc(t('Add another folder used by this game. Local backups cover every folder.'))}</span></div><span class="acts"><button type="button" class="btn sm" data-act="saves-place-add" data-id="${esc(id)}">${esc(t('Add a Folder'))}</button></span></div>` : '';
   return `<div class="card"><h3 style="margin-bottom:6px">${esc(t('Where it saves'))}</h3>${rows}${add}</div>`;
 }
 
@@ -293,72 +220,14 @@ function sinceText(ts) {
 
 // What a problem kept by the last sync looks like, by its kind. The backend's own words say why
 // (in the tooltip); these say it short.
-const PROBLEM_BADGE = {
-  full: { label: N_('Can\'t upload'), note: N_('cloud full'), head: N_('Your cloud saves are full') },
-  'too-big-copy': { label: N_('Too big for the cloud'), head: N_('This save is too big for the cloud') },
-  'too-big-folder': { label: N_('Sync paused'), head: N_('Cloud saves are paused for this game') },
-  paused: { label: N_('Cloud saves paused'), head: N_('Cloud saves are paused for now') },
-  error: { label: N_('Can\'t upload'), head: N_('The last upload didn\'t go through') },
-};
-
-// While something runs (from the save-sync event): checking before Play, a save going up or one
-// coming down.
-const PHASE_BADGE = {
-  check: { mark: 'check-run', label: N_('Checking cloud…'), head: N_('Looking for a newer save'), text: N_('Before the game starts, the launcher checks whether another PC saved after this one.') },
-  up: { mark: 'up', label: N_('Uploading…'), head: N_('Sending your save'), text: N_('Your newest save is going to the cloud.') },
-  down: { mark: 'down', label: N_('Getting cloud save…'), head: N_('Bringing in a newer save'), text: N_('Another PC saved after this one. Your current save is kept as a backup first.') },
-  // The game just closed (or crashed, or the launcher is finishing a session it didn't see end):
-  // its save is being copied, and sent when cloud saves are on.
-  after: { mark: 'play', label: N_('Syncs after you play'), head: N_('Saving after you played'), text: N_('Its save is being copied, and sent to the cloud when cloud saves are on.') },
-};
-
-// What the status line shows for a game: its tone (ok, cy, warn, bad, dim), the mark inside the
-// cloud, a label and a short note, and for the tooltip a heading, a line and rows ([label, value]).
-// `phase` is what's running now, `running` whether the game is.
 function saveBadgeInfo(st, phase, running) {
-  // The copy after a session runs for every game; it's only shown for one that syncs. Signed out
-  // or with cloud saves off, the line keeps saying so instead of a sync that isn't happening.
-  const syncs = st.state !== 'signed-out' && st.state !== 'off' && st.known !== false;
-  const p = syncs && PHASE_BADGE[phase];
-  if (p) return { tone: 'cy', mark: p.mark, label: t(p.label), note: '', head: t(p.head), text: t(p.text), rows: [] };
-  // Nobody has said where it saves: nothing is backed up or uploaded, whatever else is set. Many
-  // games are like this until their folder is known, so it's grey here, not a red alarm on every
-  // page; the Saves tab says it in red, with Pick a Folder.
-  if (st.known === false) return { tone: 'dim', mark: 'off', label: t('Saves not backed up'), note: '', head: t('The launcher doesn\'t know where this game saves'), text: t('Nothing of it is backed up or sent to the cloud. Pick its save folder on its Saves tab.'), rows: [] };
-  const synced = st.syncedAt ? [[t('Last synced'), whenText(st.syncedAt)], [t('Saved on'), st.syncedDevice || t('this PC')]] : [];
-  const newest = st.newest ? [[t('Last backup'), `${whenText(st.newest.when)}${st.newest.device ? ' · ' + st.newest.device : ''}`]] : [];
-  if (st.state === 'signed-out') return { tone: 'dim', mark: 'dash', label: t('Not signed in'), note: '', head: t('Keep this save on any PC'), text: t('Sign in to RecompStore and your saves go to the cloud after you play. It\'s free.'), rows: newest };
-  if (st.state === 'off') return { tone: 'dim', mark: 'off', label: t('Cloud saves off'), note: '', head: t('Saves stay on this PC'), text: t('The launcher still keeps a copy after every session. Turn cloud saves on in its Saves tab.'), rows: newest };
-  if (st.state === 'conflict') return { tone: 'warn', mark: 'conflict', label: t('Choose a save'), note: t('press Play to pick'), head: t('Both saves changed'), text: t('This PC and the cloud both changed since they last synced. Press Play, or Sync Now in its Saves tab, to pick the one to keep; the other stays as a backup on this PC.'), rows: synced };
-  if (st.state === 'problem') return problemBadge(st, synced);
-  if (running) return { tone: 'cy', mark: 'play', label: t('Syncs after you play'), note: '', head: t('Playing now'), text: t('Its save goes to the cloud when you close the game.'), rows: synced };
-  if (st.state === 'waiting') return waitingBadge(st, synced);
-  if (st.state === 'up-to-date') return { tone: 'ok', mark: 'check', label: t('Up to date'), note: sinceText(st.syncedAt), head: t('Your save is in the cloud'), text: t('This PC and the cloud have the same save.'), rows: synced };
-  return { tone: 'dim', mark: 'dash', label: t('No saves yet'), note: '', head: t('Nothing to sync yet'), text: t('Play it once. Its saves are backed up after, and go to the cloud too.'), rows: [] };
+  if (st.known === false) return { tone: 'dim', mark: 'off', label: t('Saves folder not set'), note: '', head: t('Pick the folder where this game saves'), text: t('Choose its save folder on the Saves tab to enable local backups.'), rows: [] };
+  const newest = st.newest ? [[t('Last backup'), whenText(st.newest.when)]] : [];
+  if (running) return { tone: 'cy', mark: 'play', label: t('Playing now'), note: '', head: t('Local backup after play'), text: t('The launcher keeps a local copy of this game\'s saves after the session.'), rows: newest };
+  if (st.newest) return { tone: 'ok', mark: 'check', label: t('Backed up on this device'), note: sinceText(st.newest.when), head: t('Local save backup ready'), text: t('A copy of this game\'s saves is stored on this device.'), rows: newest };
+  return { tone: 'dim', mark: 'dash', label: t('No backup yet'), note: '', head: t('No local save backup yet'), text: t('Play the game once. The launcher will keep a copy of its saves after the session.'), rows: [] };
 }
 
-function problemBadge(st, synced) {
-  const kind = (st.problem && st.problem.kind) || 'error';
-  const b = PROBLEM_BADGE[kind] || PROBLEM_BADGE.error;
-  const text = st.problem && st.problem.text ? t(st.problem.text) : '';
-  return { tone: 'bad', mark: 'alert', label: t(b.label), note: b.note ? t(b.note) : '', head: t(b.head), text, rows: synced };
-}
-
-// Saved here and not in the cloud yet: queued after a try that didn't get through (with when the
-// next one is), or going up after the next session.
-function waitingBadge(st, synced) {
-  const queued = st.waiting > 0;
-  const offline = st.problem && st.problem.kind === 'offline';
-  const minutes = st.retryIn ? Math.max(1, Math.ceil(st.retryIn / 60)) : 0;
-  const note = minutes ? tn(minutes, 'next try in 1 min', 'next try in {n} min') : offline ? t('offline') : '';
-  const text = !queued ? t('It goes up after you play next, or now with Sync Now in its Saves tab.')
-    : offline ? t('The website can\'t be reached right now. Your save is safe here and goes up by itself when it can.')
-    : t('It goes up by itself on the next try.');
-  const rows = queued ? [[t('Waiting'), tn(st.waiting, '1 copy', '{n} copies')], ...synced] : synced;
-  return { tone: 'warn', mark: 'clock', label: t('Waiting to upload'), note, head: t('Saved on this PC, not in the cloud yet'), text, rows };
-}
-
-// The cloud, with a mark inside it for the state. Drawn the same in both modes.
 const BADGE_MARKS = {
   check: '<path d="m9.4 13.4 2 2 3.4-3.6"/>',
   'check-run': '<path class="sb-spin" d="M14.6 13a2.6 2.6 0 1 1-1-2"/>',
@@ -417,7 +286,7 @@ function refreshSavesTab(sid) {
   if (saveIdOf(S.arg) === sid) refreshGame();
 }
 
-// Signed in or out, or the cloud changed: every game's status is asked again.
+// Refresh each game's local backup badge when its save status is read again.
 function forgetSaveStatus() {
   S.saveStat = {};
   S.savePhase = {};
@@ -459,7 +328,6 @@ function rootCard(o) {
 function pageSaves() {
   const o = S.savesAll;
   if (!o) { loadSavesAll(); return `<div class="loading">${esc(t('Loading…'))}</div>`; }
-  const acc = S.account || {};
   const games = (o.games || []).map((x) => ({ ...x, g: S.library[x.id] || {}, a: byId(x.id) })).filter((x) => x.g.name || x.a);
   const withSaves = games.filter((x) => x.copies).sort((a, b) => (b.newest?.when || 0) - (a.newest?.when || 0));
   const none = games.filter((x) => !x.copies).sort((a, b) => (a.g.name || '').localeCompare(b.g.name || ''));
@@ -467,10 +335,10 @@ function pageSaves() {
   const pcCard = `<div class="mc"><div class="mc-top"><span class="mc-ico">${CARD_ICON}</span><div><b>${esc(t('On this PC'))}</b><span>${esc(tn(withSaves.length, '1 game with saves', '{n} games with saves'))}</span></div><strong>${esc(fmtB(size) || '0 KB')}</strong></div>
       ${blocks(withSaves.length ? withSaves.length / Math.max(games.length, 1) : 0)}
       <p>${esc(tn(copies, '1 copy kept', '{n} copies kept'))} · ${esc(t('The newest ten of each game'))}</p></div>`;
-  const cloudCard = `<div class="mc cloud off"><div class="mc-top"><span class="mc-ico">${CLOUD_ICON}</span><div><b>${esc(t('Local save backups'))}</b><span>${esc(t('Your save copies stay on this PC.'))}</span></div></div><p>${esc(t('Cloud sync is not configured in this collection build. You can still inspect, restore and back up local saves.'))}</p></div>`;
+  const cloudCard = `<div class="mc"><div class="mc-top"><span class="mc-ico">${CARD_ICON}</span><div><b>${esc(t('Local backups'))}</b><span>${esc(t('No account or online sync is needed.'))}</span></div></div><p>${esc(t('Save copies stay on this device. You can inspect, restore and back them up at any time.'))}</p></div>`;
   const slot = (x, i) => {
     const a = x.a || { id: x.id, name: x.g.name }, n = x.newest;
-    const cloud = x.cloudOn === true ? (x.pending ? `<span class="tag wait">${esc(t('Going up'))}</span>` : `<span class="tag on">${esc(t('In the cloud'))}</span>`) : `<span class="tag">${esc(t('This PC'))}</span>`;
+    const cloud = `<span class="tag">${esc(t('On this device'))}</span>`;
     return `<div class="slot" style="--i:${i}"><button type="button" class="slot-main" data-act="saves-game" data-id="${esc(x.id)}"><span class="slot-art">${a.cover ? pic(a.cover) : ''}</span>
         <span class="slot-txt"><b>${esc(a.name)}</b><span title="${esc(whenText(n.when))}">${esc(tf('Last saved {when}', { when: ago(n.when) }))}${n.device ? ' · ' + esc(n.device) : ''}</span></span>
         <span class="slot-meta">${cloud}<span class="slot-n">${esc(tn(x.copies, '1 copy', '{n} copies'))}<small>${esc(fmtB(x.size))}</small></span></span></button>
@@ -518,7 +386,6 @@ async function ask(title, text, buttons, cards) {
   });
 }
 async function beforePlay(id) {
-  if (!(await beforeCloudPlay(id))) return false;
   const title = saveShareTitle(id);
   if (!title || !saveShareOn(title)) return true;
   let offer;
@@ -541,71 +408,6 @@ async function beforePlay(id) {
   }
   return true;
 }
-async function beforeCloudPlay(id) {
-  const g = S.library[id];
-  if (!g || !(S.account && S.account.signedIn)) return true;
-  // Asked once per game, unless the player said not to ask (Settings, Account).
-  if (g.cloud == null && (S.settings.ui || {}).cloud_ask !== false) {
-    const v = await ask(tf('Cloud saves for {name}?', { name: g.name }), `<p>${esc(t('After you play, its saves go to your account, so they\'re safe and ready on any PC. You can change this on its Saves tab.'))}</p>`,
-      [{ label: t('Don\'t Ask Again'), v: 'never', last: true }, { label: t('Not now'), sub: t('Its saves stay on this PC'), icon: 'chevL', v: 'no', focus: true }, { label: t('Turn on'), sub: t('Back them up to your account'), icon: 'check', v: 'yes', main: true }]);
-    if (v == null) return false;
-    if (v === 'never') { await saveUi({ cloud_ask: false }); toast(t('Games won\'t ask about cloud saves anymore. Turn it back on in Settings → Account.')); }
-    try { S.library[id] = await invoke('saves_cloud', { id, on: v === 'yes' }); } catch (e) { fail(e); }
-    savesChanged(id);
-    if (v !== 'yes') return true;
-  }
-  if (S.library[id].cloud !== true) return true;
-  let r;
-  try { r = await invoke('saves_check', { id }); } catch (e) { fail(e); return false; }
-  if (r.action === 'restored') toast(tf('Your newer save from {device} is in place.', { device: r.cloud.device || t('another PC') }));
-  else if (r.action === 'offline') toast(t('Cloud saves can\'t be reached right now. Playing with this PC\'s save.'), true);
-  else if (r.action === 'conflict') {
-    try { if (!(await pickCloudSave(id, r))) return false; } catch (e) { fail(e); return false; }
-  }
-  savesChanged(id);
-  return true;
-}
-
-async function pickCloudSave(id, { local, cloud }) {
-  const v = await chooseSave(local, cloud);
-  if (v !== 'local' && v !== 'cloud') return false;
-  await invoke('saves_pick', { id, keep: v, localHash: local.hash, cloudVersion: cloud.v });
-  toast(t(v === 'cloud' ? 'The cloud save is in place.' : 'Your save is in the cloud.'));
-  return true;
-}
-
-// Which of the two saves is newer ('local' or 'cloud'), or '' when they were saved at the same time.
-function newerSave(local, cloud) {
-  if (local.when > cloud.made) return 'local';
-  if (cloud.made > local.when) return 'cloud';
-  return '';
-}
-
-// Both saves changed: the player picks one. On the desktop the two saves are the choices
-// themselves (cards to click, no buttons under them); in Big Picture they're the sheet's two
-// items. The newer one says so, and what happens to the other is said under the question.
-function chooseSave(local, cloud) {
-  const newer = newerSave(local, cloud);
-  const tag = (k) => (k === newer ? t('Newer') : '');
-  const played = (secs) => tf('Played {time} in all', { time: fmtTime(secs) });
-  const note = `<p class="muted pick-note">${esc(t('The other one is kept as a copy on its Saves tab, so nothing is lost.'))}</p>`;
-  return ask(t('Which save do you want?'), note, [
-    { label: t('Keep this PC\'s'), sub: `${whenText(local.when)} · ${local.device}`, lines: [whenText(local.when), local.device, played(local.played)], tag: tag('local'), icon: 'desk', v: 'local' },
-    { label: t('Use the cloud one'), sub: `${whenText(cloud.made)} · ${cloud.device}`, lines: [whenText(cloud.made), cloud.device, played(cloud.played)], tag: tag('cloud'), icon: 'cloud', v: 'cloud' },
-  ], true);
-}
-
-async function syncCloudNow(id) {
-  const r = await invoke('saves_check', { id, manual: true });
-  switch (r.action) {
-    case 'conflict': return pickCloudSave(id, r);
-    case 'restored': return toast(t('The cloud save is in place.'));
-    case 'uploaded': return toast(t('Your save is in the cloud.'));
-    case 'offline': return toast(t('Cloud saves can\'t be reached right now.'), true);
-    default: return toast(t('Saves are up to date.'));
-  }
-}
-
 // ---------- actions ----------
 window.accountAct = async (act, el) => {
   const id = el.dataset.id;
@@ -639,13 +441,6 @@ window.accountAct = async (act, el) => {
     }
     case 'saves-more': S.savesMore.add(id); return refreshGame();
     case 'saves-less': S.savesMore.delete(id); return refreshGame();
-    case 'saves-cloud-delete': {
-      const v = await ask(t('Delete this save from the cloud?'), `<p>${esc(t('It\'s gone from your account for good. Copies on this PC stay.'))}</p>`,
-        [{ label: t('Cancel'), v: null, focus: true }, { label: t('Delete'), v: 'yes', main: true }]);
-      if (v !== 'yes') return;
-      try { await invoke('saves_cloud_delete', { id, v: el.dataset.v }); toast(t('Deleted from the cloud.')); } catch (e) { fail(e); }
-      return loadSaves(id);
-    }
     case 'saves-open': return invoke('saves_open', { id }).catch(fail);
     case 'saves-open-backups': return invoke('saves_open_backups', { id }).catch(fail);
     case 'saves-place': {
@@ -653,14 +448,14 @@ window.accountAct = async (act, el) => {
       const p = await pickFile({ title: t('The folder where the game keeps its saves'), directory: true }).catch(fail);
       if (!p) return;
       try { S.library[id] = await invoke('saves_set_place', { id, path: typeof p === 'string' ? p : p.path }); } catch (e) { return fail(e); }
-      toast(t('Saved. Backups and cloud saves use that folder now.'));
+      toast(t('Saved. Local backups use that folder now.'));
       return loadSaves(id);
     }
     case 'saves-place-add': {
       const p = await pickFile({ title: t('Another folder where the game keeps its saves'), directory: true }).catch(fail);
       if (!p) return;
       try { S.library[id] = await invoke('saves_add_place', { id, path: typeof p === 'string' ? p : p.path }); } catch (e) { return fail(e); }
-      toast(t('Added. Backups and cloud saves cover that folder too.'));
+      toast(t('Added. Local backups cover that folder too.'));
       return loadSaves(id);
     }
     case 'saves-place-remove': try { S.library[id] = await invoke('saves_remove_place', { id, template: el.dataset.t || '' }); } catch (e) { return fail(e); } return loadSaves(id);
@@ -676,19 +471,4 @@ window.accountAct = async (act, el) => {
 };
 
 T.event.listen('saves', ({ payload }) => { if (S.view === 'saves') loadSavesAll(); if (payload && payload.id) { delete S.saves[payload.id]; loadSaveStatus(payload.id); if (S.view === 'game' && S.arg === payload.id && S.tab === 'saves') loadSaves(payload.id); } });
-// A check, upload or download for a game started or ended: the badge says so, and asks for the
-// outcome once it's over.
-T.event.listen('save-sync', ({ payload }) => {
-  const sid = payload && payload.id;
-  if (!sid) return;
-  if (payload.phase !== 'idle') {
-    S.savePhase[sid] = payload.phase;
-    paintSaveBadges(sid);
-    return refreshSavesTab(sid);
-  }
-  delete S.savePhase[sid];
-  loadSaveStatus(sid);
-});
-
 // Who's signed in: what's remembered first, then the website's answer.
-loadAccount(false).then(() => loadAccount(true));

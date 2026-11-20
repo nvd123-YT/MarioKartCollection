@@ -47,7 +47,7 @@ test('an unknown clock value goes back to auto', () => {
 });
 
 test('every time on screen goes through timeOpts', () => {
-  for (const f of ['app.js', 'tv.js', 'overlay.js', 'account.js', 'achievements.js']) {
+  for (const f of ['app.js', 'tv.js', 'overlay.js', 'account.js']) {
     const lines = read(f).split('\n').filter((l) => /toLocaleTimeString|hour: '(numeric|2-digit)'/.test(l));
     for (const l of lines) assert.ok(/timeOpts|clockSample/.test(l), `${f}: ${l.trim().slice(0, 120)}`);
   }

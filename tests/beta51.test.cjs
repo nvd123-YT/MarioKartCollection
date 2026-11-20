@@ -26,40 +26,6 @@ test("the recommended version says why, in one line", () => {
   assert.match(tv, /v\.id === g\.pick \? \(g\.why \? `\$\{t\('Recommended'\)\}: \$\{g\.why\}` : t\('Recommended'\)\)/);
 });
 
-test('the score follows the release out now once 3 of its players said, like an app store', () => {
-  const c = vm.createContext({});
-  vm.runInContext(fn(app, 'runTally') + line(app, 'verNorm') + '\n' + line(app, 'verShown') + '\n' + fn(app, 'scoreOf') + '\nglobalThis.verNorm = verNorm;', c);
-  const all = { runs: 0, issues: 9, broken: 0 };
-  // Two reports on the new version: every report still counts, and how many it has so far shows.
-  let s = c.scoreOf(all, { version: 'v0.1.1', counts: { runs: 2, issues: 0, broken: 0 } });
-  assert.equal(s.cur, false);
-  assert.equal(s.r.pct('runs'), 0);
-  assert.equal(s.v, 'v0.1.1');
-  assert.equal(s.l.n, 2);
-  // Three: the new version's own score, with every version's under it.
-  s = c.scoreOf(all, { version: '0.1.1', counts: { runs: 3, issues: 0, broken: 0 } });
-  assert.equal(s.cur, true);
-  assert.equal(s.r.pct('runs'), 100);
-  assert.equal(s.all.pct('runs'), 0);
-  assert.equal(s.v, 'v0.1.1');
-  // The site's scores give the counts flat.
-  assert.equal(c.scoreOf(all, { version: 'version 2', runs: 3, issues: 1, broken: 0 }).cur, true);
-  assert.equal(c.verNorm('v0.1.1'), c.verNorm('0.1.1'));
-  assert.match(fn(app, 'runsCard'), /tf\('All versions: \{pct\}%'/);
-  assert.match(fn(app, 'runsCard'), /data-act="rep-only"/);
-});
-
-test('reports need an account: signed out, the sign-in prompt instead of a question or an error', () => {
-  const ask = fn(more, 'askRun');
-  assert.match(ask, /if \(!signedIn\(\)\) return asked_for \? signInToReport\(\) : undefined;/);
-  assert.match(ask, /const s = needSignIn\(ex\);\n\s*if \(s != null\) \{ close\(\); return signInToReport\(s\); \}/);
-  assert.match(ask, /Your name isn\\'t shown with your report\./);
-  const c = vm.createContext({});
-  vm.runInContext(more.match(/^const needSignIn = .*$/m)[0] + '\nglobalThis.needSignIn = needSignIn;', c);
-  assert.equal(c.needSignIn(new Error('NEED_SIGNIN|Sign in first.')), 'Sign in first.');
-  assert.equal(c.needSignIn(new Error('Something else')), null);
-});
-
 test('the build on this PC is offered under the game\'s box', () => {
   const { stepsContext } = require('./steps-context.cjs');
   const c = stepsContext();

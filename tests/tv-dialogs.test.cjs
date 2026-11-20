@@ -21,8 +21,8 @@ test('up and down on the controller scroll an open dialog', () => {
   assert.match(tvJs, /if \(name === 'up' \|\| name === 'down'\) \{ dialogScroll\(dlg/);
 });
 
-test('the way out on Home offers Quit RecompLauncher', () => {
-  assert.match(tvJs, /label: t\('Quit RecompLauncher'\), icon: 'close', run: \(\) => invoke\('quit_launcher'\)/);
+test('the way out on Home offers Quit Mario Kart Collection', () => {
+  assert.match(tvJs, /label: t\('Quit Mario Kart Collection'\), icon: 'close', run: \(\) => invoke\('quit_launcher'\)/);
 });
 
 test('the quit command is registered with the window', () => {

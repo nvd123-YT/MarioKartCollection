@@ -49,14 +49,6 @@ test('a list-only game already saved, installed or added from its link isn\'t of
   assert.equal(g.away.length, 0);
 });
 
-test('Bring Your Games is its own Settings tab with three boxes the same size', () => {
-  assert.match(app, /\['bring', N_\('Bring Your Games'\)\]/);
-  assert.match(app, /case 'bring':\r?\n\s*body = window\.migratePage \? window\.migratePage\(group\) : '';/);
-  assert.match(app, /if \(\/\^mig-\/\.test\(a\) && window\.migrateAct\) return window\.migrateAct\(a, el\);/);
-  assert.equal((adopt.match(/\$\{box\(/g) || []).length, 3);
-  assert.match(read('app.css'), /\.mig-sum\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-});
-
 test('nothing unsure is added until the player picks which game it is', () => {
   const look = fn(adopt, 'migLook');
   assert.match(look, /if \(w === 'pick'\) added \+= await migAdopt\(f, x\.dataset\.id\);/);

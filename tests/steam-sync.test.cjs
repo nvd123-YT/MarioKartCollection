@@ -69,7 +69,7 @@ test('with Steam open and Later picked, nothing is restarted', async () => {
 test('Remove from Steam shows with sync off, counting the launcher\'s games', () => {
   const c = context(false, { steam: true, ours: 4, launcher: false });
   const html = c.steamSyncGroup(c.group, c.row, c.sw);
-  assert.match(html, /<b>Remove from Steam<\/b><span>Takes out the 4 games RecompLauncher put in Steam/);
+  assert.match(html, /<b>Remove from Steam<\/b><span>Takes out the 4 games Mario Kart Collection put in Steam/);
   assert.doesNotMatch(html, /Keep Steam in Sync turns off too/);
   assert.doesNotMatch(html, /data-act="steam-remove" disabled/);
 });
@@ -82,7 +82,7 @@ test('with sync on, Remove from Steam says sync turns off too', () => {
 test('with nothing from the launcher in Steam, Remove All is disabled', () => {
   const c = context(false, { steam: true, ours: 0, launcher: false });
   const html = c.steamRemoveRow(c.row);
-  assert.match(html, /Steam has no games from RecompLauncher\./);
+  assert.match(html, /Steam has no games from Mario Kart Collection\./);
   assert.match(html, /data-act="steam-remove" disabled/);
 });
 
@@ -114,7 +114,7 @@ test('in Big Picture, the launcher\'s own entry goes only with the third button'
   let buttons;
   c.window.ask = async (title, body, list) => { buttons = list; return 'both'; };
   await c.steamRemoveAll();
-  assert.equal(buttons[2].label, 'Remove Them and RecompLauncher');
+  assert.equal(buttons[2].label, 'Remove Them and Mario Kart Collection');
   assert.deepEqual(sent, [true]);
 });
 

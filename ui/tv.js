@@ -1033,102 +1033,6 @@
     TV.sheet.onClose = () => done(null);
     show();
   });
-  // Recomp Achievements, sized for the TV. Testers get their profile, events, Beaten and Mastered
-  // games, recent unlocks and the leaderboard; everyone else gets what it is and how to join.
-  // Reporting a problem stays in the desktop view.
-  const ACH_STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2 6.3 20.3l1.2-6.4-4.7-4.4 6.4-.8z"/></svg>';
-  const achTag = (k) => `<span class="tv-ach-tag ${k === 'b' ? 'silver' : 'gold'}">${ACH_STAR}${esc(k === 'b' ? t('Beaten') : t('Mastered'))}</span>`;
-  // Columns that never leave one card alone on the last row.
-  const achCols = (n, opts) => (n <= opts[0] ? n : opts.find((c) => n % c !== 1) || opts[0]);
-  const achBar = (n, of, gold) => `<span class="tv-ach-bar${gold ? ' gold' : ''}"><i style="width:${of ? Math.min(100, Math.round((n / of) * 100)) : 0}%"></i></span>`;
-  function pageAchTV() {
-    const AT = window.achTV;
-    const pg = AT ? AT.page() : { tester: false };
-    const signed = !!(S.account && S.account.signedIn);
-    if (!pg.tester) {
-      const st = pg.status || {}, app = st.application;
-      const pending = signed && app && app.status === 'pending';
-      const feats = [
-        [t('Unlocks While You Play'), t('Achievements pop up in the corner the moment you earn them, right over your recomp.'), '<path d="M12 3l2.5 5.2 5.7.8-4.1 4 1 5.6L12 16l-5.1 2.6 1-5.6-4.1-4 5.7-.8z"/>'],
-        [t('Your Profile and Rating'), t('Every achievement adds to your points and rank, on every PC you play on.'), '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>'],
-        [t('Leaderboards'), t('See how you stack up against other players, overall and game by game. Only Ranked unlocks count.'), '<path d="M6 20V11M12 20V4M18 20v-7"/>'],
-      ];
-      const cards = feats.map(([h, d, ic]) => `<div class="tv-ach-card"><span class="ic" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg></span><b>${esc(h)}</b><p>${esc(d)}</p></div>`).join('');
-      const line = !signed ? t('Sign in, then apply to be a tester on the Achievements page in the desktop view.') : pending ? t('You\'re on the list. We approve testers in waves, and this page unlocks on its own once you\'re in.') : t('Apply to be a tester on the Achievements page in the desktop view.');
-      const acts = signed ? '' : btn('ach-in', 'signin', esc(t('Sign in')), { cls: 'main', g: 'a' });
-      return `${backdrop(null)}${bar()}
-        ${region(`<div class="tv-ach">${pageHead(t('Achievements'), t('Earn achievements in your recomps, track them on your profile and climb the leaderboards.'))}<span class="tv-ach-pill">${esc(pending ? t('On the List') : t('Alpha'))}</span>
-          <p class="tv-ach-ok" data-f data-key="ach-line">${esc(line)}</p>
-          <div class="tv-ach-cards">${cards}</div>
-          ${acts ? `<div class="tv-acts">${acts}</div>` : ''}</div>`)}
-        ${hints([['A', t('Select')], ['B', t('Back')], ['LB+RB', t('Sections')]])}`;
-    }
-    const p = pg.profile || {}, u = (S.account && S.account.user) || {};
-    const rk = (n) => (n ? `<small>#${esc(fmtN(n))}</small>` : '');
-    const box = (v, k, sub) => `<div class="tv-ach-box"><b>${v}${sub || ''}</b><span>${esc(k)}</span></div>`;
-    const prof = `<section class="tv-ach-prof" data-f data-key="ach-prof"><div class="tv-ach-who"><b>${esc(u.username || t('Tester'))}</b><span class="tv-ach-pill in">${esc(t('Tester'))}</span></div>
-      <div class="tv-ach-boxes">${box(esc(fmtN(p.points || 0)), t('Points'), rk(p.rank))}${box(esc(fmtN(p.score || 0)), t('Score'), rk(p.score_rank))}${box(esc(fmtN(p.beaten_count || (p.beaten || []).length || 0)), t('Beaten'))}${box(esc(fmtN(p.mastered_count || 0)), t('Mastered'))}</div>
-      <p class="tv-ach-i"><i aria-hidden="true">i</i><span><b>${esc(t('Score'))}</b> · ${esc(t('Points weighted by how rare each achievement is.'))}</span></p></section>`;
-    // The catalog's copy of the cover first, else the one the website sends with the game.
-    const cover = (g) => { const a = byId(g.id), c = (a && a.cover) || g.cover; return c ? `<img src="${esc(media(c))}" alt="" loading="lazy">` : ''; };
-    const nameOf = (g) => (byId(g.id) || {}).name || g.name || g.id;
-    const sec = (h, inner) => `<section class="tv-block"><h3>${esc(h)}</h3>${inner}</section>`;
-    const evs = p.events || [];
-    const evHtml = evs.length ? sec(t('Events'), `<div class="tv-ach-evs" style="--c:${achCols(evs.length, [3, 2])}">${evs.map((e, i) => `<div class="tv-ach-ev${e.won ? ' won' : ''}" data-f data-key="ach-ev:${i}"><span class="ic">${ACH_STAR}</span><div><b>${esc(e.title || '')}</b>${e.won ? `<em>${esc(t('Finished'))}</em>` : `${achBar(Number(e.have) || 0, Number(e.goal) || 0, true)}<small>${esc(tf('{n} of {total}', { n: fmtN(Number(e.have) || 0), total: fmtN(Number(e.goal) || 0) }))}</small>`}</div></div>`).join('')}</div>`) : '';
-    const ms = (p.mastered || []).map((m) => Object.assign({ kind: 'm' }, m));
-    const done = ms.concat((p.beaten || []).filter((b) => !ms.some((m) => m.id === b.id)).map((b) => Object.assign({ kind: 'b' }, b)));
-    const doneHtml = sec(t('Beaten and Mastered'), done.length
-      ? `<div class="tv-ach-done" style="--c:${done.length <= 6 ? 6 : achCols(done.length, [6, 5, 4])}">${done.map((m) => `<button type="button" class="tv-ach-gm" data-f data-key="ach-g:${esc(m.id)}" data-tvact="page" data-id="${esc(m.id)}"><span class="cv"><span class="ph">${esc(nameOf(m))}</span>${cover(m)}</span>${achTag(m.kind)}<b>${esc(nameOf(m))}</b></button>`).join('')}</div>`
-      : `<p class="tv-empty" data-f data-key="ach-none">${esc(t('Beat a game and it lands here; unlock every achievement and it\'s Mastered.'))}</p>`);
-    const recent = (p.recent || []).slice(0, 6);
-    const recHtml = sec(t('Recent Unlocks'), recent.length
-      ? `<div class="tv-list">${recent.map((r, i) => `<button type="button" class="tv-item tv-ach-un" data-f data-key="ach-r:${i}" data-tvact="page" data-id="${esc(r.game)}"><span class="tv-ach-star">${ACH_STAR}</span><span class="k">${esc(r.title || tf('Achievement {n}', { n: r.id }))}<small>${esc([r.name || nameOf({ id: r.game }), r.rarity != null && AT ? AT.rarityText(r.rarity) : '', r.ranked ? t('Ranked') : t('Casual')].filter(Boolean).join(' · '))}</small></span><span class="tv-pill">${esc(tf('{n} pts', { n: fmtN(r.points || 0) }))}</span></button>`).join('')}</div>`
-      : `<p class="tv-empty" data-f data-key="ach-nr">${esc(t('Your unlocks show here the moment you earn them.'))}</p>`);
-    const rows = (pg.board || []).slice(0, 10);
-    const me = u.username;
-    const lbHtml = rows.length ? sec(t('Leaderboard'), `<div class="tv-ach-lb" data-f data-key="ach-lb">${rows.map((r) => `<div class="${r.username === me ? 'you' : ''}"><span>${esc(String(r.rank || ''))}</span><b>${esc(r.username || '')}</b><em>${esc(fmtN(r.points || 0))}</em></div>`).join('')}</div>`) : '';
-    const n = pg.status && pg.status.note;
-    const note = n && typeof n === 'object' && (n.title || n.text) ? `<section class="tv-ach-pin" data-f data-key="ach-note"><b>${esc(n.title || '')}</b>${String(n.text || '').split(/\n+/).filter(Boolean).map((l) => `<p>${esc(l)}</p>`).join('')}</section>` : '';
-    return `${backdrop(null)}${bar()}
-      ${region(`<div class="tv-ach">${pageHead(t('Achievements'), t('Your Recomp Achievements across every game. Report problems from the desktop view.'))}${note}${prof}${evHtml}${doneHtml}${recHtml}${lbHtml}</div>`)}
-      ${hints([['A', t('Select')], ['B', t('Back')], ['LB+RB', t('Sections')]])}`;
-  }
-  // A game page's Achievements block: the banner, progress, every achievement with its tag and
-  // rarity, the Bonus group and the leaderboards. Only for testers, and only when it has a list.
-  function achGameTV(id) {
-    const AT = window.achTV;
-    const d = AT && AT.game(id);
-    if (!d || d.allowed === false) return '';
-    const list = d.list && Array.isArray(d.list.achievements) ? d.list.achievements : [];
-    if (!list.length) return '';
-    const mine = d.mine || {};
-    const have = new Set((d.unlocked || []).map(Number));
-    const main = list.filter((x) => !AT.isBonus(x)), bonus = list.filter(AT.isBonus);
-    const got = main.filter((x) => have.has(Number(x.id))).length;
-    const mastered = !!(d.mastered || mine.mastered), beaten = !mastered && !!mine.beaten;
-    const TYPE = { win: t('Win'), progression: t('Progression'), missable: t('Missable') };
-    const item = (x) => {
-      const on = have.has(Number(x.id)), ty = String(x.type || '').toLowerCase();
-      const rare = mine.rarity ? AT.rarityText(((mine.rarity[x.id] || mine.rarity[Number(x.id)] || {}).rate) || 0) : '';
-      return `<div class="tv-ach-row${on ? ' got' : ''}" data-f data-key="ach-a:${esc(x.id)}"><span class="tv-ach-star${on ? ' on' : ''}">${ACH_STAR}</span><span class="k"><b>${esc(x.title || tf('Achievement {n}', { n: x.id }))}${TYPE[ty] ? `<em class="ty ${ty}">${esc(TYPE[ty])}</em>` : ''}</b><small>${esc(x.description || '')}</small>${ty === 'missable' && !on ? `<small class="miss">${esc(t('Can be missed. Read the description before playing on.'))}</small>` : ''}${rare ? `<small class="rare">${esc(rare)}</small>` : ''}</span><span class="pts">${Number(x.points) ? esc(tf('{n} pts', { n: x.points })) : ''}</span></div>`;
-    };
-    const banner = mastered || beaten ? `<div class="tv-ach-banner ${mastered ? 'gold' : 'silver'}">${ACH_STAR}<b>${esc(mastered ? t('Mastered') : t('Beaten'))}</b></div>` : '';
-    const boards = d.list && Array.isArray(d.list.leaderboards) ? d.list.leaderboards : [];
-    const web = (AT.A.web[id] || {}).leaderboards || [];
-    const me = (S.account && S.account.user && S.account.user.username) || '';
-    const lb = boards.map((b, i) => {
-      const w = web.find((x) => String(x.id) === String(b.id)) || {}, fmt = b.format || w.format || 'score';
-      const best = (mine.boards || []).find((x) => String(x.id) === String(b.id));
-      const top = AT.topOf(w).slice(0, 10);
-      return `<div class="tv-ach-board" data-f data-key="ach-b:${i}"><b>${esc(b.title || w.title || t('Leaderboard'))}</b><p class="best"><span>${esc(t('Your Best'))}</span><em>${best ? esc(AT.fmtValue(best.value, fmt)) : '—'}</em></p>${top.length ? `<ol>${top.map((r, j) => `<li class="${AT.nameIn(r) === me ? 'you' : ''}"><span>${esc(String(r.rank || j + 1))}</span><b>${esc(AT.nameIn(r))}</b><em>${esc(r.display || AT.fmtValue(r.value, fmt))}</em></li>`).join('')}</ol>` : `<p class="none">${esc(t('Nobody has an entry yet.'))}</p>`}</div>`;
-    });
-    return `<section class="tv-block tv-ach-game"><h3>${esc(t('Achievements'))} <small>${esc(tf('{n} of {total}', { n: got, total: main.length }))}${d.total ? ' · ' + esc(tf('{n} of {total} points', { n: d.points, total: d.total })) : ''}</small></h3>
-      ${banner}${achBar(got, main.length, mastered)}
-      <div class="tv-ach-rows">${main.map(item).join('')}</div>
-      ${bonus.length ? `<h4 class="tv-lh">${esc(t('Bonus'))}</h4><p class="tv-note">${esc(t('Bonus achievements don\'t count for Beaten or Mastered.'))}</p><div class="tv-ach-rows">${bonus.map(item).join('')}</div>` : ''}
-      ${lb.length ? `<h4 class="tv-lh">${esc(t('Leaderboards'))}</h4><div class="tv-ach-boards">${lb.join('')}</div>` : ''}
-      <p class="tv-note">${esc(t('Report problems from the desktop view'))}</p></section>`;
-  }
   function pageDiscover() {
     wantCounts();
     const g = TV.genre || '';
@@ -1317,8 +1221,8 @@
     loadSaveStatus(saveIdOf(id));
     if (TV.on && TV.view === 'gsaves' && TV.arg === id) draw(true);
   }
-  // The desktop's next steps as this page's actions. Reporting a problem stays in the desktop view.
-  const TV_STEP = { 'acc-signin': 'account', 'saves-cloud': 'gs-cloud', 'saves-sync': 'gs-sync', 'saves-place': 'gs-place' };
+  // The desktop's next steps as this page's actions.
+  const TV_STEP = { 'saves-place': 'gs-place', 'saves-now': 'gs-backup' };
   // The status, as the item that leads the page.
   function savesStatusItem(id, sv) {
     const b = window.saveBadgeFor(id);
@@ -1328,26 +1232,22 @@
     const picked = (sv.spots || []).some((p) => p.from === 'player');
     const step = saveNextStep(st, S.savePhase[sid], S.running.has(parentId(sid)), picked);
     const act = step && !sv.busy && TV_STEP[step.act];
-    // Reporting stays in the desktop view, and the account page needs a browser: said instead.
-    const desk = !step ? '' : step.act === 'report' ? ` ${t('Report problems from the desktop view')}.` : step.act === 'url' ? ` ${t('Free up space on your account page at github.com/nvd123-YT/MarioKartCollection.')}` : '';
     const tvact = act ? ` data-tvact="${act}" data-id="${esc(id)}"` : '';
     const pill = act ? `<span class="tv-pill on">${esc(t(step.label))}</span>` : '';
     const note = b.note ? ` <i>· ${esc(b.note)}</i>` : '';
-    return `<button type="button" class="tv-item tv-svs sb-${b.tone}" data-f data-key="gs:status"${tvact} role="status">${window.saveBadgeIcon(b.mark, 34)}<span class="k"><b>${esc(b.label)}${note}</b><small>${esc(statusCardText(st, b, picked) + desk)}</small></span>${pill}</button>`;
+    return `<button type="button" class="tv-item tv-svs sb-${b.tone}" data-f data-key="gs:status"${tvact} role="status">${window.saveBadgeIcon(b.mark, 34)}<span class="k"><b>${esc(b.label)}${note}</b><small>${esc(statusCardText(st, b))}</small></span>${pill}</button>`;
   }
   // Nobody has said where it saves: red, as on the desktop, and A picks the folder.
   function savesUnknownItem(id) {
     return `<button type="button" class="tv-item tv-svs sb-bad" data-f data-key="gs:pick" data-tvact="gs-place" data-id="${esc(id)}">${window.saveBadgeIcon('alert', 34)}<span class="k"><b>${esc(t(SAVES_UNKNOWN))}</b><small>${esc(t(SAVES_UNKNOWN_HELP))}</small></span><span class="tv-pill on">${esc(t(SAVES_PICK))}</span></button>`;
   }
   function savesHistoryItem(id, r, sv) {
-    const marks = historyMarks(r, sv).map((m) => `<span class="tv-svm tv-svm-${m.k}">${esc(m.label)}</span>`).join('');
-    const which = r.name ? `data-name="${esc(r.name)}"` : `data-v="${esc(r.v)}"`;
-    // A cloud save that can be deleted carries its version, for the sheet's Delete.
-    const del = r.deletable ? ` data-cv="${esc(r.v)}"` : '';
-    const act = r.current ? '' : ` data-tvact="gs-restore" data-id="${esc(id)}" ${which}${del}`;
+    const marks = historyMarks(r).map((m) => `<span class="tv-svm tv-svm-${m.k}">${esc(m.label)}</span>`).join('');
+    const which = r.name ? `data-name="${esc(r.name)}"` : '';
+    const act = r.current ? '' : ` data-tvact="gs-restore" data-id="${esc(id)}" ${which}`;
     // The save in the game now is lit, and says so where the others say Restore.
     const side = r.current ? `<span class="tv-svh-cur">${CURRENT_ICON}${esc(t('In the game now'))}</span>` : `<span class="tv-pill">${esc(t('Restore'))}</span>`;
-    return `<button type="button" class="tv-item${r.current ? ' tv-svh-current' : ''}" data-f data-key="gc:${esc(r.name || r.v)}"${act}><span class="k">${esc(whenText(r.when))}<span class="tv-svh-marks">${marks}</span><small>${esc(historyDetails(r))}</small></span>${side}</button>`;
+    return `<button type="button" class="tv-item${r.current ? ' tv-svh-current' : ''}" data-f data-key="gc:${esc(r.name || r.when)}"${act}><span class="k">${esc(whenText(r.when))}<span class="tv-svh-marks">${marks}</span><small>${esc(historyDetails(r))}</small></span>${side}</button>`;
   }
   function pageGameSaves(id) {
     const a = libAppOf(id), g = S.library[id] || {};
@@ -1361,18 +1261,16 @@
       // Nobody has said where it saves: picking the folder is the one thing to do (first, so it has the
       // focus), and backing up or syncing waits for it, as on the desktop.
       unknown = window.savesUnknown(sv);
-      const on = sv.cloudOn === true;
       const shareTitle = saveShareTitle(id);
       const rows = saveHistory(sv);
       const shown = historyShown(id, rows);
       const more = rows.length - shown.length;
       const toggle = historyToggle(id, rows, more);
-      const empty = unknown ? t('No backups yet.') : g.last_played ? t('No saves found yet. If it saves somewhere unusual, its developer can say where in recomplauncher.json.') : t('Play it once and its saves are copied here after.');
+       const empty = unknown ? t('No backups yet.') : g.last_played ? t('No saves found yet. Check the game project documentation for its save location.') : t('Play it once and its saves are copied here after.');
       body = `<div class="tv-list">
         ${unknown ? savesUnknownItem(id) : savesStatusItem(id, sv)}
-        ${unknown || (sv.signedIn && on) ? '' : `<button type="button" class="tv-item" data-f data-key="gs:now" data-tvact="gs-backup" data-id="${esc(id)}"${S.running.has(id) ? ' disabled' : ''}>${svg('upload')}<span class="k">${esc(t('Back up now'))}<small>${esc(t('A copy of its saves as they are right now'))}</small></span></button>`}
+        ${unknown ? '' : `<button type="button" class="tv-item" data-f data-key="gs:now" data-tvact="gs-backup" data-id="${esc(id)}"${S.running.has(id) ? ' disabled' : ''}>${svg('upload')}<span class="k">${esc(t('Back up now'))}<small>${esc(t('A copy of its saves as they are right now'))}</small></span></button>`}
         <h3 class="tv-lh">${esc(t('Save History'))}</h3>
-        ${on && sv.offline ? `<p class="tv-note">${esc(t('The cloud can\'t be reached right now, so only the copies on this PC are listed.'))}</p>` : ''}
         ${rows.length ? shown.map((r) => savesHistoryItem(id, r, sv)).join('') : `<p class="tv-note">${esc(empty)}</p>`}
         ${toggle ? `<button type="button" class="tv-item" data-f data-key="gs:more" data-tvact="${toggle.more ? 'gs-more' : 'gs-less'}" data-id="${esc(id)}">${svg('history')}<span class="k">${esc(toggle.label)}</span></button>` : ''}
         ${shareTitle ? `<h3 class="tv-lh">${esc(t('Settings'))}</h3>` : ''}
@@ -1505,10 +1403,10 @@
       ...(modsOk && g ? [[esc(t('Mods')), esc(tf('{n} installed', { n: (S.mods[id].installed || []).length }))]] : []),
     ];
     const bad = checks.filter((r) => r.v === false).length;
-    // Where its saves stand (account.js), above the buttons as on the desktop: a line, not a button.
+    // Local save-backup status, above the buttons as on the desktop: a line, not a button.
     const sb = g && window.saveBadgeFor ? window.saveBadgeFor(id) : null;
     const sbNote = sb && sb.note ? `<small>${esc(sb.note)}</small>` : '';
-    const sbLine = sb ? `<p class="tv-sbadge sb-${sb.tone}" role="status" aria-label="${esc(t('Cloud saves'))}">${window.saveBadgeIcon(sb.mark, 26)}<b>${esc(sb.label)}</b>${sbNote}</p>` : '';
+    const sbLine = sb ? `<p class="tv-sbadge sb-${sb.tone}" role="status" aria-label="${esc(t('Local save backup'))}">${window.saveBadgeIcon(sb.mark, 26)}<b>${esc(sb.label)}</b>${sbNote}</p>` : '';
     const acts = [
       mainButton(a, 'g-main'),
       !g && needsSetup(a) ? btn('g-sreq', 'setupreq', esc(t('Setup Required')), { cls: 'warn-o', id, icon: 'wrench' }) : '',
@@ -1549,7 +1447,7 @@
           <div class="tv-acts">${acts}</div>
           ${stNote}
           ${tagsOf(a).length ? `<div class="tv-acts tv-tags" aria-label="${esc(t('Tags'))}">${tagsOf(a).map((tg) => `<button type="button" class="tv-tag" data-f data-key="tag:${esc(tg)}" data-tvact="tag" data-tag="${esc(tg)}">${esc(tg)}</button>`).join('')}</div>` : ''}
-          ${ownAbout(a.id) ? `<section class="tv-block"><h3>${esc(t('Your Description'))}</h3><div class="tv-panel" data-f data-key="g-own"><p class="tv-about" dir="auto">${esc(ownAbout(a.id))}</p></div></section>` : ''}${about}${checkBlock}${shotRow}${achGameTV(id)}
+          ${ownAbout(a.id) ? `<section class="tv-block"><h3>${esc(t('Your Description'))}</h3><div class="tv-panel" data-f data-key="g-own"><p class="tv-about" dir="auto">${esc(ownAbout(a.id))}</p></div></section>` : ''}${about}${checkBlock}${shotRow}
         </div>
         ${aside}
       </div>${(() => { const inc = a.parent ? [] : gamesOf(a.id, a).map((x) => byId(a.id + '--' + x.id)).filter(Boolean); return inc.length ? row('inc', tn(inc.length, 'Includes 1 Game', 'Includes {n} Games'), inc.map((x) => poster(x, 'inc:' + x.id)).join('')) : ''; })()}${(() => { const like = moreLike(a); return like.length ? row('like', t('More like this'), like.map((x) => poster(x, 'm:' + x.id)).join('')) : ''; })()}`, 'game')}
@@ -1817,7 +1715,6 @@
         ...(S.running.has(id) ? [{ label: t('Close the game'), sub: t('Anything you haven\'t saved is lost'), icon: 'stop', run: () => invoke('stop', { id }) }] : []),
         { gap: true, ...(S.steam ? { label: t('Add to Steam'), sub: t('With its art'), icon: 'steam', run: () => addToSteam(id, false) } : { label: t('Add to desktop'), sub: t('A shortcut that starts it'), icon: 'desk', run: async () => { try { await invoke('desktop_shortcut', { id }); toast(tf('{name} is on your desktop.', { name: g.name })); } catch (e) { fail(e); } } }) },
         ...(S.steam ? [{ label: t('Add to desktop'), sub: t('A shortcut that starts it'), icon: 'desk', run: async () => { try { await invoke('desktop_shortcut', { id }); toast(tf('{name} is on your desktop.', { name: g.name })); } catch (e) { fail(e); } } }] : []),
-        ...(S.account && S.account.signedIn ? [{ label: g.cloud ? t('Turn off cloud saves') : t('Turn on cloud saves'), sub: g.cloud ? t('Its saves stay on this PC from now on') : t('Its saves go to your account after you play'), icon: 'cloud', run: async () => { try { S.library[id] = await invoke('saves_cloud', { id, on: !g.cloud }); toast(g.cloud ? t('Cloud saves are off for it. What\'s in the cloud stays there.') : t('Cloud saves are on for it.')); } catch (e) { fail(e); } } }] : []),
         ...(window.tvBetaItem && window.tvBetaItem(id) ? [window.tvBetaItem(id)] : []),
         // The same switch as the game's Manage tab on the desktop, and the same skip list under Settings.
         ...(!g.local && window.autoUpdates ? [(() => { const on = window.autoUpdates(id); return { label: on ? t('Turn off automatic updates') : t('Update automatically'), sub: on ? t('Updates wait for you in Downloads') : t('Installs new releases as soon as the launcher finds them. Your saves are backed up first.'), icon: 'refresh', run: async () => { await window.toggleAutoUpdate(id); draw(true); } }; })()] : []),
@@ -1943,22 +1840,6 @@
     sheet(title, items.map((x, i) => ({ ...x, run: () => fin(i) })), head ? 'sreq' : '', head);
     TV.sheet.onClose = () => setTimeout(() => fin(-1), 0);
   });
-  // Signing in from the couch: a QR code for a phone, and the code to type.
-  window.tvSignIn = (s) => {
-    if (!TV.on) return null;
-    TV.sheet = { items: [{ label: t('Cancel') }], prev: (focused() || {}).dataset?.key, onClose: () => s.onClose && s.onClose() };
-    const el = document.createElement('div');
-    el.className = 'tv-sheet tv-signin';
-    el.innerHTML = `<div class="tv-sheet-in"><h3>${esc(t('Sign in with your phone'))}</h3><div class="tv-signin-two"><div class="tv-qr">${s.qr}</div><div><p>${esc(t('Scan the code with your phone, or go to github.com/nvd123-YT/MarioKartCollection/activate and type:'))}</p><div class="tv-code">${esc(s.code)}</div><p class="tv-wait" data-st>${esc(t('Waiting for you to sign in…'))}</p></div></div>
-      <button type="button" class="tv-item" data-f data-key="sheet:0" data-sheet="0"><span class="k">${esc(t('Cancel'))}</span></button></div>`;
-    stage().append(el);
-    focus($('[data-sheet="0"]', el), true);
-    sfx('open');
-    return {
-      say: (m) => { const p = $('[data-st]', el); if (p) p.textContent = m; },
-      close: (quiet) => { if (quiet && TV.sheet) TV.sheet.onClose = null; if (topSheet() === el) closeSheet(); },
-    };
-  };
   // The sheet on top (the file browser can be over the setup sheet).
   const topSheet = () => $$('.tv-sheet:not(.out)', root).pop();
   function closeSheet() {
@@ -2412,7 +2293,7 @@
       ${hints([['B', t('Back')]])}`;
   }
 
-  const VIEWS = { home: pageHome, library: pageLibrary, achievements: pageAchTV, discover: pageDiscover, soon: pageSoonTV, downloads: pageDownloads, settings: pageSettings, about: pageAbout, storage: pageStorage, saves: pageSavesAll };
+  const VIEWS = { home: pageHome, library: pageLibrary, discover: pageDiscover, soon: pageSoonTV, downloads: pageDownloads, settings: pageSettings, about: pageAbout, storage: pageStorage, saves: pageSavesAll };
   function draw(keep) {
     expandLib();
     if (!TV.on || TV.booting) return;
@@ -2980,21 +2861,6 @@
           { label: t('Game page'), icon: 'page', run: () => go('game', id) },
         ]);
       }
-      case 'gs-sync': {
-        const sv = TV.saves[id];
-        if (sv?.busy) return;
-        if (sv && sv !== 'loading') sv.busy = true;
-        draw(true);
-        try { await syncCloudNow(id); } catch (e) { fail(e); }
-        delete S.saves[id];
-        return loadGameSaves(id);
-      }
-      case 'gs-cloud': {
-        sfx('select');
-        const g = S.library[id] || {};
-        try { S.library[id] = await invoke('saves_cloud', { id, on: !g.cloud }); } catch (e) { fail(e); }
-        return loadGameSaves(id);
-      }
       case 'gs-share': {
         sfx('select');
         const title = saveShareTitle(id);
@@ -3014,17 +2880,15 @@
         const p = await pickFile({ title: t('The folder where the game keeps its saves'), directory: true }).catch(fail);
         if (!p) return;
         try { S.library[id] = await invoke('saves_set_place', { id, path: typeof p === 'string' ? p : p.path }); } catch (e) { return fail(e); }
-        toast(t('Saved. Backups and cloud saves use that folder now.'));
+        toast(t('Saved. Local backups use that folder now.'));
         return loadGameSaves(id);
       }
       case 'gs-restore': {
         sfx('open');
-        const name = el.dataset.name || null, v = el.dataset.v || null, cv = el.dataset.cv || null;
-        const del = { label: t('Delete from the cloud'), sub: t('Gone from your account for good. Copies on this PC stay.'), icon: 'bin', cls: 'danger', run: async () => { try { await invoke('saves_cloud_delete', { id, v: cv }); toast(t('Deleted from the cloud.')); } catch (e) { fail(e); } loadGameSaves(id); } };
+        const name = el.dataset.name || null, v = null;
         return sheet(t('Restore this save?'), [
           { label: t('Keep what\'s there'), sub: t('Nothing changes'), icon: 'chevL', run: () => {} },
           { label: t('Restore it'), sub: t('It takes the place of the game\'s saves on this PC'), icon: 'history', run: async () => { try { await invoke('saves_restore', { id, name, v }); toast(t('That save is back in place.')); } catch (e) { fail(e); } loadGameSaves(id); } },
-          ...(cv ? [del] : []),
         ]);
       }
     }

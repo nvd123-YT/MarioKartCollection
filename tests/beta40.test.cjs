@@ -32,7 +32,7 @@ const crash = (lines, extra = {}) => ({
 test('a crash report on GitHub has the versions, the PC, the game and the last 60 log lines', () => {
   const lines = Array.from({ length: 100 }, (_, i) => `line ${i + 1}`);
   const { base, title, body } = parts(ghCrashUrl(crash(lines)));
-  assert.equal(base, 'https://github.com/elripalda/RecompLauncher/issues/new');
+  assert.equal(base, 'https://github.com/nvd123-YT/MarioKartCollection/issues/new');
   assert.match(title, /^Crash: A Game closed with code/);
   for (const s of ['0.90.0-beta.40', 'Windows 11', 'Some Graphics Card', 'A Game v1.0 (a-game)', 'after 12 s']) assert.ok(body.includes(s), s);
   assert.match(body, /Last 60 lines of ~\\Games\\a-game\\log\.txt:\n```text\nline 41\n/);
@@ -53,7 +53,7 @@ test('a crash report address stays under 8 KB by dropping log lines from the top
   // One huge line keeps its end, and no log at all still makes a report.
   assert.ok(ghCrashUrl(crash(['y'.repeat(50000) + 'END'])).length <= 8000);
   assert.ok(parts(ghCrashUrl(crash(['y'.repeat(50000) + 'END']))).body.includes('END'));
-  assert.match(parts(ghCrashUrl(crash([], { file: null, text: null }))).body, /RecompLauncher: 0\.90\.0-beta\.40/);
+  assert.match(parts(ghCrashUrl(crash([], { file: null, text: null }))).body, /Mario Kart Collection: 0\.90\.0-beta\.40/);
   // A log with its own code fence can't end the excerpt early.
   assert.match(parts(ghCrashUrl(crash(['a', '```', 'b']))).body, /````text\na\n```\nb\n````/);
 });

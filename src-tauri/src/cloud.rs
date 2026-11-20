@@ -72,8 +72,9 @@ fn load(dir: &Path) -> Option<Account> {
 }
 
 /// This PC's sign-in token, when signed in.
-pub fn token(dir: &Path) -> Option<String> {
-    load(dir).map(|a| a.token)
+pub fn token(_dir: &Path) -> Option<String> {
+    // Mario Kart Collection has no hosted accounts or cloud saves. Ignore tokens left by an older build.
+    None
 }
 
 fn store(dir: &Path, a: Option<&Account>) {

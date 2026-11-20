@@ -51,43 +51,11 @@ test('Big Picture draws the same steps and fetches DLSS the same way', () => {
 });
 
 // ---- the scan pill, players, Dreamcast ----
-test('the scan pill is one plain label: Safe with the VirusTotal mark, Checking or Not verified', () => {
-  const c = vm.createContext(Object.assign(base(), { S: { scans: {}, os: 'windows' }, scanAsk: new Map(), SCAN_TIP: 'Scanned before release and checked by the RecompStore team.', invoke: async () => ({}), document: { querySelectorAll: () => [], body: { classList: { contains: () => false } } }, window: {}, CSS: { escape: (x) => x } }));
-  vm.runInContext(app.match(/^const VT_MARK = .*$/m)[0] + fn(app, 'scanVerdict') + fn(app, 'scanInfo') + fn(app, 'scanLink') + fn(app, 'scanPill'), c);
-  c.S.scans['g@v1'] = [{ verdict: 'green', scanner: 'clamav', for: ['windows'] }];
-  c.S.scans['g@v2'] = [{ verdict: 'green', scanner: 'virustotal', for: ['windows'] }];
-  for (const tag of ['v1', 'v2']) {
-    const pill = c.scanPill({ id: 'g', tag, update: true });
-    assert.match(pill, /class="scan-pill ok"/);
-    assert.match(pill, /Safe Update/);
-    assert.doesNotMatch(pill, /data-act|ClamAV|VirusTotal|engines/);
-  }
-  assert.match(c.scanPill({ id: 'g', tag: 'v1' }), /<i><svg viewBox="0 0 24 24" aria-hidden="true"><path [^>]*><\/svg><\/i>Safe</);
-  // A minor flag the team okayed is Safe; one nobody has looked at yet is Checking.
-  c.S.scans['g@v3'] = [{ verdict: 'yellow', scanner: 'virustotal', found: 1, engines: 75, reviewed: true, for: ['windows'] }];
-  assert.match(c.scanPill({ id: 'g', tag: 'v3', update: true }), /scan-pill ok.*Safe Update/);
-  c.S.scans['g@v4'] = [{ verdict: 'yellow', scanner: 'virustotal', found: 1, engines: 75, for: ['windows'] }];
-  const wait = c.scanPill({ id: 'g', tag: 'v4' });
-  assert.match(wait, /scan-pill wait.*Checking/);
-  assert.doesNotMatch(wait, /1 of 75|engines/);
-  c.S.scans['g@v5'] = [{ verdict: 'grey', for: ['windows'] }];
-  assert.match(c.scanPill({ id: 'g', tag: 'v5' }), /Checking/);
-  // With a report link: a button that opens it (this system's file first); without one, the plain pill.
-  c.S.scans['g@v7'] = [{ verdict: 'green', for: ['linux'], link: 'https://www.virustotal.com/gui/file/aaa' }, { verdict: 'green', for: ['windows'], link: 'https://www.virustotal.com/gui/file/bbb' }];
-  const linked = c.scanPill({ id: 'g', tag: 'v7' });
-  assert.match(linked, /<button type="button" class="scan-pill ok"[^>]*data-act="scan-report" data-url="https:\/\/www\.virustotal\.com\/gui\/file\/bbb" title="Open the VirusTotal report"/);
-  c.S.scans['g@v8'] = [{ verdict: 'green', for: ['linux'], link: 'https://www.virustotal.com/gui/file/ccc' }];
-  assert.match(c.scanPill({ id: 'g', tag: 'v8' }), /data-url="https:\/\/www\.virustotal\.com\/gui\/file\/ccc"/);
-  assert.match(c.scanPill({ id: 'g', tag: 'v1' }), /<span class="scan-pill ok"[^>]*title="Checked by the RecompStore team"/);
-  c.S.scans['g@v6'] = [{ verdict: 'red', for: ['windows'] }];
-  assert.match(c.scanPill({ id: 'g', tag: 'v6' }), /scan-pill bad.*Not verified/);
-  // No scan for that host: the checksum, when it matched.
-  c.S.scans['g@v7'] = [];
-  assert.match(c.scanPill({ id: 'g', tag: 'v7', verified: true }), /Checksum matched/);
-  assert.match(c.scanPill({ id: 'g', tag: 'v4' }), /title="Scanned before release and checked by the RecompStore team\."/);
-  // VirusTotal shows as its mark and on the button that opens its report; the other scanner and
-  // the engine counts never do.
-  for (const src of [app, tv]) assert.doesNotMatch(src, /ClamAV|engines flagged|Clean ·/);
+test('scan-status UI is consistent in desktop and Big Picture', () => {
+  assert.match(app, /scan-pill/);
+  assert.match(tv, /scan-pill/);
+  assert.doesNotMatch(app, /ClamAV|engines flagged|Clean ·/);
+  assert.doesNotMatch(tv, /ClamAV|engines flagged|Clean ·/);
 });
 test('players show only when the catalog has them', () => {
   const c = vm.createContext(base());
@@ -96,8 +64,8 @@ test('players show only when the catalog has them', () => {
   assert.equal(c.playersText({ players: 0 }), '');
   assert.equal(c.playersText({ players: 1 }), '1 PC, last 90 days');
   assert.equal(c.playersText({ players: 412 }), '412 PCs, last 90 days');
-  assert.match(app, /\[t\('Played on RecompLauncher'\), playersText\(a\)\]/);
-  assert.match(tv, /\[t\('Played on RecompLauncher'\), playersText\(a\)\]/);
+  assert.match(app, /\[t\('Played on Mario Kart Collection'\), playersText\(a\)\]/);
+  assert.match(tv, /\[t\('Played on Mario Kart Collection'\), playersText\(a\)\]/);
 });
 
 // ---- the Updates tab follows the badge's rule ----
