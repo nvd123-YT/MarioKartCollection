@@ -1320,7 +1320,7 @@ mod tests {
         assert_eq!(super::repo_from_link("https://gitlab.com/a/../b"), None);
         // Releases through the site's gl.php, cached apart from GitHub's.
         assert!(super::releases_url("gitlab:a/b/c").ends_with("/api/gl.php?repo=a%2Fb%2Fc"));
-        assert!(super::releases_url("a/b").ends_with("/api/gh.php?repo=a/b"));
+        assert_eq!(super::releases_url("a/b"), "https://api.github.com/repos/a/b/releases?per_page=30");
         assert!(super::releases_file(std::path::Path::new("d"), "gitlab:a/b").ends_with("gitlab_a__b.json"));
         // Downloads only from the project itself.
         assert!(super::own_download("gitlab:a/b", "https://gitlab.com/a/b/-/releases/v1/downloads/game.zip", None));
@@ -1470,7 +1470,7 @@ mod tests {
         assert!(site_only(repo) && is_forgejo(repo) && !is_gitlab(repo) && !is_sourceforge(repo));
         assert!(releases_file(Path::new("d"), repo).ends_with("forgejo_git.example.dev__Studio__Hopper.json"));
         // GitHub's, GitLab's and SourceForge's stay as they were.
-        assert!(releases_url("owner/game").ends_with("/api/gh.php?repo=owner/game"));
+        assert_eq!(releases_url("owner/game"), "https://api.github.com/repos/owner/game/releases?per_page=30");
         assert!(releases_url("gitlab:group/game").ends_with("/api/gl.php?repo=group%2Fgame"));
         assert!(!site_only("owner/game") && !is_forgejo("owner/game") && !is_forgejo("gitlab:group/game"));
     }
