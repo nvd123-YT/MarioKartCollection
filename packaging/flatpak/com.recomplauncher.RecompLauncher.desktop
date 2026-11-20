@@ -1,10 +1,10 @@
 [Desktop Entry]
 Categories=Game;
-Comment=Recompiled and decompiled PC games
+Comment=A unified launcher for Mario Kart recompilations
 Exec=recomplauncher %u
-StartupWMClass=com.recomplauncher.RecompLauncher
-Icon=com.recomplauncher.RecompLauncher
-Name=RecompLauncher
+StartupWMClass=com.nvd123.mariokartcollection
+Icon=com.nvd123.mariokartcollection
+Name=Mario Kart Collection
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/recomplauncher;
+MimeType=x-scheme-handler/mariokartcollection;
