@@ -1,7 +1,7 @@
-# Run by mac_update.rs with /bin/sh -c once the new RecompLauncher.app is in place. Every path is
+# Run by mac_update.rs with /bin/sh -c once the new Mario Kart Collection.app is in place. Every path is
 # an argument, never part of the script's text.
 pid=$1      # the version being replaced, still quitting
-app=$2      # RecompLauncher.app, now the new version
+app=$2      # Mario Kart Collection.app, now the new version
 old=$3      # the previous version, set aside
 failed=$4   # where a new version that failed goes while the previous one is put back
 program=$5  # the new version's program inside $app
