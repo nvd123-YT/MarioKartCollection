@@ -16,19 +16,12 @@ const whenText = (ts) => (ts ? new Date(ts * 1000).toLocaleString(curLocale(), t
 const avatar = (u, size = 28) => (u && u.avatar ? `<img class="acc-pic" src="${esc(u.avatar)}" alt="" width="${size}" height="${size}">` : `<span class="acc-pic none" style="width:${size}px;height:${size}px">${esc(((u && u.username) || '?').slice(0, 1).toUpperCase())}</span>`);
 const inTV = () => document.body.classList.contains('tv-on');
 
-async function loadAccount(fresh) {
-  const was = !!(S.account && S.account.signedIn);
-  try { S.account = await invoke('account_state', { fresh: !!fresh }); } catch (e) { S.account = S.account || { signedIn: false }; }
-  // Signed in (or out) just now: what each game's Saves tab knew is out of date.
-  if (was !== !!S.account.signedIn) { S.saves = {}; S.savesAll = null; S.myReports = null; forgetSaveStatus(); }
+async function loadAccount(_fresh) {
+  S.account = { signedIn: false };
+  S.saves = {};
+  S.savesAll = null;
+  S.myReports = null;
   renderAccountBits();
-  if (S.account.signedIn && !S.myReports && !S.account.offline) loadMyReports();
-  // Notify Me: the games they're waiting on (none when signed out).
-  if (window.afterSignIn && !S.account.offline) window.afterSignIn();
-  // The saved list, kept with the account.
-  if (S.account.signedIn && !S.account.offline && typeof libSync === 'function') libSync();
-  // Playtime over all the account's PCs (or back to this PC's own when signed out).
-  if (typeof playSync === 'function') playSync().then((changed) => changed && render(true));
 }
 
 // ---------- your reports ----------
@@ -638,17 +631,10 @@ function pageSaves() {
   const withSaves = games.filter((x) => x.copies).sort((a, b) => (b.newest?.when || 0) - (a.newest?.when || 0));
   const none = games.filter((x) => !x.copies).sort((a, b) => (a.g.name || '').localeCompare(b.g.name || ''));
   const copies = withSaves.reduce((n, x) => n + x.copies, 0), size = withSaves.reduce((n, x) => n + x.size, 0);
-  const cloudGames = games.filter((x) => x.cloudOn === true).length;
-  const used = acc.used || 0, quota = acc.quota || 150 * 1024 * 1024;
   const pcCard = `<div class="mc"><div class="mc-top"><span class="mc-ico">${CARD_ICON}</span><div><b>${esc(t('On this PC'))}</b><span>${esc(tn(withSaves.length, '1 game with saves', '{n} games with saves'))}</span></div><strong>${esc(fmtB(size) || '0 KB')}</strong></div>
       ${blocks(withSaves.length ? withSaves.length / Math.max(games.length, 1) : 0)}
       <p>${esc(tn(copies, '1 copy kept', '{n} copies kept'))} · ${esc(t('The newest ten of each game'))}</p></div>`;
-  const cloudCard = acc.signedIn
-    ? `<div class="mc cloud"><div class="mc-top"><span class="mc-ico">${CLOUD_ICON}</span><div><b>${esc(t('Cloud saves'))}</b><span>${esc(tn(cloudGames, '1 game backs up to your account', '{n} games back up to your account'))}</span></div><strong>${esc(fmtB(used) || '0 KB')}</strong></div>
-      ${blocks(used / quota)}
-      <p>${esc(tf('{used} of {quota} used', { used: fmtB(used) || '0 KB', quota: fmtB(quota) }))}</p></div>`
-    : `<div class="mc cloud off"><div class="mc-top"><span class="mc-ico">${CLOUD_ICON}</span><div><b>${esc(t('Cloud saves'))}</b><span>${esc(t('Sign in to keep your saves on any PC.'))}</span></div></div>
-      <div class="acts grid2"><button type="button" class="btn" data-act="acc-create">${esc(t('Create an account'))}</button><button type="button" class="btn main" data-act="acc-signin">${esc(t('Sign in'))}</button></div></div>`;
+  const cloudCard = `<div class="mc cloud off"><div class="mc-top"><span class="mc-ico">${CLOUD_ICON}</span><div><b>${esc(t('Local save backups'))}</b><span>${esc(t('Your save copies stay on this PC.'))}</span></div></div><p>${esc(t('Cloud sync is not configured in this collection build. You can still inspect, restore and back up local saves.'))}</p></div>`;
   const slot = (x, i) => {
     const a = x.a || { id: x.id, name: x.g.name }, n = x.newest;
     const cloud = x.cloudOn === true ? (x.pending ? `<span class="tag wait">${esc(t('Going up'))}</span>` : `<span class="tag on">${esc(t('In the cloud'))}</span>`) : `<span class="tag">${esc(t('This PC'))}</span>`;
