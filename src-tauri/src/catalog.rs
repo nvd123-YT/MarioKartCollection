@@ -1,8 +1,7 @@
-//! The list of recomps and each one's GitHub releases, read from recomplauncher.com.
+//! Mario Kart Collection's curated game list and each project's own GitHub releases.
 //!
-//! Both are kept on disk, so the launcher opens with the last copy when it's offline and the
-//! Library always works. Releases come through recomplauncher.com/api/gh.php, which asks GitHub
-//! once for everyone and keeps working past GitHub's rate limit.
+//! The collection list is bundled with the app. Game release metadata is read directly from each
+//! project's GitHub repository and cached locally.
 
 use crate::assets::Asset;
 use crate::Error;
@@ -197,36 +196,28 @@ fn list_ok(v: &Value) -> bool {
     v.get("apps").map(Value::is_array).unwrap_or(false)
 }
 
-/// The list. `force`: the player pressed Refresh. Otherwise it's asked for once per launch, and
-/// only when the copy on disk is more than an hour old; everything after that reads the disk.
-pub async fn catalog(http: &reqwest::Client, dir: &Path, force: bool) -> Result<Fetched, Error> {
-    if !force && LIST_ASKED.load(Ordering::Relaxed) {
-        if let Some(f) = on_disk(&list_file(dir), list_ok) {
-            return Ok(Fetched { data: with_mine(dir, f.data), ..f });
-        }
-    }
+/// The fixed collection catalog. Game releases are fetched separately from each project's GitHub.
+fn bundled_catalog() -> Value {
+    serde_json::from_str(include_str!("../mario-kart-catalog.json")).expect("bundled Mario Kart catalog must be valid JSON")
+}
+
+/// Returns the bundled catalog. `force` is accepted to keep the command interface unchanged.
+pub async fn catalog(_http: &reqwest::Client, dir: &Path, _force: bool) -> Result<Fetched, Error> {
     LIST_ASKED.store(true, Ordering::Relaxed);
-    let fresh = if force { 0 } else { LIST_FRESH };
-    let mut f = cached(http, &format!("{}/pc-catalog.json", base()), list_file(dir), fresh, crate::net::LONGER, force, list_ok).await?;
-    f.data = with_mine(dir, f.data);
-    Ok(f)
+    Ok(Fetched { data: with_mine(dir, bundled_catalog()), offline: false, age: 0, archived: None })
 }
 
 /// For the window as it opens: the copy on disk straight away (None when there isn't one), and
 /// whether it's old enough to be asked for again in the background.
 pub fn catalog_now(dir: &Path) -> Option<(Fetched, bool)> {
-    let f = on_disk(&list_file(dir), list_ok)?;
-    // Decided once per launch: after this, the list is only asked for again by Refresh or a push.
-    let stale = f.age >= LIST_FRESH && !LIST_ASKED.swap(true, Ordering::Relaxed);
-    Some((Fetched { data: with_mine(dir, f.data), ..f }, stale))
+    LIST_ASKED.store(true, Ordering::Relaxed);
+    Some((Fetched { data: with_mine(dir, bundled_catalog()), offline: false, age: 0, archived: None }, false))
 }
 
 /// The list asked for again in the background (not the player's doing).
-pub async fn catalog_refresh(http: &reqwest::Client, dir: &Path) -> Result<Fetched, Error> {
+pub async fn catalog_refresh(_http: &reqwest::Client, dir: &Path) -> Result<Fetched, Error> {
     LIST_ASKED.store(true, Ordering::Relaxed);
-    let mut f = cached(http, &format!("{}/pc-catalog.json", base()), list_file(dir), 0, crate::net::LONGER, false, list_ok).await?;
-    f.data = with_mine(dir, f.data);
-    Ok(f)
+    Ok(Fetched { data: with_mine(dir, bundled_catalog()), offline: false, age: 0, archived: None })
 }
 
 // ---------- recomps the player added by their GitHub link ----------
@@ -254,14 +245,16 @@ pub fn save_mine(dir: &Path, list: &[Value]) -> std::io::Result<()> {
     std::fs::rename(&tmp, &f)
 }
 
-/// The catalog with the player's own recomps added after it. One the catalog lists under the same
-/// id is the catalog's; one whose repo it lists under another id stays too, so a copy the player
-/// has keeps its page and updates until it moves over to the catalog's (merge_mine in lib.rs).
+/// Adds only saved entries that refer to a project already in this curated collection. Other
+/// repositories stay out of the collection, even if they were previously added by URL.
 pub fn with_mine(dir: &Path, mut cat: Value) -> Value {
     take_newer(&mut cat, env!("CARGO_PKG_VERSION"));
     mark_hosts(&mut cat);
     crate::boot::from_catalog(&mut cat);
-    let list = mine(dir);
+    let allowed: std::collections::HashSet<String> = cat.get("apps").and_then(Value::as_array).into_iter().flatten()
+        .filter_map(|a| a.get("repo").and_then(Value::as_str).map(str::to_ascii_lowercase)).collect();
+    let list = mine(dir).into_iter().filter(|e| e.get("repo").and_then(Value::as_str)
+        .is_some_and(|r| allowed.contains(&r.to_ascii_lowercase()))).collect::<Vec<_>>();
     if list.is_empty() {
         return with_repo_profiles(dir, with_known_project_status(dir, cat));
     }
@@ -752,7 +745,7 @@ pub(crate) fn releases_url(repo: &str) -> String {
     }
     match gitlab_path(repo) {
         Some(p) => format!("{}/api/gl.php?repo={}", base(), p.replace('/', "%2F")),
-        None => format!("{}/api/gh.php?repo={}", base(), repo),
+        None => format!("https://api.github.com/repos/{repo}/releases?per_page=30"),
     }
 }
 
