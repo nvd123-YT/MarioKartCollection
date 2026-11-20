@@ -1,112 +1,73 @@
-<p align="center"><img src="docs/images/banner.jpg" alt="RecompLauncher: PC recomps, all in one place." width="100%"></p>
+# Mario Kart Collection
 
-<p align="center">
-  <a href="https://github.com/elripalda/RecompLauncher/releases/latest"><b>Download the beta</b></a> ·
-  <a href="https://recomplauncher.com">recomplauncher.com</a> ·
-  <a href="https://discord.gg/FUzqGM2cvf">Discord</a>
-</p>
+**One launcher for the existing Mario Kart recompilation projects.** Choose a game, install the developer's published build, provide your own legally obtained game files when asked, and launch it from one library.
 
-<p align="center">
-  <a href="https://github.com/elripalda/RecompLauncher/stargazers"><img src="https://img.shields.io/github/stars/elripalda/RecompLauncher?style=flat&color=34f2e8&label=Stars" alt="Stars"></a>
-  <a href="https://github.com/elripalda/RecompLauncher/releases"><img src="https://img.shields.io/github/downloads/elripalda/RecompLauncher/total?style=flat&color=34f2e8&label=Downloads" alt="Downloads"></a>
-  <a href="https://github.com/elripalda/RecompLauncher/releases"><img src="https://img.shields.io/github/v/release/elripalda/RecompLauncher?include_prereleases&style=flat&color=34f2e8&label=Latest" alt="Latest version"></a>
-</p>
+Mario Kart Collection is a customized fork of [RecompLauncher](https://github.com/elripalda/RecompLauncher). It reuses the launcher's existing install, update, library, controller, local-save and backup systems; it does not reimplement the games.
 
----
+## Games
 
-RecompLauncher finds, installs, updates and plays PC recomps: native PC versions of console
-games, made by their developers from the original game. You bring your own copy of the game and
-the launcher sets it up.
+| Game | Windows | macOS (Apple Silicon) | Linux x86-64 | Project |
+|---|---:|---:|---:|---|
+| Super Mario Kart | Yes | — | — | [SMKSNESRecomp](https://github.com/mpolizel/SMKSNESRecomp) |
+| Mario Kart 64 | Yes | Yes | Yes | [MarioKart64Recomp](https://github.com/sonicdcer/MarioKart64Recomp) |
+| Mario Kart: Super Circuit | Yes | — | Yes | [MarioKartSuperCircuitRecomp](https://github.com/mstan/MarioKartSuperCircuitRecomp) |
+| Mario Kart DS | Yes | Beta | Beta | [DS-Kart-Recompiled](https://github.com/AlonsoTlol/DS-Kart-Recompiled) |
+| Mario Kart Wii | Yes | — | Yes | [Wiicompiled](https://github.com/patchzyy/Wiicompiled) |
+| Mario Kart 7 | Yes | Yes | Yes | [MK7Recomp](https://github.com/nvd123-YT/MK7Recomp) |
+| Mario Kart 8 Deluxe | Experimental | — | — | [MK8-online](https://github.com/Vnnc1/MK8-online) |
+| Mario Kart World | Early build | — | Yes | [mkw-recomp](https://github.com/adriadam10/mkw-recomp) |
 
-## What's in it
+Build availability is taken from each project's published releases and can change independently of this launcher. A published build is not a guarantee that every feature works on every machine. Mario Kart DS's Linux/macOS builds are beta; Mario Kart 8 Deluxe and Mario Kart World are experimental/early-stage projects.
 
-- **Catalog:** every recomp on recomplauncher.com, with screenshots, what it needs and how it
-  runs for other players.
-- **Coming Soon:** the recomps on the way, with Notify Me for an email when each comes out, and
-  Request a Recomp to ask for a project on GitHub or GitLab.
-- **Install and update in one click,** straight from the developer's own GitHub release. Every
-  download is checked against GitHub's checksum.
-- **Easy Setup:** point it at your disc image or game folder and it does the rest, for the recomps
-  that support it.
-- **Versions:** games with more than one recomp show once, and you can switch between versions or
-  keep a few side by side.
-- **Saves:** backups before every update, and cloud saves with a free account.
-- **Big Picture mode:** a full-screen view for a controller and a TV.
-- **Looks:** CRT and other screen effects, per game.
-- **Player reports:** see how a recomp runs for people before you install it, and add your own.
-- **Verified developers:** follow the people making the recomps you like and hear when they put
-  out something new.
+## What it does
 
-## A look around
+- Shows the eight Mario Kart projects in one focused library.
+- Downloads builds directly from each project's original GitHub Releases.
+- Checks release checksums where the developer provides them.
+- Keeps each recompilation's own runtime and game-specific setup intact.
+- Supports per-game settings where the project provides a `recomplauncher.json` profile.
+- Keeps local saves, save discovery, backups and restore tools.
+- Supports keyboard, mouse and game controllers through the existing launcher.
+- Updates Mario Kart Collection itself from this repository's GitHub Releases.
 
-<p align="center"><img src="docs/images/home.jpg" alt="Home" width="100%"></p>
+Some projects have their own setup programs or launchers. Those remain part of the individual project and may appear when a game is installed or started.
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/discover.jpg" alt="Catalog"><p align="center"><b>Catalog</b></p></td>
-    <td width="50%"><img src="docs/images/game.jpg" alt="A game's page"><p align="center"><b>A game's page</b></p></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/images/bigpicture.jpg" alt="Big Picture mode"><p align="center"><b>Big Picture mode</b></p></td>
-    <td width="50%"><img src="docs/images/saves.jpg" alt="Saves"><p align="center"><b>Saves</b></p></td>
-  </tr>
-</table>
+## Requirements
 
-## Get it
+- Windows 10/11 x64, macOS Apple Silicon, or Linux x86-64 for the collection launcher builds.
+- An internet connection to download each project's existing releases.
+- Your own legally obtained game dumps and any required keys, BIOS or firmware. Requirements differ by game and are shown by the project's own setup.
+- Enough free disk space for each game's native build and runtime. Some projects compile code locally and can require substantially more space than the downloaded archive.
 
-Windows 10 or 11, 64-bit. Initial macOS support targets Apple Silicon: see the
-[Mac build and test-artifact instructions](docs/BUILDING.md#macos-initial-apple-silicon-support).
-Mac test builds support native Mac games packaged as ZIP, DMG, RAR or 7z and are not Apple-notarized releases. If macOS blocks the first launch because it cannot verify the developer, follow the [Mac first-launch steps](docs/TROUBLESHOOTING.md#macos-cannot-verify-the-developer).
+**No Nintendo game data, ROMs, keys, firmware or proprietary assets are included or downloaded by this repository.** Users must provide their own legally obtained copies. Game data is processed by each game's own setup tools.
 
-Arch Linux x86_64 has a native `.pkg.tar.zst` build: see the
-[Arch package instructions](packaging/arch/README.md) for building and installing it with pacman.
+## Saves and online features
 
-NixOS and Nix (x86_64): `nix run github:elripalda/RecompLauncher`, or see the
-[Nix instructions](packaging/nix/README.md) to install it with your system.
+Local save discovery, backups and restore are available. The hosted account, cloud-save, community-reporting and telemetry services from the upstream RecompLauncher are not configured in this fork; the app blocks requests to those original first-party endpoints by default. An operator may explicitly set `RL_API` to a compatible service they control.
 
-Download the setup file from [Releases](https://github.com/elripalda/RecompLauncher/releases/latest)
-and run it. While the beta is new, Windows may say "Windows protected your PC". Click
-**More info**, then **Run anyway**. Each release lists its file's SHA-256 so you can check you
-have the real one.
+Online functionality implemented inside an individual Mario Kart recompilation is separate and is not disabled by that setting.
 
-In **Settings > General > When you close the window**, **Run in background** controls whether
-closing the window keeps RecompLauncher in the system tray. Turn it off to exit the launcher
-and its background work when you close the window. **Quit RecompLauncher** always exits.
-The setting is also available in Big Picture mode. It is off by default for new installations;
-existing saved choices are kept. Games already running keep playing.
+## Building from source
 
-## No game files
+Requirements are Node.js, Rust, the platform's Tauri prerequisites, and the dependencies documented by Tauri 2.
 
-RecompLauncher has no game files and never downloads any. Every recomp comes from its developer's
-GitHub, and you set it up with your own copy of the game.
+```sh
+npm ci
+npm run tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
+cp src-tauri/icons/32x32.png src-tauri/icons/tray.png
+npm run dev
+```
 
-## Found a bug? Have an idea?
+Build the macOS Apple Silicon app and disk image with:
 
-The quickest way is **Settings > Beta** in the launcher. It goes straight to the developer and can
-include your PC's details. You can also post in the [Discord](https://discord.gg/FUzqGM2cvf) or
-[open an issue](https://github.com/elripalda/RecompLauncher/issues/new/choose) here.
+```sh
+npm run build:macos
+```
 
-If a game crashes, send the log from the crash screen. Every one helps.
+The existing GitHub Actions workflows build and test the application and package releases for the supported desktop targets.
 
-## Making a recomp?
+## Credits and licensing
 
-Add a `recomplauncher.json` to your release and players get one-click setup, your settings inside
-the launcher, and Big Picture mode support. The guide is in [docs/DEVELOPERS.md](docs/DEVELOPERS.md),
-with examples in [docs/examples](docs/examples).
+Mario Kart Collection is GPL-3.0-or-later and is based on [RecompLauncher by Ripalda](https://github.com/elripalda/RecompLauncher). See [CREDITS.md](CREDITS.md) for framework, library and font credits.
 
-## Source code
-
-The full source of the launcher is here: the Rust core in `src-tauri/` and the window in `ui/`. You
-can read exactly what it does, or build it yourself with the steps in
-[docs/BUILDING.md](docs/BUILDING.md). It's licensed under the GPL v3 ([LICENSE](LICENSE)).
-
-## Stars over time
-
-<a href="https://star-history.com/#elripalda/RecompLauncher&Date"><img src="https://api.star-history.com/svg?repos=elripalda/RecompLauncher&type=Date&theme=dark" alt="RecompLauncher's stars over time" width="100%"></a>
-
-## About
-
-Made by [Ripalda](https://github.com/elripalda). If you'd like to support it: [Ko-fi](https://ko-fi.com/recomp).
-
-RecompLauncher is free to download and use. It isn't affiliated with or endorsed by any game's
-makers or platform holders.
+Each game recompilation belongs to its respective developers and retains its own license and requirements. Mario Kart Collection is an independent project and is not affiliated with, endorsed by, or sponsored by Nintendo or any of the game developers.
