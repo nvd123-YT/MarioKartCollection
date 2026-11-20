@@ -1234,10 +1234,6 @@
     return `${backdrop(null)}${bar()}
       ${region(`${pageHead(t('Settings'), t('Folders, updates and the rest are in the desktop view.'))}
         <div class="tv-setwrap"><div class="tv-list tv-setlist">
-          ${head(t('Account'))}
-          ${S.account && S.account.signedIn
-            ? `<button type="button" class="tv-item" data-f data-key="s:account" data-tvact="account" data-val="${esc(S.account.user.username)}"><span class="k">${esc(tf('Signed in as {name}', { name: S.account.user.username }))}<small>${esc(t('Cloud saves keep each game\'s saves on your account'))}</small></span><span class="tv-pill on">${esc(t('Account'))}</span></button>`
-            : `<button type="button" class="tv-item" data-f data-key="s:account" data-tvact="account"><span class="k">${esc(t('Sign in'))}<small>${esc(t('Back your saves up to a RecompStore account, and play on with them on any PC'))}</small></span><span class="tv-pill on">${esc(t('Sign in'))}</span></button>`}
           ${head(t('Display'))}
           ${(() => {
             const m = window.monitorPicked(S.monitors, S.settings.tv_monitor);
