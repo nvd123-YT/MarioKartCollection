@@ -13,7 +13,7 @@ use std::sync::{Mutex, OnceLock};
 /// top-level `"discord"` overrides it.
 pub const APP_ID: &str = "";
 /// The launcher's logo, shown small in the corner of the game's cover.
-const LOGO: &str = "https://recomplauncher.com/assets/logo-512.png";
+const LOGO: &str = "https://raw.githubusercontent.com/nvd123-YT/MarioKartCollection/main/src-tauri/icons/icon.svg";
 
 pub enum Msg {
     Playing { app_id: String, game: String, recomp: String, cover: String, start: u64 },
@@ -70,7 +70,7 @@ fn put(client: &mut Option<(String, DiscordIpcClient)>, app_id: &str, show: Show
                 .state(if line.is_empty() { "via Mario Kart Collection" } else { line })
                 .timestamps(activity::Timestamps::new().start(*start as i64 * 1000))
                 .assets(assets)
-                .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://recomplauncher.com")])
+                .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://github.com/nvd123-YT/MarioKartCollection")])
         }
         // The launcher open, no game: "Playing Mario Kart Collection" with its logo.
         Show::Launcher { start } => activity::Activity::new()
@@ -78,7 +78,7 @@ fn put(client: &mut Option<(String, DiscordIpcClient)>, app_id: &str, show: Show
             .details("In the launcher")
             .timestamps(activity::Timestamps::new().start(*start as i64 * 1000))
             .assets(activity::Assets::new().large_image(LOGO).large_text("Mario Kart Collection"))
-            .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://recomplauncher.com")]),
+            .buttons(vec![activity::Button::new("Get Mario Kart Collection", "https://github.com/nvd123-YT/MarioKartCollection")]),
     };
     if c.set_activity(make()).is_err() {
         // Discord was closed and opened again: one more try.
