@@ -63,8 +63,7 @@ modules:
       - type: git
         url: https://github.com/nvd123-YT/MarioKartCollection.git
         # The first Mario Kart Collection release.
-        tag: v0.1.0
-        commit: REPLACE_WITH_RELEASE_COMMIT
+        branch: main
       # Every crate, generated from src-tauri/Cargo.lock:
       #   python3 flatpak-cargo-generator.py src-tauri/Cargo.lock -o cargo-sources.json
       - cargo-sources.json
