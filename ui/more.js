@@ -1,6 +1,6 @@
 'use strict';
 // Mario Kart Collection's own updates (found while it runs, installed quietly, What's new after), games
-// sent from recomplauncher.com ("Get it on my PC"), betas of recomps, "How did it run?" after a
+// sent from the collection ("Get it on my PC"), betas of recomps, "How did it run?" after a
 // session, and usage and diagnostics. Uses app.js's helpers and state (S), and account.js's ask().
 
 S.betas = [];
@@ -47,11 +47,11 @@ T.event.listen('inbox', async ({ payload }) => {
   for (const it of (payload && payload.items) || []) {
     const id = it.game, a = byId(id) || { name: it.name || id };
     let result = 'installing';
-    if (S.library[id]) { result = 'installed'; toast(tf('{name} is already installed. Sent from recomplauncher.com.', { name: a.name })); }
+    if (S.library[id]) { result = 'installed'; toast(tf('{name} is already installed. Sent from the collection.', { name: a.name })); }
     else if (!byId(id) || status(byId(id)) === 'nobuild' || status(byId(id)) === 'soon') { result = 'no'; toast(tf('{name} can\'t be installed on this PC.', { name: a.name }), true); }
     else if (S.jobs[id]) result = 'installing';
     else {
-      toast(tf('Installing {name}. Sent from recomplauncher.com.', { name: a.name }));
+      toast(tf('Installing {name}. Sent from the collection.', { name: a.name }));
       // Asked where it goes, like an install started here.
       startInstall(id);
     }
@@ -198,7 +198,7 @@ async function askRun(id, secs, asked_for) {
   const send = async (verdict, note, log) => {
     const r2 = await invoke('run_report', { id, verdict, note: note || null, mins, log: !!log });
     keep(Object.assign({}, r, { sent: true }));
-    toast(r2 && r2.warning ? t(r2.warning) : t('Thanks! It\'s on the game\'s page on recomplauncher.com.'));
+    toast(r2 && r2.warning ? t(r2.warning) : t('Thanks! It\'s on the game\'s page on the collection.'));
     delete S.reports[id];
     if (S.view === 'game' && S.arg === id) setTimeout(() => loadReports(id, true), 1500);
     if (S.account && S.account.signedIn && window.loadMyReports) setTimeout(() => window.loadMyReports(true), 2500);
