@@ -1,10 +1,8 @@
-//! Where the launcher's server is, and how gently it's asked.
+//! Network requests used by optional account, cloud and community features.
 //!
-//! Every request to the RecompLauncher server goes through `send`. When a site answers with
-//! trouble (no answer, a timeout, 403, 408, 429 or a 5xx), the launcher stops asking that site for
-//! a while: 30 seconds at first, doubling up to an hour, with a random part so launchers don't all
-//! come back at the same moment. A Retry-After from the site is respected. While a site is resting,
-//! the launcher works from what it has on disk, and the window shows a small "Offline" mark.
+//! Mario Kart Collection is local-first. Calls to RecompLauncher's original hosted services are
+//! blocked unless the operator explicitly sets RL_API to a service they control. Game releases
+//! are fetched directly from the games' own GitHub repositories.
 
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -99,6 +97,19 @@ pub fn spread(secs: u64, extra: f64) -> Duration {
 
 fn host(url: &str) -> String {
     reqwest::Url::parse(url).ok().and_then(|u| u.host_str().map(str::to_ascii_lowercase)).unwrap_or_default()
+}
+
+/// First-party endpoints inherited from RecompLauncher. This fork has no hosted backend, so
+/// it must not send account tokens, save files, telemetry or reports to those servers. An
+/// explicitly configured RL_API enables a self-hosted compatible service.
+fn first_party_service(url: &str) -> bool {
+    if std::env::var("RL_API").ok().is_some_and(|value| !value.trim().is_empty()) {
+        return false;
+    }
+    matches!(
+        host(url).as_str(),
+        "recomplauncher.com" | "www.recomplauncher.com" | "recompstore.com" | "www.recompstore.com"
+    )
 }
 
 /// What a failure puts to rest: the whole site, except release info (gh.php passes on GitHub's own
@@ -326,6 +337,9 @@ pub fn forced() -> bool {
 /// The one way to ask the server. A site that's resting isn't asked at all; trouble makes it rest.
 /// The answer comes back whatever its status, for the caller to read.
 pub async fn send(rb: reqwest::RequestBuilder, url: &str, player: bool) -> Result<reqwest::Response, crate::Error> {
+    if first_party_service(url) {
+        return Err(crate::Error::Net("This build has no hosted account or cloud service. Local saves remain available.".into()));
+    }
     if !forced() && resting(url, player) {
         if busy() && is_api(&key(url)) {
             return Err(crate::Error::Net(format!("{} is busy, retrying in {}s. Using what's saved on this PC.", host(url), wait_left(url).max(1))));
@@ -371,7 +385,7 @@ fn picture_went_well(url: &str) {
 }
 
 pub async fn send_picture(rb: reqwest::RequestBuilder, url: &str) -> Option<reqwest::Response> {
-    if resting(url, false) {
+    if first_party_service(url) || resting(url, false) {
         return None;
     }
     let started = Instant::now();
