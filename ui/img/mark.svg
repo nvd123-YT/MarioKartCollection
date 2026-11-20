@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="RecompLauncher"><defs><linearGradient id="m" x1="0" y1="38" x2="0" y2="218" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#34f2e8"/><stop offset="1" stop-color="#377bb6"/></linearGradient></defs><g fill="url(#m)" transform="translate(4 -2)"><path d="M40 40H88V168H116L64 220L12 168H40Z"/><path d="M104 40H172L216 84V116L180 152H104V116H164L180 100V92L164 76H104Z"/><path d="M132 168H184L236 220H184Z"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Mario Kart Collection">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd34e"/><stop offset=".55" stop-color="#ff9b42"/><stop offset="1" stop-color="#f04b5d"/></linearGradient></defs>
+<rect width="256" height="256" rx="54" fill="#101827"/>
+<path d="M24 196c46-7 50-83 104-112 32-17 64-25 105-26" fill="none" stroke="#2a3951" stroke-width="39" stroke-linecap="round"/>
+<path d="M24 196c46-7 50-83 104-112 32-17 64-25 105-26" fill="none" stroke="url(#g)" stroke-width="26" stroke-linecap="round"/>
+<path d="M16 224h54M28 240h39" stroke="#eaf0f7" stroke-width="8" stroke-linecap="round" opacity=".52"/>
+<g transform="translate(153 17) rotate(12 38 38)"><rect width="76" height="76" rx="8" fill="#fff"/><path d="M0 0h38v38H0zM38 38h38v38H38z" fill="#101827"/></g>
+<circle cx="45" cy="194" r="18" fill="#101827" stroke="#ffd34e" stroke-width="8"/>
+</svg>
