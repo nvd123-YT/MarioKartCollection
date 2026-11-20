@@ -267,7 +267,12 @@ pub fn with_mine(dir: &Path, mut cat: Value) -> Value {
     let apps = cat["apps"].as_array_mut().unwrap();
     for e in list {
         let id = e.get("id").and_then(Value::as_str).unwrap_or("");
-        if !apps.iter().any(|a| a.get("id").and_then(Value::as_str) == Some(id)) {
+        let repo = e.get("repo").and_then(Value::as_str).unwrap_or("");
+        let already_listed = apps.iter().any(|a| {
+            a.get("id").and_then(Value::as_str) == Some(id)
+                || a.get("repo").and_then(Value::as_str).is_some_and(|r| r.eq_ignore_ascii_case(repo))
+        });
+        if !already_listed {
             apps.push(e);
         }
     }
