@@ -7582,27 +7582,35 @@ pub(crate) async fn version_json(st: &App, max_age: u64, player: bool) -> Option
 
     // The collection updates from its own GitHub Releases, never from RecompLauncher's catalog service.
     let url = "https://api.github.com/repos/nvd123-YT/MarioKartCollection/releases/latest";
-    let response = net::send(
+    let response = match net::send(
         st.http.get(url).header(reqwest::header::ACCEPT, "application/vnd.github+json").timeout(net::QUICK),
         url,
         player,
-    ).await.ok()?;
-    if !response.status().is_success() {
-        return disk();
-    }
-    let release = response.json::<Value>().await.ok()?;
-    let version = release.get("tag_name").and_then(Value::as_str)?.trim_start_matches(['v', 'V']).to_string();
-    let assets = release.get("assets").and_then(Value::as_array)?;
+    ).await {
+        Ok(response) if response.status().is_success() => response,
+        Ok(_) | Err(_) => return disk(),
+    };
+    let release = match response.json::<Value>().await {
+        Ok(release) if release.is_object() => release,
+        _ => {
+            net::bad_answer(url);
+            return disk();
+        }
+    };
+    let Some(tag) = release.get("tag_name").and_then(Value::as_str) else { return disk() };
+    let version = tag.trim_start_matches(['v', 'V']).to_string();
+    if version.is_empty() { return disk(); }
+    let Some(assets) = release.get("assets").and_then(Value::as_array) else { return disk() };
     let pick = |suffix: &str, contains: &str| -> Option<(String, String)> {
         let asset = assets.iter().find(|asset| {
             let name = asset.get("name").and_then(Value::as_str).unwrap_or("").to_ascii_lowercase();
             name.ends_with(suffix) && name.contains(contains)
         })?;
         let download = asset.get("browser_download_url").and_then(Value::as_str)?.to_string();
-        let digest = asset.get("digest").and_then(Value::as_str).and_then(|d| d.strip_prefix("sha256:")).unwrap_or("").to_string();
-        (!digest.is_empty()).then_some((download, digest))
+        let digest = asset.get("digest").and_then(Value::as_str).and_then(|d| d.strip_prefix("sha256:"))?.to_string();
+        (!download.is_empty() && !digest.is_empty()).then_some((download, digest))
     };
-    let (windows_url, windows_sha) = pick(".exe", "setup")?;
+    let Some((windows_url, windows_sha)) = pick(".exe", "setup") else { return disk() };
     let mut info = json!({
         "version": version,
         "url": windows_url,
