@@ -10459,14 +10459,16 @@ mod tests {
 
     #[test]
     fn only_plain_game_links_open_anything() {
+        assert_eq!(super::link_game("mariokartcollection://game/recompia").as_deref(), Some("recompia"));
+        assert_eq!(super::link_game("MarioKartCollection://Game/zelda64-recomp/").as_deref(), Some("zelda64-recomp"));
         assert_eq!(super::link_game("recomplauncher://game/recompia").as_deref(), Some("recompia"));
         assert_eq!(super::link_game("RecompLauncher://Game/zelda64-recomp/").as_deref(), Some("zelda64-recomp"));
         assert_eq!(super::link_game("recomplauncher://game/recompia?play=1#x").as_deref(), Some("recompia"));
         assert_eq!(super::link_game("recomplauncher://game/recompia/extra").as_deref(), Some("recompia"));
-        for bad in ["recomplauncher://game/", "recomplauncher://game/../x", "recomplauncher://game/a%20b", "recomplauncher://install/recompia", "https://recomplauncher.com/game/recompia", "recomplauncher:game/x", "recomplauncher://game/a.exe", "--play"] {
+        for bad in ["mariokartcollection://game/", "mariokartcollection://game/../x", "recomplainer://game/a%20b", "mariokartcollection://install/recompia", "https://github.com/nvd123-YT/MarioKartCollection/game/recompia", "mariokartcollection:game/x", "mariokartcollection://game/a.exe", "--play"] {
             assert_eq!(super::link_game(bad), None, "{bad}");
         }
-        assert_eq!(super::link_game(&format!("recomplauncher://game/{}", "a".repeat(81))), None);
+        assert_eq!(super::link_game(&format!("mariokartcollection://game/{}", "a".repeat(81))), None);
     }
 
     #[test]
