@@ -361,13 +361,13 @@ mod imp {
 
     // ---------- the sign-in, kept by Windows ----------
 
-    const CRED: &str = "RecompLauncher/account";
+    const CRED: &str = "Mario Kart Collection/account";
 
     /// Keeps a secret in Windows' Credential Manager, for this Windows user only.
     pub fn cred_write(secret: &str) -> bool {
         use windows::Win32::Security::Credentials::{CredWriteW, CREDENTIALW, CRED_PERSIST_LOCAL_MACHINE, CRED_TYPE_GENERIC};
         let mut target: Vec<u16> = CRED.encode_utf16().chain([0]).collect();
-        let mut user: Vec<u16> = "RecompLauncher".encode_utf16().chain([0]).collect();
+        let mut user: Vec<u16> = "Mario Kart Collection".encode_utf16().chain([0]).collect();
         let mut blob = secret.as_bytes().to_vec();
         let c = CREDENTIALW {
             Type: CRED_TYPE_GENERIC,
