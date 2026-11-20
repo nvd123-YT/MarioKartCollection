@@ -1156,12 +1156,7 @@ async fn check_saves(app: AppHandle, id: String, manual: bool) -> Res<Value> {
 
 /// A shortcut or tray launch has no conflict prompt, so let the player resolve it in the launcher.
 pub async fn sync_quiet(app: &AppHandle, id: &str) -> Res<()> {
-    let st = app.state::<App>();
-    let save_id = if own_saves(&st, id).is_some() { id.to_string() } else { crate::recomp_of(&st, id) };
-    let result = saves_check(app.clone(), save_id, None).await?;
-    if result["action"] == "conflict" {
-        return Err(Error::Msg(SYNC_CONFLICT.into()));
-    }
+    // No hosted save account is configured for this collection. Never block Play on cloud sync.
     Ok(())
 }
 
