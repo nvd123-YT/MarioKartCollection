@@ -2568,11 +2568,6 @@ function manageStartRows(id, inst) {
 function manageFileRows(id, inst) {
   const rows = [`<div class="set-row"><div class="k"><b>${esc(t('Folder'))}</b><span>${esc(inst.path)}</span></div><div class="acts"><button type="button" class="btn" data-act="folder" data-id="${esc(id)}">${esc(t('Open'))}</button>${inst.local ? '' : `<button type="button" class="btn" data-act="move" data-id="${esc(id)}">${esc(t('Move'))}</button>`}</div></div>`];
   if (!inst.local) rows.push(`<div class="set-row"><div class="k"><b>${esc(t('Backups of your saves'))}</b><span>${esc(t('Taken before every update: the saves in its folder.'))}</span></div><button type="button" class="btn" data-act="backups" data-id="${esc(id)}">${esc(t('Backups'))}</button></div>`);
-  // Cloud saves is switched here only; the Saves tab just offers to turn it on.
-  if (S.account && S.account.signedIn) {
-    const on = inst.cloud === true;
-    rows.push(`<div class="set-row"><div class="k"><b>${esc(t('Cloud saves'))}</b><span>${esc(on ? t('On. After you play, its saves go to your account.') : t('Off. Its saves only stay on this PC.'))}</span></div><button type="button" class="switch" role="switch" aria-checked="${on}" aria-label="${esc(t('Cloud saves'))}" data-act="saves-cloud" data-id="${esc(id)}"></button></div>`);
-  }
   return rows;
 }
 // Asks once what the Updates tab shows for a game. update_info works it out from the release list
