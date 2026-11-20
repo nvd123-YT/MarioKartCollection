@@ -8196,16 +8196,10 @@ async function troubleshootModal(id, lastCode) {
   const m = modal(`<div class="ts-h"><h2>${esc(tf('Troubleshoot {name}', { name }))}</h2><span class="bh-tag">${esc(t('Beta'))}</span></div>
     <p class="muted">${esc(t('What could keep it from starting, and a fix where there is one.'))}</p>
     <div class="ts-list" id="ts-list"></div>
-    <div class="acts grid2"><button type="button" class="btn" data-x="again">${esc(t('Check Again'))}</button><button type="button" class="btn main" data-x="send">${esc(t('Send to the Developer'))}</button></div>`, async (x, close) => {
+    <div class="acts grid2"><button type="button" class="btn" data-x="again">${esc(t('Check Again'))}</button></div>`, async (x, close) => {
     if (x.dataset.x === 'again') return run();
     if (x.dataset.x === 'fix') { const c = checks[Number(x.dataset.i)]; close(); try { await TS_FIX[c.fix][1](id); } catch (e) { fail(e); } return; }
-    if (x.dataset.x === 'send') {
-      const text = (checks || []).map((c) => { const f = (x) => String(x).replace(/\{(\w+)\}/g, (k, n) => (c.v && n in c.v ? c.v[n] : k)); return `[${c.level}] ${f(c.title)}${c.detail ? ': ' + f(c.detail).replace(/\s+/g, ' ').slice(0, 300) : ''}`; }).join('\n');
-      S.betaFb = Object.assign({ kind: 'bug', area: 'Playing a game', mood: '', text: '', contact: '', attach: true, sent: false, busy: false, game: '' }, S.betaFb || {}, { kind: 'bug', area: 'Playing a game', sent: false, text: (t('It won\'t start. Troubleshoot found:') + '\n' + text).slice(0, 1800) });
-      S.reportGame = id;
-      close();
-      return setSection('report');
-    }
+
   }, tf('Troubleshoot {name}', { name }));
   m.querySelector('.modal').classList.add('ts');
   draw();
