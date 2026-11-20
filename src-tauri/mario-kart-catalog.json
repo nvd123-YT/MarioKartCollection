@@ -33,7 +33,7 @@
       "about": "Native N64 recompilation using N64: Recompiled and RT64. Requires your own supported game dump.",
       "assets": {
         "windows": "*Windows-RelWithDebInfo.zip",
-        "linux": "*Linux-X64-Release.zip",
+        "linux": "*Linux*Release.zip",
         "macos": "*macOS-Release.zip"
       }
     },
@@ -91,7 +91,7 @@
       "about": "Native PowerPC static recompilation. Current builds support the PAL disc; Windows uses the project's setup program and Linux uses its AppImage.",
       "assets": {
         "windows": "*Setup.exe",
-        "linux": "*x86_64.AppImage"
+        "linux": "*AppImage"
       }
     },
     {
@@ -146,7 +146,7 @@
       "about": "Early native recompilation for Windows and Linux. Its own setup screen builds the game locally from your own Switch 2 dump; allow substantial free disk space.",
       "assets": {
         "windows": "*windows-x64.zip",
-        "linux": "*x86_64.AppImage"
+        "linux": "*AppImage"
       }
     }
   ],
