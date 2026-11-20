@@ -1,8 +1,8 @@
 [package]
 name = "recomplauncher"
-version = "0.90.0-beta.66"
-description = "RecompLauncher: recompiled and decompiled PC games"
-authors = ["Ripalda"]
+version = "0.1.0"
+description = "Mario Kart Collection: one launcher for eight existing Mario Kart recompilations"
+authors = ["nvd123-YT"]
 license = "GPL-3.0-or-later"
 edition = "2021"
 rust-version = "1.85"
