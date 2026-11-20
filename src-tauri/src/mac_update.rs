@@ -1,4 +1,4 @@
-//! The launcher's own update on a Mac: the new RecompLauncher.app comes out of the release's disk
+//! The launcher's own update on a Mac: the new Mario Kart Collection.app comes out of the release's disk
 //! image and takes the place of the running one, then opens again once this copy has quit.
 
 use std::path::{Path, PathBuf};
@@ -30,7 +30,7 @@ fn bundle_of(exe: &Path) -> Option<PathBuf> {
 /// or from a folder only an administrator can change.
 pub fn can_replace(bundle: &Path) -> bool {
     let Some(parent) = bundle.parent() else { return false };
-    let probe = parent.join(format!(".recomplauncher-write-test-{}", std::process::id()));
+    let probe = parent.join(format!(".mariokartcollection-write-test-{}", std::process::id()));
     if std::fs::create_dir(&probe).is_err() {
         return false;
     }
@@ -64,7 +64,7 @@ fn signed(app: &Path) -> bool {
 
 /// The previous version, kept next to the new one until the new one has started.
 fn old_of(bundle: &Path) -> PathBuf {
-    bundle.with_file_name(".RecompLauncher-old.app")
+    bundle.with_file_name(".Mario Kart Collection-old.app")
 }
 
 /// Copies the new app next to `bundle`, checks it and swaps it in, keeping the previous version
@@ -73,7 +73,7 @@ fn old_of(bundle: &Path) -> PathBuf {
 #[cfg(target_os = "macos")]
 pub fn install(dmg: &Path, bundle: &Path, version: &str) -> Result<(), Failed> {
     // Next to the app, so the swap is a rename on the same disk and can't be left half done.
-    let work = bundle.with_file_name(".RecompLauncher-update");
+    let work = bundle.with_file_name(".Mario Kart Collection-update");
     let old = old_of(bundle);
     let _ = std::fs::remove_dir_all(&work);
     let _ = std::fs::remove_dir_all(&old);
@@ -86,7 +86,7 @@ pub fn install(dmg: &Path, bundle: &Path, version: &str) -> Result<(), Failed> {
 fn swap_in(dmg: &Path, bundle: &Path, version: &str, work: &Path, old: &Path) -> Result<(), Failed> {
     std::fs::create_dir_all(work).map_err(|e| Failed::Msg(format!("Couldn't make room for the new version next to this one: {e}")))?;
     crate::install::undmg(dmg, work).map_err(|e| Failed::Msg(e.to_string()))?;
-    let new_app = app_in(work).ok_or_else(|| Failed::Msg("The new version's disk image has no RecompLauncher.app in it.".into()))?;
+    let new_app = app_in(work).ok_or_else(|| Failed::Msg("The new version's disk image has no Mario Kart Collection.app in it.".into()))?;
     let found = version_of(&new_app).unwrap_or_default();
     if !version.is_empty() && found != version {
         return Err(Failed::OtherVersion(found));
@@ -97,7 +97,7 @@ fn swap_in(dmg: &Path, bundle: &Path, version: &str, work: &Path, old: &Path) ->
     // The release is signed ad hoc and the copy keeps that signature. One that doesn't verify was
     // changed after it was built, so it's refused, not signed again (that would let anything in).
     if !signed(&new_app) {
-        return Err(Failed::Msg("The new version's signature doesn't check out, so it wasn't put in place. Download it from recomplauncher.com instead.".into()));
+        return Err(Failed::Msg("The new version's signature doesn't check out, so it wasn't put in place. Download it from github.com/nvd123-YT/MarioKartCollection instead.".into()));
     }
     if crate::macos::bundle_executable(&new_app, crate::assets::arch_now()).is_none() {
         return Err(Failed::Msg("The new version has no program for this Mac in it, so it wasn't put in place.".into()));
@@ -128,7 +128,7 @@ const WATCH: &str = include_str!("mac_update.sh");
 
 pub fn start_and_watch(bundle: &Path, data: &Path) -> std::io::Result<()> {
     let program = crate::macos::bundle_executable(bundle, crate::assets::arch_now()).ok_or_else(|| std::io::Error::other("the new version has no program for this Mac"))?;
-    let failed = bundle.with_file_name(".RecompLauncher-failed.app");
+    let failed = bundle.with_file_name(".Mario Kart Collection-failed.app");
     let mut c = std::process::Command::new("/bin/sh");
     c.arg("-c").arg(WATCH).arg("sh");
     c.arg(std::process::id().to_string()).arg(bundle).arg(old_of(bundle)).arg(failed).arg(program).arg("/usr/bin/open").arg(data.join("update-pending.json"));
@@ -143,26 +143,26 @@ mod tests {
 
     #[test]
     fn bundle_of_finds_the_app_around_its_program() {
-        let exe = Path::new("/Applications/RecompLauncher.app/Contents/MacOS/recomplauncher");
-        assert_eq!(bundle_of(exe), Some(PathBuf::from("/Applications/RecompLauncher.app")));
+        let exe = Path::new("/Applications/Mario Kart Collection.app/Contents/MacOS/recomplauncher");
+        assert_eq!(bundle_of(exe), Some(PathBuf::from("/Applications/Mario Kart Collection.app")));
     }
 
     #[test]
     fn bundle_of_is_none_outside_a_bundle() {
-        assert_eq!(bundle_of(Path::new("/Users/me/RecompLauncher/target/debug/recomplauncher")), None);
+        assert_eq!(bundle_of(Path::new("/Users/me/Mario Kart Collection/target/debug/recomplauncher")), None);
     }
 
     #[test]
     fn can_replace_is_true_for_a_folder_this_account_writes() {
         let dir = std::env::temp_dir().join(format!("rl-can-replace-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap();
-        assert!(can_replace(&dir.join("RecompLauncher.app")));
+        assert!(can_replace(&dir.join("Mario Kart Collection.app")));
         std::fs::remove_dir_all(&dir).unwrap();
     }
 
     #[test]
     fn can_replace_is_false_when_the_folder_is_missing() {
-        assert!(!can_replace(Path::new("/no/such/folder/RecompLauncher.app")));
+        assert!(!can_replace(Path::new("/no/such/folder/Mario Kart Collection.app")));
     }
 
     /// Runs mac_update.sh with a stand-in new version that exits with `code` straight away, next
@@ -173,7 +173,7 @@ mod tests {
         use std::os::unix::fs::PermissionsExt;
         let dir = std::env::temp_dir().join(format!("rl-mac-watch-{name}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
-        let (app, old) = (dir.join("RecompLauncher.app"), dir.join(".RecompLauncher-old.app"));
+        let (app, old) = (dir.join("Mario Kart Collection.app"), dir.join(".Mario Kart Collection-old.app"));
         std::fs::create_dir_all(&app).unwrap();
         std::fs::create_dir_all(&old).unwrap();
         std::fs::write(app.join("which"), "new").unwrap();
@@ -184,7 +184,7 @@ mod tests {
         // A process that has already quit stands in for the version being replaced.
         let mut gone = std::process::Command::new("true").spawn().unwrap();
         gone.wait().unwrap();
-        let status = std::process::Command::new("/bin/sh").arg("-c").arg(WATCH).arg("sh").arg(gone.id().to_string()).arg(&app).arg(&old).arg(dir.join(".RecompLauncher-failed.app")).arg(&program).arg("true").arg(dir.join("update-pending.json")).status().unwrap();
+        let status = std::process::Command::new("/bin/sh").arg("-c").arg(WATCH).arg("sh").arg(gone.id().to_string()).arg(&app).arg(&old).arg(dir.join(".Mario Kart Collection-failed.app")).arg(&program).arg("true").arg(dir.join("update-pending.json")).status().unwrap();
         assert!(status.success());
         dir
     }
@@ -193,9 +193,9 @@ mod tests {
     #[test]
     fn a_new_version_that_crashes_is_replaced_by_the_old_one() {
         let dir = watch_with_exit(3, "crash");
-        assert_eq!(std::fs::read_to_string(dir.join("RecompLauncher.app/which")).unwrap(), "old");
-        assert!(!dir.join(".RecompLauncher-old.app").exists());
-        assert!(!dir.join(".RecompLauncher-failed.app").exists());
+        assert_eq!(std::fs::read_to_string(dir.join("Mario Kart Collection.app/which")).unwrap(), "old");
+        assert!(!dir.join(".Mario Kart Collection-old.app").exists());
+        assert!(!dir.join(".Mario Kart Collection-failed.app").exists());
         std::fs::remove_dir_all(&dir).unwrap();
     }
 
@@ -203,8 +203,8 @@ mod tests {
     #[test]
     fn a_new_version_the_player_closes_soon_is_kept() {
         let dir = watch_with_exit(0, "closed");
-        assert_eq!(std::fs::read_to_string(dir.join("RecompLauncher.app/which")).unwrap(), "new");
-        assert!(!dir.join(".RecompLauncher-old.app").exists());
+        assert_eq!(std::fs::read_to_string(dir.join("Mario Kart Collection.app/which")).unwrap(), "new");
+        assert!(!dir.join(".Mario Kart Collection-old.app").exists());
         std::fs::remove_dir_all(&dir).unwrap();
     }
 }
