@@ -1,24 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
-  <!-- The app icon, and the source of every other file in this folder: after changing it, run
-       `npx tauri icon src-tauri/icons/icon.svg` (then drop the android/ and ios/ folders it adds).
-       The mark is ui/img/mark.svg, on its dark tile. -->
-  <defs>
-    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="256" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#1b1d22"/>
-      <stop offset="1" stop-color="#050608"/>
-    </linearGradient>
-    <linearGradient id="m" x1="0" y1="38" x2="0" y2="218" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#34f2e8"/>
-      <stop offset="1" stop-color="#377bb6"/>
-    </linearGradient>
-  </defs>
-  <!-- Rounded like other app tiles (Discord, macOS): the corners are about 22% of the side. -->
-  <rect width="256" height="256" rx="56" fill="url(#tile)"/>
-  <g transform="translate(128 128) scale(0.74) translate(-128 -128)">
-    <g fill="url(#m)" transform="translate(4 -2)">
-      <path d="M40 40H88V168H116L64 220L12 168H40Z"/>
-      <path d="M104 40H172L216 84V116L180 152H104V116H164L180 100V92L164 76H104Z"/>
-      <path d="M132 168H184L236 220H184Z"/>
-    </g>
-  </g>
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#171f30"/><stop offset="1" stop-color="#090d15"/></linearGradient><linearGradient id="track" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffd34e"/><stop offset=".52" stop-color="#ff9b42"/><stop offset="1" stop-color="#f04b5d"/></linearGradient></defs>
+<rect width="256" height="256" rx="58" fill="url(#bg)"/>
+<path d="M24 196c46-7 50-83 104-112 32-17 64-25 105-26" fill="none" stroke="#29394f" stroke-width="37" stroke-linecap="round"/>
+<path d="M24 196c46-7 50-83 104-112 32-17 64-25 105-26" fill="none" stroke="url(#track)" stroke-width="24" stroke-linecap="round"/>
+<path d="M17 222h53M30 238h36" stroke="#d5deeb" stroke-width="7" stroke-linecap="round" opacity=".5"/>
+<g transform="translate(156 18) rotate(12 38 38)"><rect width="76" height="76" rx="7" fill="#f7f8fc"/><path d="M0 0h38v38H0zM38 38h38v38H38z" fill="#111827"/></g>
+<circle cx="45" cy="194" r="17" fill="#0d111a" stroke="#ffd34e" stroke-width="8"/>
 </svg>
