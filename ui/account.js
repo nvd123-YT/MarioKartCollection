@@ -1,12 +1,12 @@
 'use strict';
-// The RecompStore account and cloud saves: signing in (browser or phone), Settings > Account, the
+// The Mario Kart Collection and cloud saves: signing in (browser or phone), Settings > Account, the
 // sidebar's account button, a game's Saves tab, and what happens before Play (turn cloud saves on?
 // a newer save from another PC? which save to keep?). Works the same in Big Picture mode, with its
 // own sheets. Uses app.js's helpers and state (S).
 
 const ACC_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>';
 const CLOUD_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9 6 6 0 0 1 11.5 1.6A3.8 3.8 0 0 1 17.5 18z"/></svg>';
-const SITE = 'https://recomplauncher.com';
+const SITE = 'https://github.com/nvd123-YT/MarioKartCollection';
 S.account = { signedIn: false };
 S.saves = {};
 // The signed-in player's reports (Settings > Account > Your Reports), with developers' answers.
@@ -89,7 +89,7 @@ async function signIn(create) {
     invoke('open_url', { url: s.url }).catch(() => {});
     box = modal(`<div class="signin"><h2>${esc(create ? t('Create your account') : t('Sign in'))}</h2>
       <p>${esc(t('Your browser opened recomplauncher.com. Sign in there and press Sign in to connect this PC.'))}</p>
-      <div class="signin-two"><div class="signin-qr" aria-hidden="true">${s.qr}</div><div class="signin-code"><small>${esc(t('On another device? Scan the code, or go to recomplauncher.com/activate and type:'))}</small><b>${esc(s.code)}</b></div></div>
+      <div class="signin-two"><div class="signin-qr" aria-hidden="true">${s.qr}</div><div class="signin-code"><small>${esc(t('On another device? Scan the code, or go to github.com/nvd123-YT/MarioKartCollection/releases and type:'))}</small><b>${esc(s.code)}</b></div></div>
       <p class="signin-st" data-st><span class="spinr"></span>${esc(t('Waiting for you to sign in…'))}</p>
       <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Cancel'))}</button><button type="button" class="btn main" data-x="open">${esc(t('Open the browser again'))}</button></div></div>`, (x) => {
       if (x.dataset.x === 'open') invoke('open_url', { url: s.url }).catch(fail);
@@ -130,7 +130,7 @@ async function signOut() {
 function accountSection(group, row) {
   const a = S.account || {};
   if (!a.signedIn) {
-    return group(t('Account'), `<div class="acc-hero">${CLOUD_ICON}<div><b>${esc(t('Keep your saves safe'))}</b><span>${esc(t('With a RecompStore account, your saves go to the cloud after you play and are there on any PC. It\'s free, and the launcher works the same without one.'))}</span></div></div>
+    return group(t('Account'), `<div class="acc-hero">${CLOUD_ICON}<div><b>${esc(t('Keep your saves safe'))}</b><span>${esc(t('With a Mario Kart Collection, your saves go to the cloud after you play and are there on any PC. It\'s free, and the launcher works the same without one.'))}</span></div></div>
       <div class="acts grid2 acc-acts"><button type="button" class="btn" data-act="acc-create">${esc(t('Create an account'))}</button><button type="button" class="btn main" data-act="acc-signin">${esc(t('Sign in'))}</button></div>`)
       + group(t('Save backups'), row(t('On this PC'), t('After every session the launcher keeps a copy of each game\'s saves, the newest ten. They\'re on each game\'s Saves tab.'), ''));
   }
@@ -181,7 +181,7 @@ async function loadSaves(id) {
   // Whatever just changed the tab (Sync Now, Back Up Now, the cloud switch) changed the badge too.
   loadSaveStatus(saveIdOf(id));
 }
-const FROM = { player: N_('You picked this folder'), developer: N_('Set by its developer'), catalog: N_('Set by RecompLauncher') };
+const FROM = { player: N_('You picked this folder'), developer: N_('Set by its developer'), catalog: N_('Set by the game project') };
 // A folder its developer or RecompLauncher named is the right one: it's said in green, with a
 // shield, so the player sees there's nothing to set up. One the player picked is said plainly.
 const SET_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 3 8.3 7 9.5 4-1.2 7-5.1 7-9.5V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></svg>';
