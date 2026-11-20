@@ -48,7 +48,7 @@ const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':
 // A translated sentence with markup in its gaps: the text is escaped, the values (already HTML) go in as they are.
 const htmlFill = (s, v) => esc(s).replace(/\{(\w+)\}/g, (m, k) => (v && k in v ? (typeof v[k] === 'number' ? fmtNum(v[k]) : String(v[k])) : m));
 // The Mario Kart Collection Discord (the catalog can name a newer invite).
-const discordUrl = () => { const u = (S.cat && S.cat.site && S.cat.site.discord) || ''; return /^https:\/\//.test(u) ? u : 'https://github.com/nvd123-YT/MarioKartCollection/issues'; };
+const discordUrl = () => '';
 const webUrl = (u) => (!u ? '' : /^(https?:|data:)/.test(u) ? u : S.site + (u[0] === '/' ? '' : '/') + u);
 // A cover at the size a tile shows it: the site's smaller copy (its thumb.php, the same one the
 // website uses) for pictures in its /media folder; anything else as it is.
@@ -2461,37 +2461,8 @@ function devReplies(x) {
   const list = (x.replies || []).filter((r) => r.dev);
   return list.length ? `<div class="rep-replies">${list.map((r) => `<div class="rep-reply dev"><div class="who"><b>${esc(r.name || t('Developer'))}</b><span class="dev-badge">${esc(t('Developer'))}</span><small>${esc(Date.parse(r.when) ? ago(Date.parse(r.when) / 1000) : '')}</small></div><p dir="auto">${esc(r.text)}</p></div>`).join('')}</div>` : '';
 }
-function runsCard(a) {
-  if (a.soon || (S.library[a.id] && S.library[a.id].local)) return '';
-  const rep = S.reports[a.id];
-  if (rep === undefined) loadReports(a.id);
-  const inst = S.library[a.id];
-  const head = (sub) => `<div class="card-h"><h3>${esc(t('How it runs'))}</h3><span>${esc(sub)}</span></div>`;
-  if (!rep || rep === 'loading') return `<div class="card runs">${head('')}<p class="muted" style="margin:6px 0 0">${esc(t('Loading…'))}</p></div>`;
-  const sc = scoreOf(rep.counts, rep.latest), r = sc.r, all = sc.all;
-  const say = inst ? `<button type="button" class="btn" data-act="run-say" data-id="${esc(a.id)}">${esc(t('Say how it runs'))}</button>` : '';
-  const site = `<button type="button" class="btn" data-act="url" data-url="${esc(SITE + '/game/' + encodeURIComponent(a.id))}">${esc(all.n > 3 ? tf('All {n} reports', { n: all.n }) : t('On this collection's GitHub repository'))}</button>`;
-  const acts = `<div class="acts${say ? ' grid2' : ''}">${say}${site}</div>`;
-  if (!all.n) return `<div class="card runs">${head(rep.error ? t('Can\'t be reached right now') : t('No reports yet'))}<p class="runs-empty">${esc(inst ? t('Be the first: after you play, say how it ran on your PC.') : t('Nobody has said how it runs yet. Players who try it can say so from the launcher.'))}</p>${say ? `<div class="acts">${say}</div>` : ''}</div>`;
-  // Reports from Linux or a Steam Deck on a Windows build: played through Proton.
-  const pxc = rep.proton_counts || (rep.items || []).filter(viaPx).reduce((c, x) => Object.assign(c, { [x.verdict]: (c[x.verdict] || 0) + 1 }), {});
-  const px = runTally(pxc);
-  const pxLine = px.n ? `<p class="rep-px">${esc(tf('Through Proton: {great} of {all} say it plays great', { great: fmtNum(px.runs), all: fmtNum(px.n) }))}</p>` : '';
-  // This version's reports, or every one.
-  const only = sc.v && (S.repOnly || {})[a.id];
-  const shown = (rep.items || []).filter((x) => !only || verNorm(x.version) === verNorm(sc.v));
-  const filter = sc.v && (rep.items || []).length ? `<div class="rep-filter" role="group" aria-label="${esc(t('Reports'))}"><button type="button" class="chip${only ? '' : ' on'}" data-act="rep-only" data-id="${esc(a.id)}" data-on="">${esc(t('All Versions'))}</button><button type="button" class="chip${only ? ' on' : ''}" data-act="rep-only" data-id="${esc(a.id)}" data-on="1">${esc(t('This Version'))}</button></div>` : '';
-  const items = shown.slice(0, 3).map((x) => `<div class="rep"><div class="rep-top"><span class="rverdict v-${esc(x.verdict)}"><i aria-hidden="true"></i>${esc(t(RUN_WORD[x.verdict] || ''))}</span>${viaPx(x) ? `<span class="rep-pxtag">${esc(t('Through Proton'))}</span>` : ''}<small>${esc([x.version, x.when ? ago(Date.parse(x.when) / 1000 || x.when) : ''].filter(Boolean).join(' · '))}</small></div>
-      ${x.specs ? `<p class="rep-pc">${esc(x.specs)}</p>` : x.pc ? `<p class="rep-pc">${esc([x.pc.gpu, x.pc.cpu, x.pc.ram ? tf('{n} GB', { n: x.pc.ram }) : '', x.pc.os].filter(Boolean).join(' · '))}</p>` : ''}
-      ${x.note ? `<p class="rep-note" dir="auto">${esc(x.note)}</p>` : ''}${devReplies(x)}</div>`).join('');
-  const sub = sc.cur ? `<p class="runs-sub">${esc(tf('All versions: {pct}%', { pct: all.pct('runs') }))}</p>`
-    : sc.v && sc.l ? `<p class="runs-sub">${esc(sc.l.n ? `${sc.v}: ${tn(sc.l.n, '1 report so far', '{n} reports so far')}` : tf('{v}: no reports yet', { v: sc.v }))}</p>` : '';
-  return `<div class="card runs">${head(tn(all.n, '1 report', '{n} reports'))}
-    <div class="runs-top"><b class="runs-pct">${esc(tf('{pct}%', { pct: r.pct('runs') }))}</b><span>${esc(sc.cur ? tf('This version ({v})', { v: sc.v }) : t('say it plays great'))}</span></div>
-    ${sub}
-    ${runBar(r)}
-    <div class="rlegend">${['runs', 'issues', 'broken'].map((k) => `<div class="v-${k}"><i aria-hidden="true"></i><span>${esc(t(RUN_WORD[k]))}</span><b>${fmtNum(r[k])}</b></div>`).join('')}</div>
-    ${pxLine}${filter}${items ? `<div class="reps">${items}</div>` : only ? `<p class="muted">${esc(t('No reports for this version yet.'))}</p>` : ''}${acts}</div>`;
+function runsCard(_a) {
+  return '';
 }
 const viaPx = (x) => !!x && (x.proton === true || x.proton === 1 || x.proton === '1' || x.proton === 'true');
 
@@ -4389,7 +4360,6 @@ function pageSettings() {
   let body = '';
   switch (sec) {
     case 'general':
-      if (!S.ids && !S.idsAsked) { S.idsAsked = true; invoke('data_ids').then((ids) => { S.ids = ids; if (S.view === 'settings') render(true); }).catch(() => {}); }
       body = group(t('Language'), row(t('Language'), t('The launcher and its quick menu over your games.'), `<select class="sel" data-act="lang" aria-label="${esc(t('Language'))}">${[['auto', tf('Same as your computer ({lang})', { lang: (LANGS.find((x) => x[0] === systemLang()) || ['', 'English (US)'])[1] })]].concat(LANGS).map(([c, n]) => `<option value="${c}"${(ui.lang || 'auto') === c ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`)
           + row(t('Clock'), t('How times show in the launcher, Big Picture mode and the quick menu.'), clockSelect(ui.clock)))
         + group(t('Catalog'), row(t('Refresh Catalog'), t('Get the newest list of recomps, their releases and their art now, instead of waiting for the next check.'), `<button type="button" class="btn" data-act="refresh">${esc(t('Refresh now'))}</button>`)
@@ -4398,11 +4368,6 @@ function pageSettings() {
           + row(t('Show the AI-assisted tag'), t('The tag on game pages. What the developer used AI for is always in the game\'s Overview.'), sw('show_ai_tag', ui.show_ai_tag, t('Show the AI-assisted tag'), 'ui-toggle'))
           + row(t('Hidden games'), (ui.hidden || []).length ? t('Games you hid from the Catalog and Home. Right-click a game to hide it.') : t('Right-click a game in the Catalog and pick Hide from Catalog to keep it out of the way.'), `<button type="button" class="btn" data-act="hidden-list"${(ui.hidden || []).length ? '' : ' disabled'}>${esc(t('Show Hidden Games'))}</button>`))
         + (S.os === 'windows' ? group(t('Portable'), portableRow(row)) : S.os === 'linux' ? group(t('Windows recomps'), row(t('Play Windows recomps with Proton'), t('Recomps that only have a Windows version install that one and play through Proton. Steam\'s Proton, GE-Proton, umu-launcher and Wine are found on their own.') + ' ' + t('With this off, those recomps are left out of the Catalog, search and game pages.'), sw('proton', st.proton, t('Play Windows recomps with Proton'))) + geRow(row)) : '')
-        + group(t('Notifications and sharing'), row(t('Notifications'), S.os === 'windows' ? t('A Windows notification when a new recomp comes out for a game you own.') : t('A notification when a new recomp comes out for a game you own.'), sw('notify', st.notify, t('Notifications')))
-          + row(t('Discord status'), t('Shows the game you\'re playing on your Discord profile, with its cover and play time.'), sw('discord', st.discord !== false, t('Discord status')))
-          + row(t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. It helps fix problems faster. No names, no files.'), `<span class="set-ctl2"><a href="#" data-act="url" data-url="https://github.com/nvd123-YT/MarioKartCollection#saves-and-online-features">${esc(t('What\'s sent'))}</a>${sw('share_usage', st.data_asked && st.share_usage, t('Share usage and diagnostics'))}</span>`)
-          + row(t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'), sw('share_stats', st.data_asked && st.share_stats, t('Share anonymous usage stats')))
-          + row(t('Your IDs'), S.ids ? tf('Diagnostics {a} · Stats {b}. Quote them to have what was sent removed. A reset starts new ones.', { a: S.ids.usage.slice(0, 8), b: S.ids.stats.slice(0, 8) }) : t('Quote them to have what was sent removed. A reset starts new ones.'), `<span class="set-ctl2"><button type="button" class="btn" data-act="copy-ids">${esc(t('Copy'))}</button><button type="button" class="btn" data-act="reset-ids">${esc(t('Reset'))}</button></span>`))
         + group(t('When you close the window'), row(t('Run in background'), t('Keep Mario Kart Collection running when you close the window. Turn off to exit on close. Quit always exits.'), sw('close_to_tray', st.close_to_tray, t('Run in background'))));
       break;
     case 'report':
@@ -6479,19 +6444,7 @@ window.missingModal = missingModal;
 // Players who had Mario Kart Collection before sharing was asked about: asked once, both off unless they
 // say yes. Big Picture mode asks with a sheet of its own (tv.js).
 function askData() {
-  if (S.settings.data_asked || !S.settings.setup_done) return;
-  if (document.body.classList.contains('tv-on') && window.tvAskData) return window.tvAskData();
-  const pick = { share_usage: false, share_stats: false };
-  const swr = (k, b, s) => `<div class="set-row"><div class="k"><b>${esc(b)}</b><span>${esc(s)}</span></div><button type="button" class="switch" role="switch" aria-checked="false" aria-label="${esc(b)}" data-x="sw" data-k="${k}"></button></div>`;
-  modal(`<h2>${esc(t('Help Improve Mario Kart Collection?'))}</h2>
-    <p>${esc(t('Mario Kart Collection can send a little information to help fix problems and see what players use. Both are off unless you turn them on, and you can change this any time in Settings.'))}</p>
-    <div class="set-rows">${swr('share_usage', t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. No names, no files.'))}
-    ${swr('share_stats', t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'))}</div>
-    <div class="acts grid2"><button type="button" class="btn" data-x="what">${esc(t('What\'s sent'))}</button><button type="button" class="btn main" data-x="save">${esc(t('Save'))}</button></div>`, async (x, close) => {
-    if (x.dataset.x === 'sw') { const k = x.dataset.k; pick[k] = !pick[k]; x.setAttribute('aria-checked', String(pick[k])); }
-    if (x.dataset.x === 'what') invoke('open_url', { url: 'https://github.com/nvd123-YT/MarioKartCollection#saves-and-online-features' }).catch(fail);
-    if (x.dataset.x === 'save') { close(); await saveSettings(Object.assign({ data_asked: true }, pick), true); if (S.view === 'settings') render(true); }
-  }, t('Help Improve Mario Kart Collection?'));
+  // This build has no hosted telemetry or diagnostics service.
 }
 window.askData = askData;
 
@@ -7266,16 +7219,11 @@ function resetModal(what) {
 function aboutModal() {
   modal(`<div class="about"><img src="img/mark.svg" alt="" width="72" height="72"><h2 class="sr">Mario Kart Collection</h2><img class="about-wm" src="img/wordmark.svg" alt="" height="26">
     <p class="muted">${esc(tf('Version {v}', { v: verName(S.version) }))} · ${OS_NAME[S.os]} ${esc(S.arch)}</p>
-    <p>${esc(t('Recompiled and decompiled PC games: find, install, update and play them, straight from each developer\'s own GitHub.'))}</p>
-    <p class="muted" style="font-size:14px">${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp runs with your own copy of the game. Mario Kart Collection is free software under the GPL-3.0; each recomp has its own license, set by its developer.'))}</p>
-    ${discordUrl() ? `<div class="acts grid2"><button type="button" class="btn" data-x="site">this collection's GitHub repository</button><button type="button" class="btn dc-btn" data-x="discord" aria-label="Discord" title="Discord">${DISCORD}</button>
-      <button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button>
-      <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn main span2" data-x="no">${esc(t('Close'))}</button></div>` : `<div class="acts grid2"><button type="button" class="btn" data-x="site">this collection's GitHub repository</button><button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button>
-      <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button><button type="button" class="btn main" data-x="no">${esc(t('Close'))}</button></div>`}</div>`, async (x) => {
-    if (x.dataset.x === 'discord') invoke('open_url', { url: discordUrl() }).catch(fail);
+    <p>${esc(t('One library for eight existing Mario Kart recompilation projects. Each game is downloaded from its own developer and keeps its own runtime.'))}</p>
+    <p class="muted" style="font-size:14px">${esc(t('No game data, ROMs, keys or firmware are included. Bring your own legally obtained copies. Local save backups stay on this PC.'))}</p>
+    <div class="acts grid2"><button type="button" class="btn" data-x="site">${esc(t('GitHub repository'))}</button><button type="button" class="btn" data-x="issues">${esc(t('Report a launcher issue'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button><button type="button" class="btn main" data-x="no">${esc(t('Close'))}</button></div></div>`, async (x) => {
     if (x.dataset.x === 'site') invoke('open_url', { url: 'https://github.com/nvd123-YT/MarioKartCollection' }).catch(fail);
-    if (x.dataset.x === 'me') invoke('open_url', { url: 'https://www.elripalda.com' }).catch(fail);
-    if (x.dataset.x === 'kofi') invoke('open_url', { url: KOFI }).catch(fail);
+    if (x.dataset.x === 'issues') invoke('open_url', { url: 'https://github.com/nvd123-YT/MarioKartCollection/issues' }).catch(fail);
     if (x.dataset.x === 'update') checkLauncher(x);
   }, t('About Mario Kart Collection'));
 }
