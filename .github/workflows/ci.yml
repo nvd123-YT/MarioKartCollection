@@ -67,6 +67,11 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Generate collection icons
+        run: |
+          npx tauri icon src-tauri/icons/icon.svg --output src-tauri/icons
+          cp src-tauri/icons/32x32.png src-tauri/icons/tray.png
+
       - name: Verify Apple Silicon runner
         if: runner.os == 'macOS'
         run: test "$(uname -m)" = arm64
@@ -113,8 +118,8 @@ jobs:
         run: |
           mkdir -p artifacts
           bundle=src-tauri/target/release/bundle
-          codesign --verify --deep --strict "$bundle/macos/RecompLauncher.app"
-          ditto -c -k --sequesterRsrc --keepParent "$bundle/macos/RecompLauncher.app" artifacts/RecompLauncher-macOS-arm64.zip
+          codesign --verify --deep --strict "$bundle/macos/Mario Kart Collection.app"
+          ditto -c -k --sequesterRsrc --keepParent "$bundle/macos/Mario Kart Collection.app" artifacts/Mario-Kart-Collection-macOS-arm64.zip
           cp "$bundle"/dmg/*.dmg artifacts/
           cd artifacts
           shasum -a 256 *.zip *.dmg > SHA256SUMS
