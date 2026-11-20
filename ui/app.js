@@ -4040,7 +4040,7 @@ function updNotes(u) {
   if (u.self) {
     const n = S.selfNotes;
     if (n === undefined) { loadSelfNotes(); return `<p class="muted">${esc(t('Loading the notes…'))}</p>`; }
-    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on this the collection GitHub repository.'))}</p>`;
+    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on the collection GitHub repository.'))}</p>`;
   }
   if (!u.repo) return `<p class="muted">${esc(t('No notes for this one.'))}</p>`;
   const r = S.rels[u.repo];
@@ -4135,7 +4135,7 @@ function devTab(a) {
   if (r === undefined) { devCheck(id); return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`; }
   if (r === 'loading') return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`;
   const flow = FLOW_NAME[r.flow || ''] || FLOW_NAME[''];
-  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file on this the collection GitHub repository'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
+  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file in the collection GitHub repository'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
   const errs = r.items.filter((x) => x.level === 'err').length, warns = r.items.filter((x) => x.level === 'warn').length;
   return `<div class="stack">
     <div class="card dev-head"><div class="dev-sum"><span class="kick">${esc(t('Local build'))}</span><h3>${esc(src)}</h3>
@@ -4295,7 +4295,7 @@ function pageSettings() {
         ${(st.rom_dirs || []).length ? (st.rom_dirs || []).map((d) => `<div class="set-row"><div class="k"><b class="path">${esc(d)}</b><span>${esc(folderCounts(d))}</span></div><div class="acts"><button type="button" class="btn sm" data-act="folder" data-path="${esc(d)}">${esc(t('Open'))}</button><button type="button" class="btn sm danger" data-act="rom-remove" data-path="${esc(d)}">${esc(t('Remove'))}</button></div></div>`).join('') : `<p class="set-empty">${esc(t('No folders yet.'))}</p>`}
         ${nOwned ? `<p class="set-foot">${esc(tn(nOwned, '1 of your games has a recomp.', '{n} of your games have recomps.'))} <a href="#" data-go="home">${esc(t('See them on Home'))}</a></p>` : ''}`,
         `<span class="acts"><button type="button" class="btn sm" data-act="rom-scan">${esc(t('Look again'))}</button><button type="button" class="btn sm" data-act="rom-emus">${esc(t('From My Emulators'))}</button><button type="button" class="btn sm main" data-act="rom-add">${esc(t('Add a folder'))}</button></span>`)
-        + group(t('Desktop shortcuts'), row(t('Shortcuts Go Through the Launcher'), t('Off: a game\'s desktop shortcut starts the game itself, for front ends like RetroBat. On: it opens the launcher, which brings your shader, cloud saves and play time along.'), sw('shortcut_launcher', ui.shortcut_launcher, t('Shortcuts Go Through the Launcher'), 'ui-toggle')))
+        + group(t('Desktop shortcuts'), row(t('Shortcuts Go Through the Launcher'), t('Off: a game\'s desktop shortcut starts the game itself, for front ends like RetroBat. On: it opens the launcher, which brings your graphics settings, local save backups and play time along.'), sw('shortcut_launcher', ui.shortcut_launcher, t('Shortcuts Go Through the Launcher'), 'ui-toggle')))
         + (S.steam ? steamSyncGroup(group, row, sw) : '')
         + (S.os === 'windows' ? group(t('Picking files'), row(t('Use the Launcher\'s Own File Browser'), t('Off: Windows\' own window for picking files and folders. On: the launcher\'s, which marks the games it knows and can unzip.'), sw('own_picker', ui.own_picker, t('Use the Launcher\'s Own File Browser'), 'ui-toggle'))) : '')
         + group(t('Recomps you already have'), row(t('Bring them into the Library'), t('Games from another launcher, Steam or a folder. They update from here after that, in the same folder.'), `<button type="button" class="btn sm" data-act="mig-open">${esc(t('Bring Your Games'))}</button>`))
@@ -8058,7 +8058,7 @@ const TS_TEXT = [
   N_('No updates in 1 year'),
   N_('No updates in {n} years'),
   N_('This build comes as a Flatpak, and Flatpak isn\'t on this PC. Install Flatpak from your system\'s software center, or switch to another build on the game\'s page.'),
-  N_('This build comes as a Flatpak, and the Mario Kart Collection Flatpak is not allowed to install it. Allow it with: flatpak override --user --talk-name=org.freedesktop.Flatpak com.recomplauncher.Mario Kart Collection. Or switch to another build on the game page.'),
+  N_('This game package cannot be installed from inside the Mario Kart Collection Flatpak. Install it outside Flatpak or use another build from the game's page. Or switch to another build on the game page.'),
   N_('This Flatpak file doesn\'t say which app it holds, so it can\'t be installed. Switch to another build on the game\'s page.'),
   N_('Installing its Flatpak for the first time. It can take a few minutes; the game starts when it\'s done.'),
   N_('Unpacking the game into your Recomp Library. This happens once; it starts when it\'s done.'),
