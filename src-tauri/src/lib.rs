@@ -4,7 +4,6 @@
 //! games running) report back through events: `install` with a Progress, `game` when one starts
 //! or closes.
 
-pub mod ach;
 pub mod adopt;
 pub mod xex;
 mod appimage;
@@ -3231,41 +3230,6 @@ fn start_game_with_monitor_context(
     // An unpacked AppImage's AppRun: what its runtime would have set (APPDIR, ARGV0).
     #[cfg(target_os = "linux")]
     appimage_env(&mut cmd, &exe);
-    // Recomp Achievements (test accounts): the game's channel, named in RL_SESSION.
-    let mut ach_id = full_id.clone();
-    let ach_session = {
-        let cat = cached_catalog(&st);
-        let mut entry = catalog::app(&cat, id);
-        // A copy the player added of a listed game (a fork, another repo of the same developer):
-        // its achievements go by the listing's id.
-        if entry.is_none() && pick.is_none() {
-            let disc = || crate::xex::table_for(&g.path, &[g.path.clone()], &[]).map(|t| t.title_id).filter(|t| !t.is_empty());
-            if let Some((lid, how)) = listing_for_copy(&cat, &g.repo, disc) {
-                trail::note(format!("Achievements {id}: a copy of the listing {lid} (the same {how}), so its achievements go by {lid}"));
-                ach::set_alias(&st.dir, id, &lid);
-                entry = catalog::app(&cat, &lid);
-                ach_id = lid;
-            }
-        }
-        let origin = entry.map(|e| str_of(e, "origin").to_string()).unwrap_or_default();
-        let folder = entry.and_then(|e| e.get("achievements_folder").and_then(Value::as_str).or_else(|| e.pointer("/achievements/folder").and_then(Value::as_str))).map(str::to_string);
-        let mut roots = vec![g.path.clone()];
-        if let Some(p) = g.path.parent() {
-            roots.push(p.join("Game Copies").join(library::folder_name(id)));
-        }
-        let title = entry.and_then(catalog_title);
-        // One game of several: its own list (by its full id), and only its own unlock file.
-        match &pick {
-            Some(pk) => {
-                let title = Some(pk.game.title_id.clone()).filter(|t| !t.is_empty());
-                ach::start(app, ach::Start { id: &full_id, play_id: id, name: &pk.game.name, version: &g.tag, install: &g.path, origin: &origin, prof: prof.as_ref(), catalog_folder: folder, title, roots })
-            }
-            None => ach::start(app, ach::Start { id: &ach_id, play_id: id, name: &g.name, version: &g.tag, install: &g.path, origin: &origin, prof: prof.as_ref(), catalog_folder: folder, title, roots }),
-        }
-    };
-    if let Some(p) = &ach_session {
-        cmd.env("RL_SESSION", p);
-    }
     note_run(&st, id, &g, &exe, &args, &cwd, prof.as_ref(), look_run.is_some());
     trail::note(format!("Play {id}: {}{}", exe.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default(), if look_run.is_some() { " with a Look" } else { "" }));
     let spawned = cmd.spawn();
@@ -3286,9 +3250,6 @@ fn start_game_with_monitor_context(
         trail::note(format!("Play {id}: didn't start: {e}"));
     }
     if spawned.is_err() {
-        if ach_session.is_some() {
-            ach::abort(app, &ach_id);
-        }
         if let Some(p) = look_run.as_ref().and_then(|r| r.placed.as_ref()) {
             looks::finish(&st.dir, id, p);
         }
@@ -3346,7 +3307,6 @@ fn start_game_with_monitor_context(
     st.started.lock().unwrap().insert(id.clone(), started);
     // Which of its games is being played (a recomp that carries several), for the window.
     let game_full = pick.as_ref().map(|_| full_id.clone());
-    let ach_game = ach_id.clone();
     let game_sub = pick.as_ref().map(|p| p.game.id.clone());
     PLAYING_GAME.lock().unwrap().get_or_insert_with(HashMap::new).insert(id.clone(), full_id.clone());
     let placed = look_run.as_ref().and_then(|r| r.placed.clone());
@@ -3476,7 +3436,6 @@ fn start_game_with_monitor_context(
             st.started.lock().unwrap().remove(&id);
             #[cfg(windows)]
             win::forget_game_process(&id);
-            ach::end(&app2, &ach_game);
             if let Some(m) = PLAYING_GAME.lock().unwrap().as_mut() {
                 m.remove(&id);
             }
@@ -10000,8 +9959,6 @@ pub fn run() {
                 looked: Mutex::new(HashSet::new()),
                 headless: AtomicBool::new(play.is_some()),
             });
-            // Achievements: what the website said about this account last time.
-            ach::init(&app.state::<App>().dir);
             #[cfg(windows)]
             watch_outside(app.handle().clone());
             // Text Size from last time.
@@ -10066,7 +10023,6 @@ pub fn run() {
                 eprintln!("No tray icon: {e}");
             }
             // Games sent from the website, while signed in.
-            cloud::watch_inbox(app.handle().clone());
             // Settings → Keep Steam in Sync: written whenever Steam is found closed.
             steam_sync::start(app.handle().clone());
             // A new RecompLauncher: the window looks as it opens; after that, every six hours or so
@@ -10232,14 +10188,14 @@ pub fn run() {
             save_settings, list_monitors, prepare_tv_mode, leave_tv_mode, open_url, libraries, move_game, game_sizes, backups, backup_now, restore_backup, pc_check, set_ui_scale, update_retry, ge_proton_install, proton_now, repo_readme, install_vcredist, scan_roms, rom_matches, copy_files, support_local,
             desktop_shortcut, open_app_control, fs_paste, portable_info, make_portable, add_to_steam, launcher_to_steam, steam_sync::steam_sync_now, steam_sync::steam_sync_state, steam_sync::steam_remove_all, recent_log, screenshots, open_shots, overlay_action, overlay_state, is_handheld, skip_backup, set_cover, art::art_source, art::art_open, art::art_save, art::art_search, art::art_for, all_screenshots, delete_screenshot,
             copy_screenshot, show_screenshot, controllers, prefetch_images, versions, build_check, news, game_info, mods_state, mods_online,
-            mod_install, mod_remove, open_mods, send_report, beta_feedback, game_programs, run_program, game_root, boot::boot_builtin, update_launcher, resume_game, game_setup, set_game_copy, free_up_space, move_build, set_update_copy, set_game_setting, set_game_slider, set_game_binding, reset_game_bindings, usage::report_preview, usage::profile_report, usage::my_reports, usage::report_reply,
-            recomp_games, adopt::move_listing, update_info, set_proxy, umu_repair, dlss_fetch, dlss_set, dlss_state, dlss_remove, cloud::library_pull, cloud::library_push, cloud::playtime_push, cloud::playtime_pull, cloud::saves_open_backups, game_action, setup_copy, setup_cancel, setup_status, setup_begin, setup_end, setup_input_set, setup_key_remove, setup_inputs_run, setup_use_build, easy_setup, set_game_options,
+            mod_install, mod_remove, open_mods, send_report, beta_feedback, game_programs, run_program, game_root, boot::boot_builtin, update_launcher, resume_game, game_setup, set_game_copy, free_up_space, move_build, set_update_copy, set_game_setting, set_game_slider, set_game_binding, reset_game_bindings, 
+            recomp_games, adopt::move_listing, update_info, set_proxy, umu_repair, dlss_fetch, dlss_set, dlss_state, dlss_remove, cloud::saves_open_backups, game_action, setup_copy, setup_cancel, setup_status, setup_begin, setup_end, setup_input_set, setup_key_remove, setup_inputs_run, setup_use_build, easy_setup, set_game_options,
             set_prepare_opts,
             convert_plan,
             convert_copy,
             convert_cancel, looks_info, set_look, look_picture, ui_data,
-            reset_settings, tray::tray_words, tray::quit_launcher, ach::ach_access, ach::ach_status, ach::ach_apply, ach::ach_profile, ach::ach_games, ach::ach_board, ach::ach_game_web, ach::ach_report, ach::ach_tracker_get, ach::ach_game, ach::ach_set_disc, ach::ach_set_folder, ach::ach_sound, ach::ach_log, ach::ach_peek, ach::ach_rule, ach::ach_reset, ach::ach_test_toast, ach::ach_toast_take, ach::ach_toast_done, cloud::account_start, cloud::account_poll, cloud::account_cancel, cloud::account_state, cloud::account_signout,
-            cloud::saves_check, cloud::saves_pick, cloud::saves_cloud, download_history, report_counts, play_reports, cloud::saves_info, cloud::saves_status, cloud::saves_upload_now, cloud::cloud_retry, cloud::saves_overview, cloud::saves_backup, cloud::saves_restore, cloud::saves_cloud_delete, cloud::saves_share, cloud::saves_set_place, cloud::saves_add_place, cloud::saves_remove_place, cloud::saves_open, saves_set_root, saves_open_root, missing_files, missing_made, dll_check, dll_aside, gpu_choice, prefer_fast_gpu, copy_check, wine_tools, deck_scores, latest_counts, team_notes, trending, ig_info, ig_view, usage::notifies, usage::notify, usage::pc_specs, usage::recomp_request,
+            reset_settings, tray::tray_words, tray::quit_launcher,
+            download_history, cloud::saves_info, cloud::saves_status, cloud::saves_overview, cloud::saves_backup, cloud::saves_restore, cloud::saves_share, cloud::saves_set_place, cloud::saves_add_place, cloud::saves_remove_place, cloud::saves_open, saves_set_root, saves_open_root, missing_files, missing_made, dll_check, dll_aside, gpu_choice, prefer_fast_gpu, copy_check, wine_tools, deck_scores, latest_counts, team_notes, trending, ig_info, ig_view, usage::pc_specs, usage::recomp_request,
             adopt::adopt_scan, adopt::migrate_scan, adopt::migrate_pick, adopt::adopt_pick, adopt::adopt_add, adopt::adopt_check, adopt::set_project, usage::usage_hello, usage::usage_event, usage::data_ids, usage::reset_ids, ping::usage_open, ping::usage_mode, usage::run_report, cloud::inbox, cloud::inbox_done, cloud::betas, cloud::beta_join, cloud::beta_leave, launcher_notes, scan_info, devtools::dev_add, devtools::add_any, devtools::dev_check, devtools::dev_starter, fs_places, fs_list, fs_extract, gb_mods, gb_mod, gb_install
         ])
         .build(tauri::generate_context!())

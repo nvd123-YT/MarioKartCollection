@@ -187,7 +187,6 @@ function sideOnce() {
     order = order.filter((k) => k !== 'discover' && k !== 'achievements');
     const h = order.indexOf('home');
     order.splice(h >= 0 ? h + 1 : 0, 0, 'discover');
-    order.push('achievements');
   }
   saveUi({ side_v26: true, side_order: order }, true);
 }
@@ -1236,7 +1235,7 @@ function actions(a, size = 'big') {
     case 'paused': return progress(a.id) + `<button type="button" class="${sq}" data-act="dl-resume" data-id="${id}" aria-label="${esc(t('Resume'))}" title="${esc(t('Resume'))}">${PLAY.replace(/18/g, '14')}</button><button type="button" class="${sq}" data-act="cancel" data-id="${id}" aria-label="${esc(t('Cancel'))}" title="${esc(t('Cancel'))}">${XS}</button>` + (size === 'big' ? more : '');
     case 'update': return b('main', 'install', esc(t('Update')), DOWN) + b('', 'play', esc(t('Play')), PLAY) + more;
     case 'installed': return setupDue(a) ? b('main warn', 'setupreq', esc(t('Set Up')), WRENCH) + more : easyNotReady(a.id) ? b('main', 'setup', esc(t('Set up')), DISC_S.replace(/14/g, '18')) + more : isServer(a) ? b('main', 'play', esc(t('Start Server')), PLAY) + more : size === 'big' && otherInstalled(a).length ? `<span class="split">${withBuildLine(a, size, b('main', 'play', esc(t('Play')), PLAY))}<button type="button" class="btn ${size} main caret" data-act="play-pick" data-id="${id}" aria-label="${esc(t('Play another version'))}" title="${esc(t('Play another version'))}"><svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 4.5 3.5 3.5 3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span>` + more : withBuildLine(a, size, b('main', 'play', esc(t('Play')), PLAY)) + more;
-    case 'soon': return (a.custom ? `<button type="button" class="btn ${size}" disabled>${esc(t('Coming soon'))}</button>` : notifyOn(a.id) ? b('notify-on', 'notify', esc(t('We\'ll Email You')), BELL(18)) : b('main', 'notify', esc(t('Notify Me')), BELL(18))) + more;
+    case 'soon': return `<button type="button" class="btn ${size}" disabled>${esc(t('Coming soon'))}</button>` + more;
     case 'nobuild': return S.os === 'linux' && hasWindowsBuild(a) ? b('main', 'use-proton', esc(t('Play With Proton')), PLAY) + more : `<button type="button" class="btn ${size}" disabled>${esc(tf('No {os} version yet', { os: OS_NAME[S.os] }))}</button>` + more;
     // Easy Setup games say so: one press installs it and asks for the player's copy.
     default: return (isSaved(a.id) ? (turnkey(a) ? b('main easy', 'install', esc(t('Easy Install')) + (a.size ? ` <span style="opacity:.7;font-weight:600">· ${esc(a.size)}</span>` : ''), DISC_S.replace(/14/g, '18')) : b('main', 'install', esc(t('Install')) + (a.size ? ` <span style="opacity:.7;font-weight:600">· ${esc(a.size)}</span>` : ''), DOWN)) : b('main', 'addlib', esc(t('Add to Library')), PLUS)) + (needsSetup(a) && size === 'big' ? b('warn-o', 'setupreq', esc(t('Setup Required')), WRENCH) : '') + (size === 'big' && !a.custom ? b('glass', 'have-it', esc(t('Locate Installed')), FOLDER_FIND) : '') + more;
@@ -2321,7 +2320,7 @@ function gameTabs(a) {
   const id = a.id, inst = S.library[id];
   const su = S.setup[id];
   const local = inst && inst.local && inst.tag !== 'own';
-  const tabs = (local ? [['dev', t('Developer')], ['overview', t('Overview')]] : inst && inst.local ? [['overview', t('Overview')]] : [['overview', t('Overview')]].concat(a.repo ? [['updates', t('Updates')]] : [])).concat((su && su !== 'loading') || (su === 'loading' && inst && S.easy.has(id)) ? [['settings', t('Game settings'), su && su.beta && su.settings && su.settings.length ? BETA_MARK() : '']] : [], inst && looksHere() ? [['looks', t('Shaders')]] : [], S.mods[id] && S.mods[id] !== 'loading' ? [['mods', t('Mods')]] : [], inst ? [['saves', t('Saves')]] : [], inst ? [['installed', t('Manage')]] : [], window.achTabs ? window.achTabs(id) : [], window.pluginTabs ? window.pluginTabs(id) : []);
+  const tabs = (local ? [['dev', t('Developer')], ['overview', t('Overview')]] : inst && inst.local ? [['overview', t('Overview')]] : [['overview', t('Overview')]].concat(a.repo ? [['updates', t('Updates')]] : [])).concat((su && su !== 'loading') || (su === 'loading' && inst && S.easy.has(id)) ? [['settings', t('Game settings'), su && su.beta && su.settings && su.settings.length ? BETA_MARK() : '']] : [], inst && looksHere() ? [['looks', t('Shaders')]] : [], S.mods[id] && S.mods[id] !== 'loading' ? [['mods', t('Mods')]] : [], inst ? [['saves', t('Saves')]] : [], inst ? [['installed', t('Manage')]] : [], window.pluginTabs ? window.pluginTabs(id) : []);
   if (!tabs.some(([k]) => k === S.tab)) S.tab = local ? 'dev' : 'overview';
   return tabs;
 }
@@ -2339,35 +2338,13 @@ async function loadReports() {}
 // `seq` goes up with every look and every press, so an answer that comes back after a newer one
 // (or after a press) is left out.
 const NOTIFY = { set: new Set(), pending: null, seq: 0 };
-const notifyOn = (id) => NOTIFY.set.has(id);
-async function loadNotifies() {
-  const before = [...NOTIFY.set].sort().join();
-  const seq = ++NOTIFY.seq;
-  if (!(S.account && S.account.signedIn)) NOTIFY.set = new Set();
-  else {
-    try {
-      const list = await invoke('notifies');
-      if (seq !== NOTIFY.seq) return;
-      NOTIFY.set = new Set(list || []);
-    } catch (e) { /* kept as it was */ }
-  }
-  if ([...NOTIFY.set].sort().join() !== before) notifyRedraw();
-}
+const notifyOn = () => false;
+async function loadNotifies() { NOTIFY.set = new Set(); }
 function notifyRedraw() {
   if (S.view === 'game') refreshGame(); else if (S.view === 'discover' && $('#dlist')) morphList($('#dlist'), discoverGrid()); else render(true);
   if (window.tvRefresh && document.body.classList.contains('tv-on')) window.tvRefresh();
 }
-async function toggleNotify(id) {
-  // Not signed in: the sign-in first, and it's turned on once that's done.
-  if (!(S.account && S.account.signedIn)) { NOTIFY.pending = id; return signIn(false); }
-  const on = !notifyOn(id);
-  let r;
-  try { r = await invoke('notify', { id, on }); } catch (e) { return fail(e); }
-  NOTIFY.seq++;
-  if (r) NOTIFY.set.add(id); else NOTIFY.set.delete(id);
-  toast(r ? t('We\'ll email you when it comes out.') : t('You won\'t get an email about it.'));
-  notifyRedraw();
-}
+async function toggleNotify() { toast(t('Email notifications are not part of this collection.')); }
 window.toggleNotify = toggleNotify;
 window.notifyOn = notifyOn;
 // Just signed in (or the launcher started signed in): their list, and the one they pressed first.
@@ -4156,7 +4133,6 @@ function devTab(a) {
 const SET_ICONS = {
   playing: '<circle cx="12" cy="12" r="9"/><path d="m10 8.5 5 3.5-5 3.5z"/>',
   report: '<path d="M5 21V4.5"/><path d="M5 4.5h11l-2 4 2 4H5"/>',
-  account: '<circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>',
   general: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/>',
   library: '<path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H10l2 2.5h7.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/>',
   updates: '<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"/>',
@@ -4281,9 +4257,6 @@ function pageSettings() {
       break;
     case 'beta':
       body = window.betaSection ? window.betaSection(group, row) : '';
-      break;
-    case 'account':
-      body = accountSection(group, row);
       break;
     case 'library':
       body = group(t('Recomp Library'), `<p class="set-note">${esc(t('Each game gets its own folder in a library. Add folders on other drives to spread games out; new games go to the default one unless you pick another when you install.'))}</p>
@@ -4506,7 +4479,7 @@ function render(keepScroll) {
   // A plugin's page keeps running while the rest of the window is redrawn.
   if (v.startsWith('plug:') && !S.anim && main.dataset.v === v) { renderSide(); paintIsland(); $('#offline').hidden = !offNow(); return; }
   if (keepScroll && v === 'game' && !S.anim && gp && gp.dataset.gp === S.arg) { refreshGame(); renderSide(); paintIsland(); $('#offline').hidden = !offNow(); fitTitles(main); return; }
-  const html = v === 'discover' ? pageDiscover() : v === 'library' ? pageLibrary() : v === 'achievements' ? pageAchievements() : v === 'game' ? pageGame(S.arg) : v === 'downloads' ? pageDownloads() : v === 'settings' ? pageSettings() : v === 'shots' ? pageShots() : v === 'soon' ? pageSoon() : v === 'saves' && window.pageSaves ? window.pageSaves() : v.startsWith('plug:') && window.pagePlugin ? window.pagePlugin(v.slice(5)) : pageHome();
+  const html = v === 'discover' ? pageDiscover() : v === 'library' ? pageLibrary() : v === 'records' ? pageRecords() : v === 'game' ? pageGame(S.arg) : v === 'downloads' ? pageDownloads() : v === 'settings' ? pageSettings() : v === 'shots' ? pageShots() : v === 'soon' ? pageSoon() : v === 'saves' && window.pageSaves ? window.pageSaves() : v.startsWith('plug:') && window.pagePlugin ? window.pagePlugin(v.slice(5)) : pageHome();
   // Going to a page draws it fresh, with its entrance. Anything else (the same page with new
   // data) is patched in place, so nothing on screen flickers.
   // Redrawing the same page: whatever was at the top of the view stays there, even when something
@@ -6900,8 +6873,64 @@ async function loadAllShots() {
 const shotList = () => (S.allShots || []).filter((x) => !S.shotsGame || x.id === S.shotsGame);
 const when = (ts) => new Date(ts * 1000).toLocaleString(curLocale(), timeOpts({ month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }));
 
-// Achievements: the page itself is in achievements.js (testers, and the alpha page for everyone else).
-function pageAchievements() { return window.achPage ? window.achPage() : ''; }
+// ---------- Mario Kart records: local-only time trials and race totals ----------
+const MK_RECORD_GAMES = [
+  ['smk', 'Super Mario Kart'], ['mk64', 'Mario Kart 64'], ['mksc', 'Mario Kart: Super Circuit'],
+  ['mkds', 'Mario Kart DS'], ['mkwii', 'Mario Kart Wii'], ['mk7', 'Mario Kart 7'],
+  ['mk8dx', 'Mario Kart 8 Deluxe'], ['mkworld', 'Mario Kart World'],
+];
+function mkRecordData() {
+  const raw = (S.settings.ui || {}).mk_records || {};
+  return { trials: Array.isArray(raw.trials) ? raw.trials.filter((r) => r && typeof r === 'object') : [],
+    stats: raw.stats && typeof raw.stats === 'object' && !Array.isArray(raw.stats) ? Object.assign({}, raw.stats) : {} };
+}
+function mkGameName(id) { const g = MK_RECORD_GAMES.find((x) => x[0] === id); return g ? g[1] : (id || 'Mario Kart'); }
+function mkTimeSeconds(value) {
+  const m = /^(\d{1,2}):([0-5]\d)\.(\d{1,3})$/.exec(String(value || '').trim());
+  return m ? Number(m[1]) * 60 + Number(m[2]) + Number(m[3].padEnd(3, '0')) / 1000 : Infinity;
+}
+function mkNumber(value) { const n = Number(value); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0; }
+function pageRecords() {
+  const data = mkRecordData(), ui = S.settings.ui || {};
+  const statGame = MK_RECORD_GAMES.some((g) => g[0] === ui.mk_stats_game) ? ui.mk_stats_game : 'mk7';
+  const stat = data.stats[statGame] || {};
+  const games = MK_RECORD_GAMES.map((g) => '<option value="' + g[0] + '">' + esc(g[1]) + '</option>').join('');
+  const statGames = MK_RECORD_GAMES.map((g) => '<option value="' + g[0] + '"' + (g[0] === statGame ? ' selected' : '') + '>' + esc(g[1]) + '</option>').join('');
+  const trials = data.trials.slice().sort((a, b) => mkTimeSeconds(a.time) - mkTimeSeconds(b.time) || String(b.date || '').localeCompare(String(a.date || '')));
+  const rows = trials.length ? trials.map((r) => {
+    const details = [r.cc, r.character, r.vehicle, r.build, r.date].filter(Boolean).map(esc).join(' · ');
+    return '<article class="mkr-row"><div class="mkr-time">' + esc(r.time || '') + '</div><div class="mkr-detail"><b>' + esc(r.course || 'Untitled course') + '</b><span>' + esc(mkGameName(r.game)) + (details ? ' · ' + details : '') + '</span>' + (r.ghost ? '<small>Ghost: ' + esc(r.ghost) + '</small>' : '') + (r.notes ? '<small>' + esc(r.notes) + '</small>' : '') + '</div><button type="button" class="icon-btn" data-act="record-delete" data-id="' + esc(r.id || '') + '" title="' + esc(t('Delete record')) + '" aria-label="' + esc(t('Delete record')) + '">' + XMARK + '</button></article>';
+  }).join('') : '<div class="mkr-empty"><b>' + esc(t('No time trials recorded yet')) + '</b><span>' + esc(t('Add your first course time above. Your records stay on this device.')) + '</span></div>';
+  const statsCount = Object.keys(data.stats).filter((k) => data.stats[k] && Object.values(data.stats[k]).some((v) => mkNumber(v) > 0)).length;
+  const wins = mkNumber(stat.wins), races = mkNumber(stat.races), rate = races ? Math.round(wins / races * 100) + '%' : '—';
+  return '<div class="page mkr-page"><div class="head"><div><h1>' + esc(t('Mario Kart Records')) + '</h1><p>' + esc(t('Your personal time trials and race statistics, stored locally on this device.')) + '</p></div></div>' +
+    '<section class="card mkr-card"><div class="mkr-section-head"><div><h2>' + esc(t('Log a Time Trial')) + '</h2><p>' + esc(t('Record a course time from any build or alternative.')) + '</p></div></div>' +
+    '<div class="mkr-form-grid">' +
+    '<label>' + esc(t('Game')) + '<select class="sel" id="mk-record-game">' + games + '</select></label>' +
+    '<label>' + esc(t('Course')) + '<input class="field" id="mk-record-course" maxlength="80" placeholder="' + esc(t('e.g. Luigi Circuit')) + '"></label>' +
+    '<label>' + esc(t('Engine class')) + '<select class="sel" id="mk-record-cc"><option>50cc</option><option>100cc</option><option selected>150cc</option><option>200cc</option><option>' + esc(t('Mirror')) + '</option><option>' + esc(t('Other')) + '</option></select></label>' +
+    '<label>' + esc(t('Time (m:ss.mmm)')) + '<input class="field" id="mk-record-time" maxlength="10" placeholder="1:42.315" inputmode="decimal"></label>' +
+    '<label>' + esc(t('Character')) + '<input class="field" id="mk-record-character" maxlength="60" placeholder="' + esc(t('Optional')) + '"></label>' +
+    '<label>' + esc(t('Vehicle')) + '<input class="field" id="mk-record-vehicle" maxlength="60" placeholder="' + esc(t('Optional')) + '"></label>' +
+    '<label>' + esc(t('Build / alternative')) + '<input class="field" id="mk-record-build" maxlength="100" placeholder="' + esc(t('e.g. MK7Recomp 1.0.5')) + '"></label>' +
+    '<label>' + esc(t('Date')) + '<input class="field" id="mk-record-date" type="date" value="' + new Date().toISOString().slice(0, 10) + '"></label>' +
+    '<label class="mkr-wide">' + esc(t('Ghost / replay reference (optional)')) + '<input class="field" id="mk-record-ghost" maxlength="240" placeholder="' + esc(t('Local file path or URL')) + '"></label>' +
+    '<label class="mkr-wide">' + esc(t('Notes')) + '<input class="field" id="mk-record-notes" maxlength="240" placeholder="' + esc(t('Setup, conditions or anything else')) + '"></label>' +
+    '</div><div class="acts"><button type="button" class="btn main" data-act="record-add">' + esc(t('Save Time Trial')) + '</button></div></section>' +
+    '<section class="card mkr-card"><div class="mkr-section-head"><div><h2>' + esc(t('Race Statistics')) + '</h2><p>' + esc(t('Keep manual totals for races and modes that do not report stats to the collection.')) + '</p></div><span class="mkr-count">' + esc(tn(statsCount, '1 game tracked', '{n} games tracked')) + '</span></div>' +
+    '<div class="mkr-form-grid mkr-stats-grid">' +
+    '<label>' + esc(t('Game')) + '<select class="sel" id="mk-stat-game" data-act="record-stats-game">' + statGames + '</select></label>' +
+    '<label>' + esc(t('Races')) + '<input class="field" id="mk-stat-races" type="number" min="0" max="9999999" value="' + mkNumber(stat.races) + '"></label>' +
+    '<label>' + esc(t('Wins')) + '<input class="field" id="mk-stat-wins" type="number" min="0" max="9999999" value="' + wins + '"></label>' +
+    '<label>' + esc(t('VR / rating')) + '<input class="field" id="mk-stat-rating" type="number" min="0" max="99999999" value="' + mkNumber(stat.rating) + '"></label>' +
+    '<label>' + esc(t('Coins collected')) + '<input class="field" id="mk-stat-coins" type="number" min="0" max="99999999" value="' + mkNumber(stat.coins) + '"></label>' +
+    '<label>' + esc(t('Cups / trophies')) + '<input class="field" id="mk-stat-cups" type="number" min="0" max="999999" value="' + mkNumber(stat.cups) + '"></label>' +
+    '</div><div class="mkr-stat-summary"><span><b>' + wins + '</b><small>' + esc(t('Wins')) + '</small></span><span><b>' + races + '</b><small>' + esc(t('Races')) + '</small></span><span><b>' + rate + '</b><small>' + esc(t('Win rate')) + '</small></span><span><b>' + mkNumber(stat.rating).toLocaleString() + '</b><small>' + esc(t('Rating')) + '</small></span></div>' +
+    '<div class="acts"><button type="button" class="btn main" data-act="record-stats-save">' + esc(t('Save Statistics')) + '</button></div></section>' +
+    '<section class="mkr-trials"><div class="mkr-section-head"><div><h2>' + esc(t('Time Trial History')) + '</h2><p>' + esc(tn(trials.length, '1 saved time', '{n} saved times')) + '</p></div></div><div class="mkr-list">' + rows + '</div></section>' +
+    '<p class="mkr-foot">' + esc(t('Records are local to this installation. They are not connected to an account, leaderboard or online service.')) + '</p></div>';
+}
+window.pageRecords = pageRecords;
 
 // Coming Soon: every recomp the catalog announces before its first release, newest first. Not only
 // this PC's: a game that's coming tells the player what to look forward to, whatever it runs on.
@@ -6914,7 +6943,7 @@ function pageSoon() {
   const req = `<button type="button" class="btn main" data-act="recomp-req">${PLUS}${esc(t('Request a Recomp'))}</button>`;
   // The count sits beside the title, small, where Discover puts its own above the grid.
   const count = list.length ? `<span class="count-line soon-n">${esc(tn(list.length, '1 recomp on the way', '{n} recomps on the way'))}</span>` : '';
-  return `<div class="page">${offlineNote()}<div class="head"><div><div class="soon-title"><h1>${esc(t('Coming Soon'))}</h1>${count}</div><p>${esc(t('Recomps on the way. Press Notify Me on one and you get an email the day it comes out.'))}</p></div>${req}</div>
+  return `<div class="page">${offlineNote()}<div class="head"><div><div class="soon-title"><h1>${esc(t('Coming Soon'))}</h1>${count}</div><p>${esc(t('Projects announced for a future release.'))}</p></div>${req}</div>
     ${list.length ? `<div class="grid" data-n="${list.length}">${list.map((a) => tile(a)).join('')}</div>`
       : `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CAL_CLOCK}</svg><h2>${esc(t('Nothing announced right now'))}</h2><p>${esc(t('Know of a recomp the launcher should have? Press Request a Recomp to ask for it.'))}</p></div>`}
   </div>`;
@@ -8317,6 +8346,25 @@ async function act(el, e) {
   if (a === 'adopt' && window.adoptAct) return window.adoptAct(a, el);
   if (/^mig-/.test(a) && window.migrateAct) return window.migrateAct(a, el);
   switch (a) {
+    case 'record-add': {
+      const val = (id) => (($('#' + id) || {}).value || '').trim();
+      const game = val('mk-record-game'), course = val('mk-record-course'), time = val('mk-record-time');
+      if (!MK_RECORD_GAMES.some((g) => g[0] === game)) return toast(t('Choose a game first.'), true);
+      if (!course) return toast(t('Enter a course name.'), true);
+      if (!Number.isFinite(mkTimeSeconds(time))) return toast(t('Enter a time in m:ss.mmm format, such as 1:42.315.'), true);
+      const data = mkRecordData();
+      data.trials.push({ id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8), game, course, time, cc: val('mk-record-cc'), character: val('mk-record-character'), vehicle: val('mk-record-vehicle'), build: val('mk-record-build'), date: val('mk-record-date') || new Date().toISOString().slice(0, 10), ghost: val('mk-record-ghost'), notes: val('mk-record-notes') });
+      await saveUi({ mk_records: data }, true); toast(t('Time trial saved on this device.')); return render(true);
+    }
+    case 'record-delete': { const data = mkRecordData(); data.trials = data.trials.filter((r) => String(r.id) !== String(id)); await saveUi({ mk_records: data }, true); return render(true); }
+    case 'record-stats-save': {
+      const game = (($('#mk-stat-game') || {}).value || (S.settings.ui || {}).mk_stats_game || 'mk7');
+      const val = (id) => mkNumber((($('#' + id) || {}).value || 0));
+      const races = val('mk-stat-races'), wins = val('mk-stat-wins');
+      if (wins > races) return toast(t('Wins cannot be higher than races.'), true);
+      const data = mkRecordData(); data.stats[game] = { races, wins, rating: val('mk-stat-rating'), coins: val('mk-stat-coins'), cups: val('mk-stat-cups') };
+      await saveUi({ mk_records: data }, true); toast(t('Race statistics saved on this device.')); return render(true);
+    }
     case 'scan-report': e.preventDefault(); e.stopPropagation(); return invoke('open_url', { url: el.dataset.url }).catch(fail);
     case 'open': e.preventDefault(); closeMenu(); return go('game', id, el.closest('.tile') ? el : null);
     case 'back': return back();
@@ -8671,13 +8719,14 @@ document.addEventListener('click', (e) => {
   const link = e.target.closest('[data-url]:not([data-act])');
   if (link) { e.preventDefault(); invoke('open_url', { url: link.dataset.url }).catch(fail); return; }
   const g = e.target.closest('[data-go]');
-  if (g) { e.preventDefault(); if (['home', 'discover', 'soon', 'library', 'achievements', 'downloads', 'shots', 'saves', 'settings'].includes(g.dataset.go) || g.dataset.go.startsWith('plug:')) { if (g.closest('.side')) { if (g.dataset.go === 'discover') S.find.genre = ''; if (g.dataset.go === 'shots') S.shotsGame = ''; } go(g.dataset.go); } return; }
+  if (g) { e.preventDefault(); if (['home', 'discover', 'soon', 'library', 'records', 'downloads', 'shots', 'saves', 'settings'].includes(g.dataset.go) || g.dataset.go.startsWith('plug:')) { if (g.closest('.side')) { if (g.dataset.go === 'discover') S.find.genre = ''; if (g.dataset.go === 'shots') S.shotsGame = ''; } go(g.dataset.go); } return; }
   const a = e.target.closest('[data-act]');
   if (a && a.tagName !== 'SELECT') { if (a.closest('.menu')) closeMenu(); act(a, e); }
 });
 document.addEventListener('change', (e) => {
   const s = e.target.closest('select[data-act]');
   if (!s) return;
+  if (s.dataset.act === 'record-stats-game') { saveUi({ mk_stats_game: s.value }, true).then(() => render(true)); return; }
   if (s.dataset.act === 'tvmonitor') return saveSettings({ tv_monitor: s.value });
   if (s.dataset.act === 'gsel') return setGameSetting(s.dataset.id, s.dataset.k, s.value);
   if (s.dataset.act === 'lang') return setLanguage(s.value);

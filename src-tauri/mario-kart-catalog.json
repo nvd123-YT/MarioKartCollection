@@ -156,6 +156,49 @@
       },
       "description": "Early Mario Kart World recompilation with Windows and Linux x86-64 packages. It requires your own supported game dump and project-specific setup prerequisites.",
       "blurb": "Early Mario Kart World recompilation with Windows and Linux x86-64 packages. It requires your own supported game dump and project-specific setup prerequisites."
+    },
+    {
+      "id": "mksc-neo",
+      "name": "MKSC Neo",
+      "game": "Mario Kart: Super Circuit",
+      "repo": "arcanite24/mksc-neo",
+      "origin": "gba",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "macos",
+        "linux"
+      ],
+      "featured": true,
+      "assets": {
+        "windows": "*windows-x64.zip",
+        "macos": "*macos-universal.zip",
+        "linux": "*linux-x86_64.tar.gz"
+      },
+      "description": "Alternative native C/SDL3 re-implementation of Super Circuit, based on the original game's decompilation. Not the gbarecomp static recomp project. Publishes a universal macOS build and imports your own US ROM locally.",
+      "blurb": "Alternative native C/SDL3 re-implementation of Super Circuit, based on the original game's decompilation. Not the gbarecomp static recomp project. Publishes a universal macOS build and imports your own US ROM locally."
+    },
+    {
+      "id": "mkwii-enhanced",
+      "name": "Mario Kart Wii (Enhanced)",
+      "game": "Mario Kart Wii",
+      "repo": "nvd123-YT/MarioKartWiiCompiled-Enhanced",
+      "origin": "wii",
+      "genre": "racing",
+      "systems": [
+        "windows",
+        "macos",
+        "linux"
+      ],
+      "featured": true,
+      "installer": true,
+      "assets": {
+        "windows": "*Setup.exe",
+        "macos": "*Setup.dmg",
+        "linux": "*x86_64.AppImage"
+      },
+      "description": "Your enhanced Wiicompiled alternative. Releases include a Windows setup, macOS DMG and Linux AppImages. Uses the game's own setup flow and your own disc.",
+      "blurb": "Your enhanced Wiicompiled alternative. Releases include a Windows setup, macOS DMG and Linux AppImages. Uses the game's own setup flow and your own disc."
     }
   ],
   "origins": [
@@ -190,6 +233,26 @@
     {
       "id": "wii",
       "name": "Nintendo Wii"
+    }
+  ],
+  "titles": [
+    {
+      "id": "mksc-versions",
+      "name": "Mario Kart: Super Circuit",
+      "pc": [
+        "mksc",
+        "mksc-neo"
+      ],
+      "pick": "mksc"
+    },
+    {
+      "id": "mkwii-versions",
+      "name": "Mario Kart Wii",
+      "pc": [
+        "mkwii",
+        "mkwii-enhanced"
+      ],
+      "pick": "mkwii-enhanced"
     }
   ]
 }

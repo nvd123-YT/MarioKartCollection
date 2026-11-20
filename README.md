@@ -10,14 +10,14 @@ Mario Kart Collection is a customized fork of [RecompLauncher](https://github.co
 |---|---:|---:|---:|---|
 | Super Mario Kart | Yes | — | — | [SMKSNESRecomp](https://github.com/mpolizel/SMKSNESRecomp) |
 | Mario Kart 64 | Yes | Yes | Yes | [MarioKart64Recomp](https://github.com/sonicdcer/MarioKart64Recomp) |
-| Mario Kart: Super Circuit | Yes | — | Yes | [MarioKartSuperCircuitRecomp](https://github.com/mstan/MarioKartSuperCircuitRecomp) |
+| Mario Kart: Super Circuit | Yes | Yes (MKSC Neo) | Yes | [Static recomp](https://github.com/mstan/MarioKartSuperCircuitRecomp) · [MKSC Neo native port](https://github.com/arcanite24/mksc-neo) |
 | Mario Kart DS | Yes | Beta | Beta | [DS-Kart-Recompiled](https://github.com/AlonsoTlol/DS-Kart-Recompiled) |
-| Mario Kart Wii | Yes | — | Yes | [Wiicompiled](https://github.com/patchzyy/Wiicompiled) |
+| Mario Kart Wii | Yes (both) | Yes (Enhanced) | Yes (both) | [Wiicompiled](https://github.com/patchzyy/Wiicompiled) · [MarioKartWiiCompiled-Enhanced](https://github.com/nvd123-YT/MarioKartWiiCompiled-Enhanced) |
 | Mario Kart 7 | Yes | Yes | Yes | [MK7Recomp](https://github.com/nvd123-YT/MK7Recomp) |
 | Mario Kart 8 Deluxe | Experimental | — | — | [MK8-online](https://github.com/Vnnc1/MK8-online) |
 | Mario Kart World | Early build | — | Yes | [mkw-recomp](https://github.com/adriadam10/mkw-recomp) |
 
-Build availability is taken from each project's published releases and can change independently of this launcher. A published build is not a guarantee that every feature works on every machine. Mario Kart DS's Linux/macOS builds are beta; Mario Kart 8 Deluxe and Mario Kart World are experimental/early-stage projects.
+Build availability is taken from each project's published releases and can change independently of this launcher. A published build is not a guarantee that every feature works on every machine. Mario Kart DS's Linux/macOS builds are beta; MKSC Neo is a separate native C/SDL3 re-implementation, not the gbarecomp static recomp; Mario Kart 8 Deluxe and Mario Kart World are experimental/early-stage projects.
 
 ## What it does
 
@@ -27,6 +27,7 @@ Build availability is taken from each project's published releases and can chang
 - Keeps each recompilation's own runtime and game-specific setup intact.
 - Supports per-game settings where the project provides a `recomplauncher.json` profile.
 - Keeps local saves, save discovery, backups and restore tools.
+- Stores personal time trials and manually tracked race statistics locally, without an account or leaderboard.
 - Supports keyboard, mouse and game controllers through the existing launcher.
 - Updates Mario Kart Collection itself from this repository's GitHub Releases.
 
@@ -43,9 +44,9 @@ Some projects have their own setup programs or launchers. Those remain part of t
 
 ## Saves and online features
 
-Local save discovery, backups and restore are available. The hosted account, cloud-save, community-reporting and telemetry services from the upstream RecompLauncher are not configured in this fork; the app blocks requests to those original first-party endpoints by default. An operator may explicitly set `RL_API` to a compatible service they control.
+Local save discovery, backups and restore are available. Accounts, cloud saves, achievements, leaderboards, community reporting and telemetry from the upstream RecompLauncher are removed or disabled in this collection. Personal time-trial records and race totals are saved only in the local launcher settings.
 
-Online functionality implemented inside an individual Mario Kart recompilation is separate and is not disabled by that setting.
+Online functionality implemented inside an individual Mario Kart project is separate from the launcher's local records and remains available when that project supports it.
 
 ## Building from source
 

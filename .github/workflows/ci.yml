@@ -83,6 +83,7 @@ jobs:
           node --check ui/tv.js
           node --check ui/setup-inputs.js
           node --check ui/games.js
+          node --check ui/account.js
 
       - name: Run Rust tests
         run: npm test -- --locked

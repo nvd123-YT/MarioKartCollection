@@ -13,7 +13,7 @@
   const TV = { on: false, view: 'home', arg: null, back: [], hero: null, row: {}, focusKey: null, genre: '', shot: null, sheet: null, sort: null, dl: {}, saves: {}, sizes: null, savesAll: null };
   // Pages that belong to one game (they have a Back pill instead of the sections).
   const GAMEVIEWS = ['game', 'shots', 'mods', 'gsettings', 'gsaves'];
-  const TABS = [['home', N_('Home')], ['discover', N_('Catalog')], ['soon', N_('Coming Soon')], ['library', N_('Library')], ['downloads', N_('Downloads')], ['achievements', N_('Achievements')], ['settings', N_('Settings')]];
+  const TABS = [['home', N_('Home')], ['discover', N_('Catalog')], ['soon', N_('Coming Soon')], ['library', N_('Library')], ['downloads', N_('Downloads')], ['settings', N_('Settings')]];
   // The tabs in the order the player gave the sidebar, without the ones they hid; Settings last.
   const tvTabs = () => {
     const ui = (S.settings && S.settings.ui) || {}, order = ui.side_order || [], hide = new Set(ui.side_hide || []);
@@ -2918,13 +2918,6 @@
       case 'leave': return leave();
       case 'monitor': sfx('open'); return tvMonitorSheet();
       case 'lang': sfx('open'); return pickLang();
-      case 'account':
-        sfx('open');
-        if (!(S.account && S.account.signedIn)) return window.signIn && window.signIn(false);
-        return sheet(S.account.user.username, [
-          { label: t('Stay signed in'), sub: t('Nothing changes'), icon: 'chevL', run: () => {} },
-          { label: t('Sign out'), sub: t('Your saves stay on this PC'), icon: 'user', run: () => window.signOut && window.signOut() },
-        ]);
       case 'versions': return pickVersion(id);
       case 'xfollow': { const f = window.followLink(byId(id)); if (f) { sfx('select'); invoke('open_url', { url: f }).catch(fail); } return; }
       case 'follow': { const d = devOf(byId(id)); if (d) { sfx('select'); await toggleFollow(d.slug); draw(true); } return; }
@@ -2940,7 +2933,6 @@
       case 'addlib': sfx('select'); await addToLibrary(id); TV.focusKey = 'g-main'; return draw(true);
       case 'dsearch': return tvSearch();
       case 'recomp-req': return tvRequest();
-      case 'signin': sfx('select'); return window.signIn && window.signIn(false);
       case 'tag': sfx('select'); TV.dtag = el.dataset.tag; TV.genre = ''; TV.dq = ''; TV.dorigin = ''; TV.gridShown = {}; return go('discover');
       case 'dtagclear': sfx('back'); TV.dtag = ''; TV.focusKey = 'g:@filter'; return discoverRedraw();
       case 'dfilter': return tvFilter();

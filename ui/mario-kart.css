@@ -26,3 +26,35 @@ a{color:var(--cyan)}
 .offline-pill{color:#ffe29b}
 .page .head h1,.page h1{font-weight:900}
 ::selection{background:rgba(255,211,78,.32);color:var(--ink)}
+
+/* Local Mario Kart records */
+.mkr-page{max-width:1120px}
+.mkr-page .head{margin-bottom:22px}
+.mkr-card{margin-bottom:18px}
+.mkr-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:15px}
+.mkr-section-head h2{font-size:20px;margin:0 0 4px}
+.mkr-section-head p{font-size:13px;color:var(--muted);margin:0}
+.mkr-count{font-size:12px;color:var(--muted);white-space:nowrap;padding:6px 10px;border:1px solid var(--line);border-radius:99px}
+.mkr-form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 16px}
+.mkr-form-grid label{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:700;color:var(--muted)}
+.mkr-form-grid .field,.mkr-form-grid .sel{width:100%;min-width:0;height:42px}
+.mkr-wide{grid-column:span 2}
+.mkr-stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mkr-stat-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:3px 0 16px}
+.mkr-stat-summary span{display:flex;flex-direction:column;gap:3px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--fill)}
+.mkr-stat-summary b{font-size:21px;font-weight:900;font-variant-numeric:tabular-nums}
+.mkr-stat-summary small{font-size:11px;color:var(--muted)}
+.mkr-trials{margin-top:24px}
+.mkr-trials .mkr-section-head{align-items:center}
+.mkr-list{display:flex;flex-direction:column;gap:7px}
+.mkr-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--card)}
+.mkr-time{width:104px;flex:none;font-size:21px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--cyan)}
+.mkr-detail{min-width:0;flex:1;display:flex;flex-direction:column;gap:3px}
+.mkr-detail b{font-size:14px}
+.mkr-detail span,.mkr-detail small{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.mkr-row .icon-btn{flex:none}
+.mkr-empty{display:flex;flex-direction:column;gap:6px;align-items:center;padding:30px 16px;border:1px dashed var(--line2);border-radius:14px;text-align:center}
+.mkr-empty span,.mkr-foot{font-size:12px;color:var(--muted)}
+.mkr-foot{margin:14px 2px 0}
+@media(max-width:900px){.mkr-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.mkr-form-grid,.mkr-stats-grid{grid-template-columns:1fr}.mkr-wide{grid-column:auto}.mkr-stat-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.mkr-time{width:84px;font-size:18px}.mkr-row{gap:9px;padding:10px}}
