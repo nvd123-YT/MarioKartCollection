@@ -3152,7 +3152,7 @@ fn start_game_with_monitor_context(
         // time (with what it needs from Flathub), then started through Flatpak.
         "flatpak" if !cfg!(windows) => {
             if flatpak::host_flatpak_blocked() {
-                return Err(Error::Msg("This build comes as a Flatpak, and the RecompLauncher Flatpak is not allowed to install it. Allow it with: flatpak override --user --talk-name=org.freedesktop.Flatpak com.recomplauncher.RecompLauncher. Or switch to another build on the game page.".into()));
+                return Err(Error::Msg("This build comes as a Flatpak, and the RecompLauncher Flatpak is not allowed to install it. Allow it with: flatpak override --user --talk-name=org.freedesktop.Flatpak com.nvd123.mariokartcollection. Or switch to another build on the game page.".into()));
             }
             if !flatpak::available() {
                 return Err(Error::Msg("This build comes as a Flatpak, and Flatpak isn't on this PC. Install Flatpak from your system's software center, or switch to another build on the game's page.".into()));
@@ -7018,16 +7018,16 @@ fn say_why_it_stopped() {
         trail::note(format!("The launcher stopped: {what}"));
         let low = what.to_lowercase();
         let text = if low.contains("webview2") || low.contains("webview") {
-            format!("RecompLauncher couldn't open its window, because Microsoft Edge WebView2 is missing or broken on this PC.\n\nInstall the WebView2 Runtime from Microsoft (search for \"WebView2 Runtime\"), then open RecompLauncher again.\n\n{what}")
+            format!("Mario Kart Collection couldn't open its window, because Microsoft Edge WebView2 is missing or broken on this PC.\n\nInstall the WebView2 Runtime from Microsoft (search for \"WebView2 Runtime\"), then open Mario Kart Collection again.\n\n{what}")
         } else {
-            format!("RecompLauncher couldn't start.\n\n{what}")
+            format!("Mario Kart Collection couldn't start.\n\n{what}")
         };
         #[link(name = "user32")]
         extern "system" {
             fn MessageBoxW(hwnd: *mut std::ffi::c_void, text: *const u16, caption: *const u16, kind: u32) -> i32;
         }
         let wide = |s: &str| s.encode_utf16().chain(std::iter::once(0)).collect::<Vec<u16>>();
-        let (t, c) = (wide(&text), wide("RecompLauncher"));
+        let (t, c) = (wide(&text), wide("Mario Kart Collection"));
         // MB_OK | MB_ICONERROR | MB_SETFOREGROUND
         // SAFETY: both strings end with a zero and live until the call returns.
         unsafe { MessageBoxW(std::ptr::null_mut(), t.as_ptr(), c.as_ptr(), 0x0000_0010 | 0x0001_0000) };
@@ -8517,12 +8517,12 @@ async fn update_launcher(app: AppHandle, st: State<'_, App>, big_picture: Option
 
 async fn update_launcher_inner(app: &AppHandle, st: &App, _big_picture: Option<bool>) -> Res<()> {
     if flatpak::sandboxed() {
-        return Err(Error::Msg("RecompLauncher updates through Flatpak. Update it from your software center, or run: flatpak update".into()));
+        return Err(Error::Msg("Mario Kart Collection updates through Flatpak. Update it from your software center, or run: flatpak update".into()));
     }
     if nix_managed() {
-        return Err(Error::Msg("RecompLauncher updates through Nix. Update the flake input (nix flake update) or nixpkgs, then rebuild.".into()));
+        return Err(Error::Msg("Mario Kart Collection updates through Nix. Update the flake input (nix flake update) or nixpkgs, then rebuild.".into()));
     }
-    let v = version_json(&st, 600, true).await.ok_or_else(|| Error::Net("Can't reach recomplauncher.com right now. Try again in a bit.".into()))?;
+    let v = version_json(&st, 600, true).await.ok_or_else(|| Error::Net("Can't reach the Mario Kart Collection GitHub Releases right now. Try again in a bit.".into()))?;
     let page = format!("{}/download", net::SITE);
     // On Linux an AppImage replaces itself; anything else (a .deb) opens the download page.
     let v = launcher_platform_entry(&v, assets::os_now(), assets::arch_now()).unwrap_or(Value::Null);
@@ -8574,10 +8574,10 @@ async fn update_launcher_inner(app: &AppHandle, st: &App, _big_picture: Option<b
     if cfg!(windows) && !to_ver.is_empty() && !installer_is_version(&bytes, &to_ver) {
         update_strike(&st.dir, &to_ver, &file_url, &want, 2);
         trail::note(format!("The update file for {to_ver} is another version; not offered again"));
-        return Err(Error::Msg(format!("The update file for RecompLauncher {to_ver} looks wrong: it's a different version inside. It won't be offered again until it's fixed, and nothing on your PC needs changing.")));
+        return Err(Error::Msg(format!("The update file for Mario Kart Collection {to_ver} looks wrong: it's a different version inside. It won't be offered again until it's fixed, and nothing on your PC needs changing.")));
     }
     if let Some(bundle) = mac_app {
-        let dmg = std::env::temp_dir().join(format!("RecompLauncher-{to_ver}.dmg"));
+        let dmg = std::env::temp_dir().join(format!("Mario-Kart-Collection-{to_ver}.dmg"));
         std::fs::write(&dmg, &bytes).map_err(|e| Error::Msg(format!("Couldn't save the new version: {e}")))?;
         let (dmg2, bundle2, ver2) = (dmg.clone(), bundle.clone(), to_ver.clone());
         let put = tokio::task::spawn_blocking(move || mac_update::install(&dmg2, &bundle2, &ver2)).await.map_err(|e| Error::Msg(e.to_string()))?;
@@ -8587,7 +8587,7 @@ async fn update_launcher_inner(app: &AppHandle, st: &App, _big_picture: Option<b
             Err(mac_update::Failed::OtherVersion(found)) => {
                 update_strike(&st.dir, &to_ver, &file_url, &want, 2);
                 trail::note(format!("The update file for {to_ver} holds {found}; not offered again"));
-                return Err(Error::Msg(format!("The update file for RecompLauncher {to_ver} looks wrong: it's a different version inside. It won't be offered again until it's fixed, and nothing on your Mac needs changing.")));
+                return Err(Error::Msg(format!("The update file for Mario Kart Collection {to_ver} looks wrong: it's a different version inside. It won't be offered again until it's fixed, and nothing on your Mac needs changing.")));
             }
             Err(mac_update::Failed::Msg(m)) => return Err(Error::Msg(m)),
         }
@@ -8608,7 +8608,7 @@ async fn update_launcher_inner(app: &AppHandle, st: &App, _big_picture: Option<b
         app.exit(0);
         return Ok(());
     }
-    let file = std::env::temp_dir().join(format!("RecompLauncher-{}-setup.exe", str_of(&v, "version").trim_start_matches('v')));
+    let file = std::env::temp_dir().join(format!("Mario-Kart-Collection-{}-setup.exe", str_of(&v, "version").trim_start_matches('v')));
     std::fs::write(&file, &bytes)?;
     // It installs with no window of its own (/S), and RecompLauncher opens again after (/R) unless
     // the player closed it meanwhile. The launcher's window says it's installing, for a moment, then
@@ -8990,7 +8990,7 @@ pub fn rest(w: &tauri::WebviewWindow, low: bool) {
 /// second WebKit process.
 pub(crate) fn build_overlay(app: &AppHandle) -> tauri::Result<tauri::WebviewWindow> {
     let w = tauri::WebviewWindowBuilder::new(app, "overlay", tauri::WebviewUrl::App("overlay.html".into()))
-        .title("RecompLauncher quick menu")
+        .title("Mario Kart Collection quick menu")
         .transparent(true)
         .decorations(false)
         .always_on_top(true)
@@ -9017,7 +9017,7 @@ const SPLASH_MIN: std::time::Duration = std::time::Duration::from_millis(900);
 /// The small start window: the logo in the middle of the screen while the launcher gets ready.
 fn open_splash(app: &AppHandle) -> Option<tauri::WebviewWindow> {
     tauri::WebviewWindowBuilder::new(app, "splash", tauri::WebviewUrl::App("splash.html".into()))
-        .title("RecompLauncher")
+        .title("Mario Kart Collection")
         .inner_size(420.0, 280.0)
         .resizable(false)
         .decorations(false)
@@ -9411,13 +9411,13 @@ fn show_main(app: &AppHandle) {
     }
 }
 
-/// A game link from the website: recomplauncher://game/<id>, with a plain catalog id (letters,
+/// A game link from the collection: mariokartcollection://game/<id> (legacy recomplauncher:// links also work), with a plain catalog id (letters,
 /// numbers, dashes). Anything else in the link is ignored, and any other link is no link at all.
 /// It only ever opens the game's page: nothing is installed or started from a link.
 fn link_game(link: &str) -> Option<String> {
     let link = link.trim();
     let (scheme, rest) = link.split_once("://")?;
-    if !scheme.eq_ignore_ascii_case("recomplauncher") {
+    if !scheme.eq_ignore_ascii_case("mariokartcollection") && !scheme.eq_ignore_ascii_case("recomplauncher") {
         return None;
     }
     let rest = rest.split(['?', '#']).next().unwrap_or("");
@@ -9505,7 +9505,7 @@ fn play_arg(args: &[String]) -> Option<String> {
 /// The launcher's data folder, before Tauri is up (the same place as `app_data_dir`), or the
 /// portable one beside the launcher.
 fn data_dir_early() -> Option<PathBuf> {
-    portable_dir().or_else(|| dirs::data_dir().map(|d| d.join("com.recomplauncher.app")))
+    portable_dir().or_else(|| dirs::data_dir().map(|d| d.join("com.nvd123.mariokartcollection")))
 }
 
 /// The folder RecompLauncher's program is in.
@@ -9714,7 +9714,7 @@ pub fn run() {
         .plugin(single_instance().callback(|app, argv, _cwd| match play_arg(&argv) {
             _ if argv.iter().any(|a| a == "--quit") => app.exit(0),
             // A game link from the website, clicked while the launcher is open (or by the clock).
-            _ if argv.iter().skip(1).any(|a| a.to_ascii_lowercase().starts_with("recomplauncher:")) => {
+            _ if argv.iter().skip(1).any(|a| { let v = a.to_ascii_lowercase(); v.starts_with("mariokartcollection:") || v.starts_with("recomplauncher:") }) => {
                 if let Some(id) = argv.iter().skip(1).find_map(|a| link_game(a)) {
                     open_link(app, id);
                 } else {
@@ -9776,7 +9776,7 @@ pub fn run() {
                                 };
                                 let _ = tauri_plugin_notification::NotificationExt::notification(app)
                                     .builder()
-                                    .title("RecompLauncher")
+                                    .title("Mario Kart Collection")
                                     .body(msg)
                                     .show();
                             }
@@ -9807,7 +9807,7 @@ pub fn run() {
                 _ => {}
             }
         })
-        // recomplauncher:// links from the website.
+        // mariokartcollection:// links from the collection.
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
@@ -9886,7 +9886,7 @@ pub fn run() {
                     let h = app.handle().clone();
                     std::thread::spawn(move || {
                         if let Err(e) = h.deep_link().register_all() {
-                            trail::note(format!("Link: couldn't register recomplauncher:// ({e})"));
+                            trail::note(format!("Link: couldn't register mariokartcollection:// ({e})"));
                         }
                     });
                 }
@@ -10084,7 +10084,7 @@ pub fn run() {
                                 told = ver.clone();
                                 let hidden = h.get_webview_window("main").map(|w| !w.is_visible().unwrap_or(true)).unwrap_or(true);
                                 if hidden {
-                                    ingame::notify(&h, &format!("RecompLauncher {ver} is out"), "Open RecompLauncher to update.");
+                                    ingame::notify(&h, &format!("Mario Kart Collection {ver} is out"), "Open Mario Kart Collection to update.");
                                 }
                                 let _ = h.emit("launcher-update", v);
                             }
