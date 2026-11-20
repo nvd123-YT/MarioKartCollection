@@ -48,7 +48,7 @@ const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':
 // A translated sentence with markup in its gaps: the text is escaped, the values (already HTML) go in as they are.
 const htmlFill = (s, v) => esc(s).replace(/\{(\w+)\}/g, (m, k) => (v && k in v ? (typeof v[k] === 'number' ? fmtNum(v[k]) : String(v[k])) : m));
 // The Mario Kart Collection Discord (the catalog can name a newer invite).
-const discordUrl = () => { const u = (S.cat && S.cat.site && S.cat.site.discord) || ''; return /^https:\/\//.test(u) ? u : 'https://discord.gg/FUzqGM2cvf'; };
+const discordUrl = () => { const u = (S.cat && S.cat.site && S.cat.site.discord) || ''; return /^https:\/\//.test(u) ? u : 'https://github.com/nvd123-YT/MarioKartCollection/issues'; };
 const webUrl = (u) => (!u ? '' : /^(https?:|data:)/.test(u) ? u : S.site + (u[0] === '/' ? '' : '/') + u);
 // A cover at the size a tile shows it: the site's smaller copy (its thumb.php, the same one the
 // website uses) for pictures in its /media folder; anything else as it is.
@@ -1163,7 +1163,7 @@ function progress(id) {
 }
 
 const HEART = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF5E7A" d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.6 4.5c2.1 0 3.5 1.2 4.4 2.6.9-1.4 2.3-2.6 4.4-2.6 3.6 0 5.7 3.7 4.2 7.2C19.5 16.4 12 21 12 21z"/></svg>';
-const KOFI = 'https://ko-fi.com/recomp';
+const KOFI = 'https://github.com/nvd123-YT/MarioKartCollection';
 const DISCORD = '<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M19.3 5.4A16.6 16.6 0 0 0 15.2 4l-.5 1a15.4 15.4 0 0 0-5.4 0l-.5-1a16.5 16.5 0 0 0-4.1 1.4C2.1 9.3 1.4 13.1 1.8 16.9a16.7 16.7 0 0 0 5 2.6l1.1-1.7a10.8 10.8 0 0 1-1.7-.8l.4-.3a11.9 11.9 0 0 0 10.8 0l.4.3c-.5.3-1.1.6-1.7.8l1.1 1.7a16.6 16.6 0 0 0 5-2.6c.5-4.4-.8-8.2-2.9-11.5zM8.7 14.6c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>';
 // What the controller buttons do, for Settings > Controllers (desktop and Big Picture mode).
 const PAD_NAME = { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', view: N_('View'), menu: N_('Menu') };
@@ -1247,7 +1247,7 @@ function actions(a, size = 'big') {
 // send themselves; nothing is sent from here.
 function askSupportUrl(a) {
   const title = 'Mario Kart Collection support';
-  const body = 'Hi! Could you add a recomplauncher.json to this recomp, so Mario Kart Collection can set it up and show its settings for players?\n\nThe guide: https://recomplauncher.com/sdk-files/guide.md';
+  const body = 'Hi! Could you add a recomplauncher.json to this recomp, so Mario Kart Collection can set it up and show its settings for players?\n\nThe guide: https://github.com/nvd123-YT/MarioKartCollection/blob/main/docs/DEVELOPERS.md';
   if (isSF(a.repo)) return repoIssues(a.repo);
   if (isLab(a.repo)) return `${repoHome(a.repo)}/-/issues/new?issue[title]=${encodeURIComponent(title)}&issue[description]=${encodeURIComponent(body)}`;
   return `${repoIssues(a.repo)}/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
@@ -2425,7 +2425,7 @@ window.afterSignIn = async () => {
   if (id && !notifyOn(id)) toggleNotify(id);
 };
 
-// ---------- notes from the RecompStore team, on top of Discover ----------
+// ---------- notes from the this collection team, on top of Discover ----------
 const NOTES = { list: [] };
 async function loadNotes() {
   try { NOTES.list = (await invoke('team_notes')) || []; } catch (e) { NOTES.list = []; }
@@ -2470,7 +2470,7 @@ function runsCard(a) {
   if (!rep || rep === 'loading') return `<div class="card runs">${head('')}<p class="muted" style="margin:6px 0 0">${esc(t('Loading…'))}</p></div>`;
   const sc = scoreOf(rep.counts, rep.latest), r = sc.r, all = sc.all;
   const say = inst ? `<button type="button" class="btn" data-act="run-say" data-id="${esc(a.id)}">${esc(t('Say how it runs'))}</button>` : '';
-  const site = `<button type="button" class="btn" data-act="url" data-url="${esc(SITE + '/game/' + encodeURIComponent(a.id))}">${esc(all.n > 3 ? tf('All {n} reports', { n: all.n }) : t('On recomplauncher.com'))}</button>`;
+  const site = `<button type="button" class="btn" data-act="url" data-url="${esc(SITE + '/game/' + encodeURIComponent(a.id))}">${esc(all.n > 3 ? tf('All {n} reports', { n: all.n }) : t('On this collection's GitHub repository'))}</button>`;
   const acts = `<div class="acts${say ? ' grid2' : ''}">${say}${site}</div>`;
   if (!all.n) return `<div class="card runs">${head(rep.error ? t('Can\'t be reached right now') : t('No reports yet'))}<p class="runs-empty">${esc(inst ? t('Be the first: after you play, say how it ran on your PC.') : t('Nobody has said how it runs yet. Players who try it can say so from the launcher.'))}</p>${say ? `<div class="acts">${say}</div>` : ''}</div>`;
   // Reports from Linux or a Steam Deck on a Windows build: played through Proton.
@@ -4030,7 +4030,7 @@ function dlPhase(id) {
 S.scans = S.scans || {};
 const VT_MARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.87 12 0 22.68h24V1.32H0zm10.73 8.52H5.28l8.637-8.448L5.28 3.48H21.6z"/></svg>';
 const scanAsk = new Map();
-const SCAN_TIP = N_('Scanned before release and checked by the RecompStore team.');
+const SCAN_TIP = N_('Scanned before release and checked by the this collection team.');
 // The label for a release's scan: { cls, ic, text }, or null while it isn't known (asked once; a
 // release still being checked is asked again at most every 10 minutes, so an okay shows up).
 function scanVerdict(files) {
@@ -4073,7 +4073,7 @@ function scanPill(h) {
   if (info.cls === 'ok') {
     const link = scanLink(S.scans[key]);
     if (link) return `<button type="button" class="scan-pill ok" data-scan="${esc(key)}" data-act="scan-report" data-url="${esc(link)}" title="${esc(t('Open the VirusTotal report'))}"><i>${info.ic}</i>${esc(info.text)}</button>`;
-    return `<span class="scan-pill ok" data-scan="${esc(key)}" title="${esc(t('Checked by the RecompStore team'))}"><i>${info.ic}</i>${esc(info.text)}</span>`;
+    return `<span class="scan-pill ok" data-scan="${esc(key)}" title="${esc(t('Checked by the this collection team'))}"><i>${info.ic}</i>${esc(info.text)}</span>`;
   }
   return `<span class="scan-pill ${info.cls}" data-scan="${esc(key)}" title="${esc(t(SCAN_TIP))}"><i>${info.ic}</i>${esc(info.text)}</span>`;
 }
@@ -4163,7 +4163,7 @@ function updNotes(u) {
   if (u.self) {
     const n = S.selfNotes;
     if (n === undefined) { loadSelfNotes(); return `<p class="muted">${esc(t('Loading the notes…'))}</p>`; }
-    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on recomplauncher.com.'))}</p>`;
+    return n && relKey(n.version) === relKey(u.tag) && n.notes ? updClamp(`<div class="md">${md(n.notes, true, { foldTables: true })}</div>`, u) : `<p class="muted">${esc(t('The notes for this version are on this collection's GitHub repository.'))}</p>`;
   }
   if (!u.repo) return `<p class="muted">${esc(t('No notes for this one.'))}</p>`;
   const r = S.rels[u.repo];
@@ -4258,7 +4258,7 @@ function devTab(a) {
   if (r === undefined) { devCheck(id); return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`; }
   if (r === 'loading') return `<div class="stack"><div class="card"><p class="muted" style="margin:0">${esc(t('Checking…'))}</p></div></div>`;
   const flow = FLOW_NAME[r.flow || ''] || FLOW_NAME[''];
-  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file on recomplauncher.com'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
+  const src = { appimage: t('The manifest inside the AppImage'), folder: t('Your recomplauncher.json'), catalog: t('The file on this collection's GitHub repository'), 'built-in': t('The file built into the launcher'), repo: t('The recomplauncher.json in its project'), none: t('No file yet') }[r.source] || '';
   const errs = r.items.filter((x) => x.level === 'err').length, warns = r.items.filter((x) => x.level === 'warn').length;
   return `<div class="stack">
     <div class="card dev-head"><div class="dev-sum"><span class="kick">${esc(t('Local build'))}</span><h3>${esc(src)}</h3>
@@ -4270,7 +4270,7 @@ function devTab(a) {
     ${r.items.length ? `<div class="card dev-list">${r.items.map((x) => `<div class="dev-item ${x.level}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${DEV_MARK[x.level]}</svg><div><b>${esc(x.text)}</b>${x.detail ? `<span>${esc(x.detail)}</span>` : ''}</div></div>`).join('')}</div>` : ''}
     <div class="card"><h3 style="margin-bottom:8px">${esc(t('Try it like a player'))}</h3>
       <p class="muted" style="margin:0 0 14px">${esc(t('Set it up with your own disc, change its settings, then press Play. Change the file and press Check again: the launcher reads it fresh each time.'))}</p>
-      <div class="acts"><button type="button" class="btn" data-act="setup" data-id="${esc(id)}">${esc(t('Set up'))}</button><button type="button" class="btn" data-act="tab" data-tab="settings"${S.setup[id] && S.setup[id] !== 'loading' ? '' : ' disabled'}>${esc(t('Settings'))}</button><button type="button" class="btn" data-act="url" data-url="https://recompstore.com/hub?tab=docs">${esc(t('The developer guide'))}</button></div></div>
+      <div class="acts"><button type="button" class="btn" data-act="setup" data-id="${esc(id)}">${esc(t('Set up'))}</button><button type="button" class="btn" data-act="tab" data-tab="settings"${S.setup[id] && S.setup[id] !== 'loading' ? '' : ' disabled'}>${esc(t('Settings'))}</button><button type="button" class="btn" data-act="url" data-url="https://github.com/nvd123-YT/MarioKartCollection/blob/main/docs/DEVELOPERS.md">${esc(t('The developer guide'))}</button></div></div>
     <p class="muted dev-path">${esc(g ? g.path : '')}</p>
   </div>`;
 }
@@ -4400,7 +4400,7 @@ function pageSettings() {
         + (S.os === 'windows' ? group(t('Portable'), portableRow(row)) : S.os === 'linux' ? group(t('Windows recomps'), row(t('Play Windows recomps with Proton'), t('Recomps that only have a Windows version install that one and play through Proton. Steam\'s Proton, GE-Proton, umu-launcher and Wine are found on their own.') + ' ' + t('With this off, those recomps are left out of the Catalog, search and game pages.'), sw('proton', st.proton, t('Play Windows recomps with Proton'))) + geRow(row)) : '')
         + group(t('Notifications and sharing'), row(t('Notifications'), S.os === 'windows' ? t('A Windows notification when a new recomp comes out for a game you own.') : t('A notification when a new recomp comes out for a game you own.'), sw('notify', st.notify, t('Notifications')))
           + row(t('Discord status'), t('Shows the game you\'re playing on your Discord profile, with its cover and play time.'), sw('discord', st.discord !== false, t('Discord status')))
-          + row(t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. It helps fix problems faster. No names, no files.'), `<span class="set-ctl2"><a href="#" data-act="url" data-url="https://recompstore.com/privacy#launcher">${esc(t('What\'s sent'))}</a>${sw('share_usage', st.data_asked && st.share_usage, t('Share usage and diagnostics'))}</span>`)
+          + row(t('Share usage and diagnostics'), t('Your PC\'s parts, which games you play and for how long, and what went wrong when one crashes or won\'t install. It helps fix problems faster. No names, no files.'), `<span class="set-ctl2"><a href="#" data-act="url" data-url="https://github.com/nvd123-YT/MarioKartCollection#saves-and-online-features">${esc(t('What\'s sent'))}</a>${sw('share_usage', st.data_asked && st.share_usage, t('Share usage and diagnostics'))}</span>`)
           + row(t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'), sw('share_stats', st.data_asked && st.share_stats, t('Share anonymous usage stats')))
           + row(t('Your IDs'), S.ids ? tf('Diagnostics {a} · Stats {b}. Quote them to have what was sent removed. A reset starts new ones.', { a: S.ids.usage.slice(0, 8), b: S.ids.stats.slice(0, 8) }) : t('Quote them to have what was sent removed. A reset starts new ones.'), `<span class="set-ctl2"><button type="button" class="btn" data-act="copy-ids">${esc(t('Copy'))}</button><button type="button" class="btn" data-act="reset-ids">${esc(t('Reset'))}</button></span>`))
         + group(t('When you close the window'), row(t('Run in background'), t('Keep Mario Kart Collection running when you close the window. Turn off to exit on close. Quit always exits.'), sw('close_to_tray', st.close_to_tray, t('Run in background'))));
@@ -4510,7 +4510,7 @@ function pageSettings() {
         + group(t('Developer tools'), row(t('Developer tools'), t('For recomp developers: add a build from a folder on this PC and check its recomplauncher.json before you ship it.'), sw('dev', ui.dev, t('Developer tools'), 'ui-toggle'))
           + (ui.dev ? row(t('Add a build from a folder'), t('Your recomp\'s folder, with its program and recomplauncher.json. It shows in your Library as a local build; the launcher never updates, moves or deletes it.'), `<button type="button" class="btn main" data-act="dev-add">${esc(t('Add a build'))}</button>`) : ''))
         + (ui.dev ? group(t('Your local builds'), locals.length ? locals.map((g) => `<div class="set-row"><div class="k"><b>${esc(g.name)}</b><span class="path">${esc(g.path)}</span></div><div class="acts"><button type="button" class="btn sm" data-act="dev-open" data-id="${esc(g.id)}">${esc(t('Check it'))}</button></div></div>`).join('') : `<p class="set-empty">${esc(t('None yet.'))}</p>`) : '')
-        + group(t('The developer guide'), row(t('Works with Mario Kart Collection'), t('How to write recomplauncher.json: Easy Setup from the player\'s disc, your settings in the launcher, and your own setup step.'), `<button type="button" class="btn" data-act="url" data-url="https://recompstore.com/hub?tab=docs">${esc(t('Open the guide'))}</button>`));
+        + group(t('The developer guide'), row(t('Works with Mario Kart Collection'), t('How to write recomplauncher.json: Easy Setup from the player\'s disc, your settings in the launcher, and your own setup step.'), `<button type="button" class="btn" data-act="url" data-url="https://github.com/nvd123-YT/MarioKartCollection/blob/main/docs/DEVELOPERS.md">${esc(t('Open the guide'))}</button>`));
       break;
     }
     default:
@@ -6489,7 +6489,7 @@ function askData() {
     ${swr('share_stats', t('Share anonymous usage stats'), t('When the launcher is open and which recomps are being played, under a random ID that isn\'t linked to you or your account.'))}</div>
     <div class="acts grid2"><button type="button" class="btn" data-x="what">${esc(t('What\'s sent'))}</button><button type="button" class="btn main" data-x="save">${esc(t('Save'))}</button></div>`, async (x, close) => {
     if (x.dataset.x === 'sw') { const k = x.dataset.k; pick[k] = !pick[k]; x.setAttribute('aria-checked', String(pick[k])); }
-    if (x.dataset.x === 'what') invoke('open_url', { url: 'https://recompstore.com/privacy#launcher' }).catch(fail);
+    if (x.dataset.x === 'what') invoke('open_url', { url: 'https://github.com/nvd123-YT/MarioKartCollection#saves-and-online-features' }).catch(fail);
     if (x.dataset.x === 'save') { close(); await saveSettings(Object.assign({ data_asked: true }, pick), true); if (S.view === 'settings') render(true); }
   }, t('Help Improve Mario Kart Collection?'));
 }
@@ -6774,7 +6774,7 @@ function updateFailedModal(f) {
   // On a Mac there's no installer: the new app was put in place, didn't start, and this one was
   // put back. Downloading it again is the only thing to offer.
   if (S.os === 'macos') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} was put in place but didn\'t start, so {now} was put back. You can try the update again, or download it from this collection's GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -6785,7 +6785,7 @@ function updateFailedModal(f) {
   // On Linux there's no installer: a helper swaps the AppImage once the launcher closes. This is
   // still the old version, so the swap didn't happen or the new one didn't start and was put back.
   if (S.os === 'linux') {
-    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from recomplauncher.com.', { to: verName(f.to), now: verName(S.version) }))}</p>
+    modal(`<h2>${esc(t('The Update Didn\'t Start'))}</h2><p>${esc(tf('Mario Kart Collection {to} didn\'t go in or didn\'t start, so this is still {now}. You can try the update again, or download it from this collection's GitHub repository.', { to: verName(f.to), now: verName(S.version) }))}</p>
     <div class="acts grid2"><button type="button" class="btn" data-x="no">${esc(t('Not Now'))}</button><button type="button" class="btn main" data-x="go">${esc(t('Try Again'))}</button></div>`, (x, close) => {
       if (x.dataset.x !== 'go') return;
       close();
@@ -7063,7 +7063,7 @@ function pageSoon() {
 }
 
 // Request a recomp: the player pastes its project's link (GitHub, GitLab, SourceForge, or a
-// Forgejo or Gitea server), with a note, and it goes to recomplauncher.com for a look. One the
+// Forgejo or Gitea server), with a note, and it goes to this collection's GitHub repository for a look. One the
 // catalog already lists just opens.
 // The link as typed, with https:// in front when it was left out.
 const reqUrl = (typed) => { const s = String(typed || '').replace(/\s+/g, ''); return !s || /^https?:\/\//i.test(s) ? s : 'https://' + s; };
@@ -7268,12 +7268,12 @@ function aboutModal() {
     <p class="muted">${esc(tf('Version {v}', { v: verName(S.version) }))} · ${OS_NAME[S.os]} ${esc(S.arch)}</p>
     <p>${esc(t('Recompiled and decompiled PC games: find, install, update and play them, straight from each developer\'s own GitHub.'))}</p>
     <p class="muted" style="font-size:14px">${esc(t('Mario Kart Collection has no game files and never downloads any. Every recomp runs with your own copy of the game. Mario Kart Collection is free software under the GPL-3.0; each recomp has its own license, set by its developer.'))}</p>
-    ${discordUrl() ? `<div class="acts grid2"><button type="button" class="btn" data-x="site">recomplauncher.com</button><button type="button" class="btn dc-btn" data-x="discord" aria-label="Discord" title="Discord">${DISCORD}</button>
+    ${discordUrl() ? `<div class="acts grid2"><button type="button" class="btn" data-x="site">this collection's GitHub repository</button><button type="button" class="btn dc-btn" data-x="discord" aria-label="Discord" title="Discord">${DISCORD}</button>
       <button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button>
-      <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn main span2" data-x="no">${esc(t('Close'))}</button></div>` : `<div class="acts grid2"><button type="button" class="btn" data-x="site">recomplauncher.com</button><button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button>
+      <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn main span2" data-x="no">${esc(t('Close'))}</button></div>` : `<div class="acts grid2"><button type="button" class="btn" data-x="site">this collection's GitHub repository</button><button type="button" class="btn" data-x="me">${esc(t('Made by Ripalda'))}</button>
       <button type="button" class="btn span2" data-x="kofi">${HEART}${esc(t('Support Us'))}</button><button type="button" class="btn" data-x="update">${esc(t('Check for updates'))}</button><button type="button" class="btn main" data-x="no">${esc(t('Close'))}</button></div>`}</div>`, async (x) => {
     if (x.dataset.x === 'discord') invoke('open_url', { url: discordUrl() }).catch(fail);
-    if (x.dataset.x === 'site') invoke('open_url', { url: 'https://recomplauncher.com' }).catch(fail);
+    if (x.dataset.x === 'site') invoke('open_url', { url: 'https://github.com/nvd123-YT/MarioKartCollection' }).catch(fail);
     if (x.dataset.x === 'me') invoke('open_url', { url: 'https://www.elripalda.com' }).catch(fail);
     if (x.dataset.x === 'kofi') invoke('open_url', { url: KOFI }).catch(fail);
     if (x.dataset.x === 'update') checkLauncher(x);
@@ -8705,7 +8705,7 @@ async function act(el, e) {
       if (Date.now() - (S.refreshedAt || 0) < 60e3) { toast(t('The Catalog is up to date.')); return; }
       S.refreshedAt = Date.now();
       toast(t('Getting the newest list…')); await loadCatalog(true); await loadOwned(); loadEasy(); S.rels = {};
-      toast(offNow() ? t('Can\'t reach recomplauncher.com right now, so this is the list saved on your PC.') : t('The Catalog is up to date.'));
+      toast(offNow() ? t('Can\'t reach this collection's GitHub repository right now, so this is the list saved on your PC.') : t('The Catalog is up to date.'));
       return render(true);
     }
     case 'tvsize': return saveSettings({ tv_size: el.dataset.k });
@@ -8749,7 +8749,7 @@ async function act(el, e) {
       if (fresh) S.updCheckedAt = Date.now();
       const ok = await checkUpdates(fresh);
       el.disabled = false;
-      if (ok && !Object.keys(S.updates || {}).length) toast(offNow() ? t('Can\'t reach recomplauncher.com right now. Try again in a bit.') : t('Everything is up to date.'));
+      if (ok && !Object.keys(S.updates || {}).length) toast(offNow() ? t('Can\'t reach this collection's GitHub repository right now. Try again in a bit.') : t('Everything is up to date.'));
       return render(true);
     }
     case 'lib-remove': {
@@ -9489,7 +9489,7 @@ T.event.listen('goto', ({ payload: p }) => {
   if (p.view === 'shots') { S.shotsGame = p.id || ''; go('shots'); }
 });
 T.event.listen('toast', ({ payload }) => toast(t(String(payload)), true));
-// A game link from the website (recomplauncher://game/<id>): that game's page, once the catalog is
+// A game link from the website (mariokartcollection://game/<id>): that game's page, once the catalog is
 // in and the first-time setup is done. A game the catalog doesn't have: Discover, with a word on why.
 // Only the page opens: installing and playing stay the player's own presses.
 let linkWait = 0;
