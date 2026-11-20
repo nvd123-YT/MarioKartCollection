@@ -1,0 +1,28 @@
+/* Mario Kart Collection visual identity: midnight asphalt, warm racing accents, bold condensed typography. */
+:root{
+  --bg:#0d111a;--bg2:#090d15;--side:#0a0e17;--card:#151d2b;--card2:#1d293b;--card3:#293a53;
+  --ink:#f7f8fc;--muted:#b2bdce;--dim:#8795aa;
+  --cyan:#ffd34e;--blue:#f04b5d;--warn:#ffd166;--bad:#ff707b;--ai:#cfb7ff;
+  --line:rgba(247,248,252,.085);--line2:rgba(247,248,252,.15);--line3:rgba(247,248,252,.25);
+  --fill:rgba(247,248,252,.035);--fill2:rgba(247,248,252,.065);--fill3:rgba(247,248,252,.11);
+  --grad:linear-gradient(135deg,#ffd34e 0%,#ff9b42 48%,#f04b5d 100%);
+}
+body.oled{--bg:#000;--bg2:#000;--side:#000;--card:#0b0d12;--card2:#151923;--card3:#202938}
+body{font-family:Archivo,Figtree,system-ui,sans-serif;background-color:var(--bg);background-image:radial-gradient(ellipse at 82% 0%,rgba(240,75,93,.10),transparent 38%),radial-gradient(ellipse at 4% 100%,rgba(255,211,78,.055),transparent 36%);font-weight:500}
+h1,h2,h3{font-family:Archivo,Figtree,sans-serif;font-stretch:118%;font-weight:900;letter-spacing:-.035em}
+h1{letter-spacing:-.045em}
+a{color:var(--cyan)}
+#brand{gap:10px}
+#brand img{width:38px;height:38px}
+.brand-name{display:flex;flex-direction:column;gap:1px;font-family:Archivo,sans-serif;font-weight:900;line-height:.98;letter-spacing:-.055em;color:var(--ink);font-size:16px}
+.brand-name b{font-weight:900;color:var(--ink)}
+.brand-name small{font-size:10px;line-height:1.25;letter-spacing:.22em;color:var(--cyan);font-weight:800}
+.nav.on{background:linear-gradient(90deg,rgba(255,211,78,.16),rgba(240,75,93,.075));box-shadow:inset 3px 0 0 var(--cyan)}
+.nav.on svg{color:var(--cyan)}
+.btn.main{background:var(--grad);color:#17131a;box-shadow:0 10px 30px -10px rgba(240,75,93,.48);font-weight:900}
+.btn.main:hover{filter:brightness(1.08);box-shadow:0 14px 34px -10px rgba(240,75,93,.62)}
+.pin.on .th{box-shadow:0 0 0 2px var(--cyan)}
+.side{background:linear-gradient(180deg,rgba(12,17,28,.98),rgba(8,12,20,.98))}
+.offline-pill{color:#ffe29b}
+.page .head h1,.page h1{font-weight:900}
+::selection{background:rgba(255,211,78,.32);color:var(--ink)}
